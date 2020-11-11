@@ -6,7 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 django-postgresql = "*"
-psycopg2-binary = "*"
+gunicorn = "*"
+django-heroku = "*"
 
 [dev-packages]
 ipython = "*"
