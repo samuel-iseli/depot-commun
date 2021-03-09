@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import { Box, Button, Grommet, Layer, ResponsiveContext } from 'grommet';
 import { FormClose } from 'grommet-icons';
 
+import PrivateRoute from './PrivateRoute';
+import { ProvideAuth } from './context/auth';
+
 import Header from './Header';
 import Menu from './Menu';
 import Login from './Login';
@@ -65,8 +68,9 @@ function Main() {
         </Layer>
         ):( <Box/> ))}
         <Route exact path="/" component={Home} />
-        <Route exact path="/items" component={Items} />
-        <Route exact path="/purchases" component={Purchases} />
+        <Route exact path="/login" component={Login} />
+        <PrivateRoute exact path="/items" component={Items} />
+        <PrivateRoute exact path="/purchases" component={Purchases} />
       </Box>
     </Box> )}
   </ResponsiveContext.Consumer>
@@ -75,11 +79,13 @@ function Main() {
 
 function App() {
   return (
-    <Router basename='/'>
-      <Grommet theme={theme} full>
-        <Main/>
-      </Grommet>
-  </Router>
+    <ProvideAuth>
+      <Router basename='/'>
+        <Grommet theme={theme} full>
+          <Main/>
+        </Grommet>
+    </Router>
+  </ProvideAuth>
   );
 }
 
