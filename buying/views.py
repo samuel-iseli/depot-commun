@@ -21,19 +21,14 @@ class PurchaseView(generics.ListCreateAPIView):
 
 class AvailableItemsView(generics.ListAPIView):
     def get_queryset(self):
-        depot_uuid = self.kwargs['depot_uuid']
-
         now = timezone.now()
         is_active_query = Q(active_from__lte=now) & (Q(active_until__isnull=True) | Q(active_until__gt=now))
 
-        queryset = models.Item.objects \
-            .filter(depot__uuid__exact=depot_uuid) \
-            .filter(number_of_items_in_stock__gt=0) \
-            .filter(is_active_query)
+        queryset = models.Item.objects.filter(is_active_query)
         return queryset
 
     serializer_class = serializers.AvailableItemsSerializer
-    permission_classes = [my_permissions.MayReadDepot]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class DepotUsersView(generics.ListCreateAPIView):
@@ -44,3 +39,4 @@ class DepotUsersView(generics.ListCreateAPIView):
 
     serializer_class = serializers.DepotUserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
