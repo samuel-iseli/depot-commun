@@ -1,30 +1,41 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { RouterProps } from 'react-router-dom';
 import { Box, Paragraph } from 'grommet';
+import axios from 'axios';
 
 type Item = {
-  id: string,
-  category: string,
-  description: string,
+  product_nr: string,
+  tags: string,
+  name: string,
   price: number,
 };
 
-const TestItems = () => Array.from<Number, Item>( Array(20).keys(), i => ({
-    id: '123',
-    category: 'Getränke',
-    description: 'Bier Paul',
-    price: 1.10,
-  } ));
-  
-const Items : FunctionComponent<RouterProps> = (props) => (
+const Items : FunctionComponent<RouterProps> = (props) => {
+
+  const [list, setList ] = useState<Item []>([]);
+
+  useEffect(() => {
+    // called when component has mounted
+
+    // load items list
+    axios.get('/buying/items/available-items/')
+    .then(response => {
+      setList(response.data);
+    })
+    .catch(error => {
+      console.log('error on getting items: ' + error)
+    })
+  }, [])
+
+  return (
     <Box direction="column" justify="start" overflow="scroll" fill="horizontal">
-    { TestItems().map(itm => (
+    { list.map(itm => (
       <Box direction="row" border={{"style":"solid"}} 
           pad="medium" gap="medium" flex={false}>
-        <Paragraph>{ itm.id }</Paragraph>
+        <Paragraph>{ itm.product_nr }</Paragraph>
         <Box align="start" justify="center" fill="horizontal">
           <Paragraph>
-            { itm.description }
+            { itm.name }
           </Paragraph>
         </Box>
         <Paragraph textAlign="end">
@@ -33,6 +44,6 @@ const Items : FunctionComponent<RouterProps> = (props) => (
       </Box>
     ))}
   </Box>
-);
+)};
 
 export default Items;
