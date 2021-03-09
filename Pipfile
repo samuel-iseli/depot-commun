@@ -9,6 +9,8 @@ django-postgresql = "*"
 gunicorn = "*"
 django-heroku = "*"
 djangorestframework = "*"
+django-cors-headers = "*"
+
 
 [dev-packages]
 ipython = "*"
