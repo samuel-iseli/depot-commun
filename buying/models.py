@@ -28,7 +28,7 @@ class Depot(models.Model):
     name = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=400)
     sign_up_secret = models.CharField(default=make_uuid, max_length=UUID_LENGTH)
-    users = models.ManyToManyField(UserProfile, related_name='depots')
+    users = models.ManyToManyField(UserProfile)
 
     def __str__(self):
         return self.name
@@ -49,7 +49,7 @@ class Item(models.Model):
     name = models.CharField(max_length=200, unique=True)
     price = models.DecimalField(max_digits=7, decimal_places=2)
 
-    tags = models.ManyToManyField(Tag, related_name='items')
+    tags = models.ManyToManyField(Tag, related_name='items', blank=True)
 
     number_of_items_in_stock = models.PositiveSmallIntegerField(default=0)
 
