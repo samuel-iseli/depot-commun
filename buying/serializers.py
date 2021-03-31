@@ -45,7 +45,7 @@ class DepotUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ['uuid', 'name', 'user']
+        fields = ['uuid', 'name', 'user', 'first_name', 'last_name', 'email']
 
     def update(self, instance, validated_data):
         raise AssertionError("Shouldn't get here")

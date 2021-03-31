@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.utils import timezone
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 
 from . import models
 from . import permissions as my_permissions
@@ -40,3 +41,16 @@ class DepotUsersView(generics.ListCreateAPIView):
     serializer_class = serializers.DepotUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+class CurrentUser(generics.GenericAPIView):
+    """
+    Simple get-only view returning the currently logged in user.
+    Is used by frontend to determine authentication state
+    """
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+    serializer_class = serializers.DepotUserSerializer
+    permission_classes = [permissions.IsAuthenticated]

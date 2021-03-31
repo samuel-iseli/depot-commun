@@ -1,13 +1,24 @@
 from django.urls import include, path
+from django.contrib.auth import views as auth_views
 from . import views
-from rest_framework.authtoken import views as token_views
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
+
+# login dialog using the template from rest_framework
+# must to be registered with app_name "rest_framework"
+# therefore we need to include these separately
+auth_patterns = [
+    path('login/', auth_views.LoginView.as_view(
+            template_name='rest_framework/login.html',
+            redirect_authenticated_user=True), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+]
+
 urlpatterns = [
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('items/available-items/', views.AvailableItemsView.as_view()),
     path('depots/<depot_uuid>/users/', views.DepotUsersView.as_view()),
     path('users/<id>/purchases/', views.PurchaseView.as_view()),
-    path('api-token-auth/', token_views.obtain_auth_token)
+    path('current-user/', views.CurrentUser.as_view()),
+    path('auth/', include((auth_patterns, 'rest_framework'))),
 ]
