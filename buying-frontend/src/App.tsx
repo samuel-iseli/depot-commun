@@ -8,7 +8,7 @@ import { ProvideAuth } from './context/auth';
 
 import Header from './Header';
 import Menu from './Menu';
-import Login from './Login';
+import NoLogin from './NoLogin';
 import Home from './Home';
 import Items from './Items';
 import Purchases from './Purchases';
@@ -68,7 +68,7 @@ function Main() {
         </Layer>
         ):( <Box/> ))}
         <Route exact path="/" component={Home} />
-        <Route exact path="/login" component={Login} />
+        <Route exact path="/nologin" component={NoLogin} />
         <PrivateRoute exact path="/items" component={Items} />
         <PrivateRoute exact path="/purchases" component={Purchases} />
       </Box>

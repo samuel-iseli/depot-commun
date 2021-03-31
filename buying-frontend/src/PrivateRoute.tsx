@@ -15,7 +15,7 @@ const PrivateRoute: FunctionComponent<RouteProps> = (props) => {
                 children    
                 )
             ) : (
-            <Redirect to="/login"/>
+            <Redirect to="/nologin"/>
         )}
         />
     );

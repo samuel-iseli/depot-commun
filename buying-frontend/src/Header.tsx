@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SetStateAction, Dispatch } from 'react';
+import React, { FunctionComponent, SetStateAction, Dispatch, useState } from 'react';
 import { Box, Button, ResponsiveContext } from 'grommet';
 import { Menu, Login, Logout, StatusGoodSmall  } from 'grommet-icons';
 import { useAuth} from './context/auth';
@@ -30,20 +30,21 @@ const Header : FunctionComponent<HeaderProps> = (props) => {
             onClick={() => {
               props.setShowMenu(!props.showMenu);
             }}
-          focusIndicator={false}
-        ><Menu /></Button>
-      </Box> )}
-      <Box fill align='center'>Depot Commun</Box> 
-        <Box>{ auth.userName }</Box>
-        <Box pad={{left: 'small', right: 'small'}}>
-          {auth.isAuthenticated && (
-          <Button
-            onClick={() => auth.logout()}
-          >
-            <Logout/>
+            focusIndicator={false}>
+            <Menu />
           </Button>
-          )}
-        </Box>
+        </Box> )}
+      <Box fill align='center'>Depot Commun</Box> 
+      <Box>{ auth.userName }</Box>
+      <Box pad={{left: 'small', right: 'small'}}>
+        {auth.isAuthenticated ? (
+          <Button
+            onClick={() => auth.logout()}>
+            <Logout/>
+          </Button> ) : (
+          <Button href= { auth.loginUrl }><Login/></Button> )
+        }
+      </Box>
     </Box> 
     )}
   </ResponsiveContext.Consumer>

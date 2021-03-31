@@ -2,23 +2,31 @@ import React, { createContext, FunctionComponent, useContext, useState } from 'r
 import axios from 'axios';
 
 // set django testserver address in development mode
-if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    axios.defaults.baseURL = 'http://localhost:8000';
+const baseUrl = ((!process.env.NODE_ENV || process.env.NODE_ENV === 'development') ?
+    ("http://localhost:8000") : (""));
+
+if (baseUrl !== "") {
+    axios.defaults.baseURL = baseUrl;
 }
+
+const loginUrl = baseUrl + '/buying/auth/login/';
+
+// send session cookies
+axios.defaults.withCredentials = true;
 
 type Auth = {
     isAuthenticated: boolean,
     userName: string,
-    authToken: string,
-    login: (userName: string, password: string) => boolean,
+    setUserName: (name: string) => void,
+    loginUrl: string,
     logout: () => void
 }
 
-const dummyLogin = (userName: string, password: string) => false;
 const authContext = createContext<Auth>({
     isAuthenticated: false, 
-    userName: '', authToken: '',
-    login: dummyLogin,
+    userName: '',
+    setUserName: (name: string) => {},
+    loginUrl: loginUrl,
     logout: () => {}
 });
 
@@ -35,40 +43,39 @@ export function useAuth() {
 
 function useProvideAuth(): Auth
 {
-    const [token, setToken] = useState<string>('');
-    const [user, setUser] = useState<string>('');
+    const [user, setUser] = useState<string>(() => {
+        return localStorage.getItem('userName') || '';
+    });
 
-    const login = (userName: string, password: string) => {
-        // perform login and set token
-        const cred = {username: userName, password: password};
-        axios
-            .post("/buying/api-token-auth/", cred)
-            .then(response => {
-                const { token } = response.data;
-                console.log('api-token-auth call successful.')
-                axios.defaults.headers.common["Authorization"] = "Token " + token;
-                setToken(token);
-                setUser(userName);
-                return true;
-            })
-            .catch(error => {
-                console.log(error)
-                return false;
-            });
-
-        return false;
+    const setUserName = (name: string) => {
+        setUser(name);
+        localStorage.setItem('userName', name);
     }
 
     const logout = () => {
-        setToken('');
-        setUser('');
+        axios.get(baseUrl + '/buying/auth/logout/')
+            .then(response => {
+                setUserName('');
+            })
+            .catch(error => {
+                console.log('error on logout: '+ error)
+            });
     }
     
     return {
-        isAuthenticated: token !== '',
+        isAuthenticated: user !== '',
         userName: user,
-        authToken: token,
-        login,
+        setUserName,
+        loginUrl,
         logout
     }
+}
+
+
+export function queryCurrentUser(): Promise<string> {
+    // query current-user from back-end
+    return axios.get('/buying/current-user/', { withCredentials: true })
+        .then(response => {
+            return response.data.name;
+        });
 }

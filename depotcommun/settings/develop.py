@@ -6,12 +6,21 @@ from .base import *
 DATABASES = {
     'default': {
         # sqlite database
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': 'depotcommun.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'depotcommun.db',
         # postgres database
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'depot-commun',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'depot-commun',
+        # 'USER': 'depot',
+        # 'PASSWORD': 'KwCwHhW8q8RLzBT2VtJe',
     }
 }
+
+# disable cookie samesite config for react debugging
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
+CORS_ALLOW_CREDENTIALS = True
+
+
+# redirect to react debug server after login
+LOGIN_REDIRECT_URL = 'http://localhost:3000/'
