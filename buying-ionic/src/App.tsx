@@ -1,9 +1,10 @@
 import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 import Menu from './components/Menu';
-import Page from './pages/Page';
-import ShopPage from './pages/ShopPage';
+import ShoppingCartPage from './pages/ShoppingCartPage';
+import AddArticlePage from './pages/AddArticlePage';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -27,22 +28,23 @@ import './theme/variables.css';
 const App: React.FC = () => {
   return (
     <IonApp>
-      <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <Menu />
-          <IonRouterOutlet id="main">
-            <Route path="/" exact={true}>
-              <Redirect to="/page/Shop" />
-            </Route>
-            <Route path="/page/Shop" exact={true}>
-              <ShopPage />  
-            </Route>
-            {/* <Route path="/page/:name" exact={true}>
-              <Page />
-            </Route> */}
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
+      <RecoilRoot>
+        <IonReactRouter>
+          <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              <Route path="/" exact={true}>
+                <Redirect to="/page/Shop" />
+              </Route>
+              <Route path="/page/Shop" component={ShoppingCartPage} exact={true} />
+              <Route path="/page/New" component={AddArticlePage} exact={true} />
+              {/* <Route path="/page/:name" exact={true}>
+                <Page />
+              </Route> */}
+            </IonRouterOutlet>
+          </IonSplitPane>
+        </IonReactRouter>
+      </RecoilRoot>
     </IonApp>
   );
 };
