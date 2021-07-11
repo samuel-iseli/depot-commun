@@ -81,7 +81,7 @@ class Purchase(models.Model):
 class ItemPurchase(models.Model):
     purchase = models.ForeignKey(Purchase, related_name='items', on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
-    quantity = models.PositiveSmallIntegerField()
+    quantity = models.PositiveSmallIntegerField(default=1)
     # TODO add unique constraint: (purchase, item)
 
     def __str__(self):
