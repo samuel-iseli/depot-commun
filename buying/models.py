@@ -2,8 +2,6 @@ import random
 
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import Group
-
 from django.contrib.auth.models import AbstractUser
 
 
@@ -16,7 +14,8 @@ def make_uuid():
 
 
 def create_uuid_field():
-    return models.CharField(unique=True, default=make_uuid, max_length=UUID_LENGTH)
+    return models.CharField(
+        unique=True, default=make_uuid, max_length=UUID_LENGTH)
 
 
 class UserProfile(AbstractUser):
@@ -27,7 +26,8 @@ class Depot(models.Model):
     uuid = create_uuid_field()
     name = models.CharField(max_length=200, unique=True)
     location = models.CharField(max_length=400)
-    sign_up_secret = models.CharField(default=make_uuid, max_length=UUID_LENGTH)
+    sign_up_secret = models.CharField(
+        default=make_uuid, max_length=UUID_LENGTH)
     users = models.ManyToManyField(UserProfile)
 
     def __str__(self):
@@ -44,7 +44,8 @@ class Tag(models.Model):
 class Item(models.Model):
     product_nr = models.PositiveSmallIntegerField(unique=True)
 
-    depot = models.ForeignKey(Depot, related_name='items', on_delete=models.PROTECT)
+    depot = models.ForeignKey(
+        Depot, related_name='items', on_delete=models.PROTECT)
 
     name = models.CharField(max_length=200, unique=True)
     price = models.DecimalField(max_digits=7, decimal_places=2)
@@ -62,12 +63,13 @@ class Item(models.Model):
         return self.active_from <= now <= self.active_until
 
     def __str__(self):
-        return f"{self.product_nr} - {self.name}: {self.price} ({self.number_of_items_in_stock})"
+        return self.name
 
 
 class Purchase(models.Model):
     uuid = create_uuid_field()
-    user = models.ForeignKey(UserProfile, related_name='purchases', on_delete=models.PROTECT)
+    user = models.ForeignKey(
+        UserProfile, related_name='purchases', on_delete=models.PROTECT)
     datetime = models.DateTimeField(default=timezone.now)
 
     @property
@@ -75,11 +77,12 @@ class Purchase(models.Model):
         return sum(i.item.price * i.quantity for i in self.items.all())
 
     def __str__(self):
-        return f"{self.datetime} by {self.user}"
+        return self.datetime.strftime('%Y-%m-%d %H:%M')
 
 
 class ItemPurchase(models.Model):
-    purchase = models.ForeignKey(Purchase, related_name='items', on_delete=models.PROTECT)
+    purchase = models.ForeignKey(
+        Purchase, related_name='items', on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=1)
     # TODO add unique constraint: (purchase, item)
