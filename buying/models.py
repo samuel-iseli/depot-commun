@@ -28,7 +28,9 @@ class Depot(models.Model):
     location = models.CharField(max_length=400)
     sign_up_secret = models.CharField(
         default=make_uuid, max_length=UUID_LENGTH)
-    users = models.ManyToManyField(UserProfile)
+    users = models.ManyToManyField(
+        UserProfile,
+        related_name='depots')
 
     def __str__(self):
         return self.name
@@ -66,11 +68,25 @@ class Item(models.Model):
         return self.name
 
 
+class Invoice(models.Model):
+    user = models.ForeignKey(
+        UserProfile, related_name='invoices', on_delete=models.PROTECT)
+    date = models.DateTimeField(default=timezone.now)
+
+
 class Purchase(models.Model):
     uuid = create_uuid_field()
+    depot = models.ForeignKey(
+        Depot, related_name='purchases', on_delete=models.PROTECT,
+        # todo: remove allow null, was only introduced
+        # while migrating existing purchases
+        null=True)
     user = models.ForeignKey(
         UserProfile, related_name='purchases', on_delete=models.PROTECT)
     datetime = models.DateTimeField(default=timezone.now)
+    invoice = models.ForeignKey(
+        Invoice, related_name='purchases',
+        on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def total_price(self):
@@ -89,3 +105,6 @@ class ItemPurchase(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.item.name}"
+
+
+
