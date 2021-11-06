@@ -1,14 +1,13 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
 from buying.models import Depot, UserProfile, Item, Purchase, ItemPurchase
-from buying.models import Invoice
-
-from buying.billing import get_billable_purchases
+from buying.billing import get_billable_purchases, create_invoice, create_invoices
 
 
-class InvoiceTests(TestCase):
+class InvoiceTestBase(TestCase):
 
     def setUp(self):
         self.depot = Depot.objects.create(
@@ -24,55 +23,6 @@ class InvoiceTests(TestCase):
         )
 
         self.items = self.create_test_items()
-
-    def test_get_billable_purchases(self):
-        purchase = self.create_purchase(
-            self.depot, self.user, self.purchase_datetime,
-            self.items
-        )
-
-        no_purchases = get_billable_purchases(
-            self.depot,
-            self.purchase_datetime + timedelta(days=-1)
-        )
-
-        self.assertEquals(0, len(no_purchases))
-
-        some_purchases = get_billable_purchases(
-            self.depot,
-            self.purchase_datetime + timedelta(days=1)
-        )
-
-        # we should get a dictionary with 1 purchase for 1 user
-        self.assertEquals(1, len(some_purchases.keys()))
-        self.assertEquals(1, len(some_purchases.values()))
-
-    def test_get_billable_purchases_multiple_user(self):
-        user2 = self.create_user(self.depot, 'Hans Muster')
-
-        purchase1 = self.create_purchase(
-            self.depot, self.user, self.purchase_datetime,
-            self.items
-        )
-
-        purchase2 = self.create_purchase(
-            self.depot, self.user, self.purchase_datetime,
-            self.items[0:1]
-        )
-
-        purchase3 = self.create_purchase(
-            self.depot, user2, self.purchase_datetime,
-            self.items
-        )
-
-        billables = get_billable_purchases(self.depot, self.purchase_datetime)
-
-        # we should get 3 purchases for 3 users
-        self.assertEquals(2, len(billables))
-
-        # self.user has 2 purchases, user2 has 1
-        self.assertEquals(2, len(billables[self.user]))
-        self.assertEquals(1, len(billables[user2]))
 
     # utility methods
     def create_user(self, depot, name):
@@ -127,3 +77,81 @@ class InvoiceTests(TestCase):
 
         return purchase
 
+
+class InvoiceTest(InvoiceTestBase):
+
+    def test_get_billable_purchases(self):
+        self.create_purchase(
+            self.depot, self.user, self.purchase_datetime,
+            self.items
+        )
+
+        no_purchases = get_billable_purchases(
+            self.depot,
+            self.purchase_datetime + timedelta(days=-1)
+        )
+
+        self.assertEquals(0, len(no_purchases))
+
+        some_purchases = get_billable_purchases(
+            self.depot,
+            self.purchase_datetime + timedelta(days=1)
+        )
+
+        # we should get a dictionary with 1 purchase for 1 user
+        self.assertEquals(1, len(some_purchases.keys()))
+        self.assertEquals(1, len(some_purchases.values()))
+
+
+class InvoiceTestsMultiUsers(InvoiceTestBase):
+    def setUp(self):
+        super().setUp()
+
+        self.user2 = self.create_user(self.depot, 'Hans Muster')
+
+        self.purchase1 = self.create_purchase(
+            self.depot, self.user, self.purchase_datetime,
+            self.items
+        )
+
+        self.purchase2 = self.create_purchase(
+            self.depot, self.user, self.purchase_datetime,
+            self.items[0:1]
+        )
+
+        self.purchase3 = self.create_purchase(
+            self.depot, self.user2, self.purchase_datetime,
+            self.items
+        )
+
+    def test_get_billable_purchases_multiple_user(self):
+
+        billables = get_billable_purchases(self.depot, self.purchase_datetime)
+
+        # we should get 3 purchases for 3 users
+        self.assertEquals(2, len(billables))
+
+        # self.user has 2 purchases, user2 has 1
+        self.assertEquals(2, len(billables[self.user]))
+        self.assertEquals(1, len(billables[self.user2]))
+
+    def test_create_invoice(self):
+
+        invoice = create_invoice(
+            self.depot, self.user, self.invoice_datetime,
+            [self.purchase1, self.purchase2])
+
+        self.assertEquals(Decimal('6.9'), invoice.amount)
+        self.assertEquals(self.invoice_datetime, invoice.date)
+
+    def test_create_invoices(self):
+        invoices = create_invoices(
+            self.depot, self.invoice_datetime, self.invoice_datetime)
+
+        self.assertEquals(2, len(invoices))
+
+        self.assertEquals(self.user, invoices[0].user)
+        self.assertEquals(Decimal('6.9'), invoices[0].amount)
+
+        self.assertEquals(self.user2, invoices[1].user)
+        self.assertEquals(Decimal('5.7'), invoices[1].amount)

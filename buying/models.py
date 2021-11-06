@@ -69,9 +69,12 @@ class Item(models.Model):
 
 
 class Invoice(models.Model):
+    depot = models.ForeignKey(
+        Depot, related_name='invoices', on_delete=models.PROTECT)
     user = models.ForeignKey(
         UserProfile, related_name='invoices', on_delete=models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
 
 
 class Purchase(models.Model):
@@ -101,7 +104,7 @@ class ItemPurchase(models.Model):
         Purchase, related_name='items', on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=1)
-    # TODO add unique constraint: (purchase, item)
+    # TODO add price on ItemPurchase
 
     def __str__(self):
         return f"{self.quantity} x {self.item.name}"

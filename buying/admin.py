@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.utils import timezone
 from .models import Item, Purchase, ItemPurchase, UserProfile, Depot, Tag, Invoice
 
-from .billing import get_billable_purchases
+from .billing import get_billable_purchases, create_invoices
 
 
 class ItemAdmin(admin.ModelAdmin):
@@ -20,8 +20,22 @@ class PurchaseAdmin(admin.ModelAdmin):
     inlines = (ItemPurchaseInline, )
 
 
+class InvoicePurchaseInline(admin.TabularInline):
+    model = Purchase
+    readonly_fields = ('datetime', 'total_price',)
+    fields = ('datetime', 'total_price')
+    extra = 0
+
+
+# class InvoiceItemInline(admin.TabularInline):
+#     model = ItemPurchase
+#     fk_name = 'invoice'
+
+
 class InvoiceAdmin(admin.ModelAdmin):
-    actions = ['query_pending_invoices', 'create_invoices']
+    actions = ['query_pending_invoices', 'do_create_invoices']
+    list_display = ('id', 'user', 'date')
+    inlines = (InvoicePurchaseInline,)
 
     def query_pending_invoices(self, request, queryset):
         """
@@ -43,6 +57,21 @@ class InvoiceAdmin(admin.ModelAdmin):
         self.message_user(
             request,
             f'{len(billables)} invoices with a total amount of {total} would be generated.',
+            messages.SUCCESS)
+
+    def do_create_invoices(self, request, queryset):
+        """
+        create all pending invoices.
+        """
+        depot = Depot.objects.all()[0]
+        effective_date = timezone.now()
+        invoices = create_invoices(depot, effective_date, effective_date)
+        total = sum([inv.amount for inv in invoices])
+
+        # show created invoice count
+        self.message_user(
+            request,
+            f'{len(invoices)} invoices with a total amount of {total} have been generated.',
             messages.SUCCESS)
 
 
