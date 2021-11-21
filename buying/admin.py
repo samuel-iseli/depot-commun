@@ -1,12 +1,14 @@
 from django.contrib import admin, messages
 from django.utils import timezone
-from .models import Item, Purchase, ItemPurchase, UserProfile, Depot, Tag, Invoice
+from .models import Item, ItemGroup, Purchase, ItemPurchase, UserProfile, Depot, Invoice
 
 from .billing import get_billable_purchases, create_invoices
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('product_nr', 'name', 'price', 'number_of_items_in_stock')
+    list_display = ('code', 'name', 'price', 'group')
+    ordering = ('code',)
+    search = ('code', 'name')
 
 
 class ItemPurchaseInline(admin.TabularInline):
@@ -20,22 +22,23 @@ class PurchaseAdmin(admin.ModelAdmin):
     inlines = (ItemPurchaseInline, )
 
 
-class InvoicePurchaseInline(admin.TabularInline):
-    model = Purchase
-    readonly_fields = ('datetime', 'total_price',)
-    fields = ('datetime', 'total_price')
+class InvoiceItemPurchaseInline(admin.TabularInline):
+    model = ItemPurchase
     extra = 0
-
-
-# class InvoiceItemInline(admin.TabularInline):
-#     model = ItemPurchase
-#     fk_name = 'invoice'
+    fields = ('item', 'quantity', 'price')
+    readonly_fields = ('price',)
 
 
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ['query_pending_invoices', 'do_create_invoices']
     list_display = ('id', 'user', 'date')
-    inlines = (InvoicePurchaseInline,)
+    inlines = (InvoiceItemPurchaseInline,)
+
+    def get_changeform_initial_data(self, request):
+        print(f"invoice admin initial data. request.user.depot:{request.user.depot}.")
+        return {
+            'depot': request.user.depot,
+        }
 
     def query_pending_invoices(self, request, queryset):
         """
@@ -80,4 +83,4 @@ admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(UserProfile)
 admin.site.register(Depot)
-admin.site.register(Tag)
+admin.site.register(ItemGroup)
