@@ -16,4 +16,4 @@ django-cors-headers = "*"
 ipython = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"
