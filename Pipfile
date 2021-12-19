@@ -10,7 +10,7 @@ gunicorn = "*"
 django-heroku = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
-
+reportlab = "*"
 
 [dev-packages]
 ipython = "*"

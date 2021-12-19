@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from buying.models import Depot, UserProfile, Item, ItemGroup, Purchase, ItemPurchase
-from buying.billing import get_billable_purchases, create_invoice, create_invoices
+from buying.billing import get_billable_purchases, create_invoice_from_purchases, create_invoice, create_invoices
 
 
 class InvoiceTestBase(TestCase):
@@ -29,6 +29,11 @@ class InvoiceTestBase(TestCase):
 
         user = UserProfile.objects.create(
             username=name,
+            first_name='Benno',
+            last_name=name,
+            street='Teststrasse 121',
+            zip='8049',
+            city='Zürich',
             depot=depot
         )
         user.save()
@@ -111,6 +116,36 @@ class InvoiceTest(InvoiceTestBase):
         self.assertEquals(1, len(some_purchases.keys()))
         self.assertEquals(1, len(some_purchases.values()))
 
+    def test_create_invoice(self):
+        # create 2 item purchases
+        itm_p1= ItemPurchase(
+            depot=self.depot,
+            user=self.user,
+            item=self.items[0],
+            quantity=2,
+            price=self.items[0].price
+        )
+        itm_p1.save()
+        itm_p2 = ItemPurchase(
+            depot=self.depot,
+            user=self.user,
+            item=self.items[1],
+            quantity=1,
+            price=self.items[1].price
+        )
+        itm_p2.save()
+        
+        invoice = create_invoice(
+            self.depot, self.user, self.invoice_datetime,
+            [itm_p1, itm_p2]
+            )
+        
+        self.assertEquals(self.depot, invoice.depot)
+        self.assertEquals(self.user, invoice.user)
+        self.assertEquals(2, len(invoice.itempurchases.all()))
+        expected_amount = Decimal(f'{2 * self.items[0].price + self.items[1].price:.2f}')
+        self.assertEquals(expected_amount, invoice.amount)
+
 
 class InvoiceTestsMultiUsers(InvoiceTestBase):
     def setUp(self):
@@ -145,7 +180,7 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         self.assertEquals(1, len(billables[self.user2]))
 
     def test_create_invoice(self):
-        invoice = create_invoice(
+        invoice = create_invoice_from_purchases(
             self.depot, self.user, self.invoice_datetime,
             [self.purchase1, self.purchase2])
 

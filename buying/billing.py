@@ -22,10 +22,24 @@ def get_billable_purchases(depot, end_date):
     return billables
 
 
-def create_invoice(depot, user, invoice_date, purchases):
+def create_invoice_from_purchases(depot, user, invoice_date, purchases):
     # get all the items from the purchases
     p_items = [itm for p in purchases for itm in p.items.all()]
-    total_amount = sum([p.price for p in p_items])
+
+    invoice = create_invoice(depot, user, invoice_date, p_items)
+
+    # additinally add the purchase objects to invoice
+    for purch in purchases:
+        purch.invoice = invoice
+        purch.save()
+
+    return invoice
+
+def create_invoice(depot, user, invoice_date, itempurchases):
+    """
+    create an invoice for a list of purchase items.
+    """
+    total_amount = sum([p.quantity * p.price for p in itempurchases])
 
     invoice = Invoice.objects.create(
         date=invoice_date,
@@ -36,17 +50,11 @@ def create_invoice(depot, user, invoice_date, purchases):
     invoice.save()
 
     # add the items to invoice
-    for item in p_items:
+    for item in itempurchases:
         item.invoice = invoice
         item.save()
 
-    # add the purchase objects to invoice
-    for purch in purchases:
-        purch.invoice = invoice
-        purch.save()
-
     return invoice
-
 
 def create_invoices(depot, end_date, invoice_date):
     """
@@ -57,7 +65,7 @@ def create_invoices(depot, end_date, invoice_date):
 
     invoices = []
     for user, items in p_items_per_user.items():
-        invoice = create_invoice(depot, user, invoice_date, items)
+        invoice = create_invoice_from_purchases(depot, user, invoice_date, items)
         invoices.append(invoice)
 
     return invoices

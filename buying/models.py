@@ -32,6 +32,9 @@ class UserProfile(AbstractUser):
     depot = models.ForeignKey(
         Depot, related_name='users', on_delete=models.PROTECT,
         null=True, blank=True)
+    street = models.CharField(max_length=100, blank=True)
+    zip = models.CharField(max_length=10, blank=True)
+    city = models.CharField(max_length=50, blank=True)
 
 
 class ItemGroup(models.Model):
@@ -67,7 +70,7 @@ class Invoice(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
 
     def update_amount(self):
-        self.amount = sum([p.price for p in self.itempurchases.all()])
+        self.amount = sum([p.price * p.quantity for p in self.itempurchases.all()])
         self.save()
 
 
