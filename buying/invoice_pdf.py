@@ -116,14 +116,14 @@ class InvoicePdfRenderer(object):
 
     def render_items(self, invoice, story):
         """
-        render the list of item_purchases on the bill.
+        render the list of purchases on the bill.
         """
         # group item purchases by item and price
         item_lines = defaultdict(lambda: 0)
-        for item_purchase in invoice.itempurchases.all():
-            item = item_purchase.item
-            p_quantity = item_purchase.quantity
-            p_price = item_purchase.price
+        for purchase in invoice.purchases.all():
+            item = purchase.item
+            p_quantity = purchase.quantity
+            p_price = purchase.price
             item_lines[(item, p_price)] += p_quantity
 
         lines = []

@@ -7,19 +7,6 @@ from . import models
 from . import permissions as my_permissions
 from . import serializers
 
-
-class PurchaseView(generics.ListCreateAPIView):
-    def get_queryset(self):
-        my_purchases = models.Purchase.objects \
-            .filter(user=self.request.user) \
-            .order_by('-datetime')
-
-        return my_purchases
-
-    serializer_class = serializers.PurchaseSerializer
-    permission_classes = [my_permissions.MayReadPurchases]
-
-
 class AvailableItemsView(generics.ListAPIView):
     def get_queryset(self):
         now = timezone.now()
@@ -32,13 +19,11 @@ class AvailableItemsView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class DepotUsersView(generics.ListCreateAPIView):
+class UsersView(generics.ListCreateAPIView):
     def get_queryset(self):
-        depot_uuid = self.kwargs['depot_uuid']
-        depot = models.Depot.objects.filter(uuid=depot_uuid).first()
-        return depot.users.all()
+        return models.UserProfile.objects.all()
 
-    serializer_class = serializers.DepotUserSerializer
+    serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -52,5 +37,9 @@ class CurrentUser(generics.GenericAPIView):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
-    serializer_class = serializers.DepotUserSerializer
+    serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+def invoice_pdf(request, invoice_id):
+    pass
