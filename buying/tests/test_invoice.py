@@ -50,7 +50,7 @@ class InvoiceTestBase(TestCase):
             code=123,
             name='Item 123',
             group=self.itemgroup,
-            price=1.20
+            price=Decimal('1.20')
         )
         item1.save()
 
@@ -58,7 +58,7 @@ class InvoiceTestBase(TestCase):
             code=456,
             name='Item 456',
             group=self.itemgroup,
-            price=4.50
+            price=Decimal('4.50')
         )
         item2.save()
 
@@ -104,30 +104,103 @@ class InvoiceTest(InvoiceTestBase):
 
     def test_create_invoice(self):
         # create 2 item purchases
-        itm_p1= Purchase(
+        p1 = Purchase(
             user=self.user,
             item=self.items[0],
             quantity=2,
             price=self.items[0].price
         )
-        itm_p1.save()
-        itm_p2 = Purchase(
+        p1.save()
+        p2 = Purchase(
             user=self.user,
             item=self.items[1],
             quantity=1,
             price=self.items[1].price
         )
-        itm_p2.save()
-        
+        p2.save()
+
         invoice = create_invoice(
             self.user, self.invoice_datetime,
-            [itm_p1, itm_p2]
+            [p1, p2]
             )
-        
+
         self.assertEquals(self.user, invoice.user)
         self.assertEquals(2, len(invoice.purchases.all()))
-        expected_amount = Decimal(f'{2 * self.items[0].price + self.items[1].price:.2f}')
+        expected_amount = Decimal(
+            f'{2 * self.items[0].price + self.items[1].price:.2f}')
         self.assertEquals(expected_amount, invoice.amount)
+
+    def test_modify_invoice(self):
+        """
+        add an additional item to an invoice.
+        this should change the invoice amount.
+        """
+        # create 2 item purchases
+        p1 = Purchase(
+            user=self.user,
+            item=self.items[0],
+            quantity=2,
+            price=self.items[0].price
+        )
+        p1.save()
+        p2 = Purchase(
+            user=self.user,
+            item=self.items[1],
+            quantity=2,
+            price=self.items[1].price
+        )
+        p2.save()
+
+        # create invoice with p1
+        invoice = create_invoice(
+            self.user, self.invoice_datetime,
+            [p1]
+            )
+
+        self.assertEquals(
+            Decimal(f'{2 * self.items[0].price}'),
+            invoice.amount)
+
+        # add purchase p2
+        p2.invoice = invoice
+        p2.save()
+        invoice.save()
+
+        self.assertEquals(
+            Decimal(f'{2 * self.items[0].price + 2 * self.items[1].price:.2f}'),
+            invoice.amount
+        )
+
+    def test_validate_purchase(self):
+        """
+        add purchase to an invoice
+        make sure that user and price are set automatically
+        by validation logic (clean())
+        """
+        # create empty invoice
+        invoice = create_invoice(
+            self.user, self.invoice_datetime,
+            []
+            )
+
+        # add purchase without specifying price or user
+        p1 = Purchase(
+            invoice=invoice,
+            item=self.items[0],
+            quantity=2,
+        )
+        p1.clean()
+        
+        self.assertEquals(self.user, p1.user)
+        self.assertEquals(self.items[0].price, p1.price)
+
+        p1.save()
+
+        self.assertEquals(
+            Decimal(f'{2 * p1.price:0.2f}'),
+            invoice.amount
+        )
+
 
 
 class InvoiceTestsMultiUsers(InvoiceTestBase):

@@ -11,11 +11,6 @@ class ItemAdmin(admin.ModelAdmin):
     search = ('code', 'name')
 
 
-class PurchaseInline(admin.TabularInline):
-    model = Purchase
-    extra = 1
-
-
 class InvoicePurchaseInline(admin.TabularInline):
     model = Purchase
     extra = 0

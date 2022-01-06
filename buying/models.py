@@ -60,7 +60,7 @@ class Purchase(models.Model):
         if self.invoice:
             self.user = self.invoice.user
         if self.item:
-            self.price = self.item.price * self.quantity
+            self.price = self.item.price
         super().clean()
 
     def save(self, *args, **kwargs):
