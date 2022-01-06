@@ -1,11 +1,17 @@
 from django.db.models import Q
 from django.utils import timezone
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required, permission_required
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 
 from . import models
 from . import permissions as my_permissions
 from . import serializers
+
+from .invoice_pdf import InvoicePdfRenderer
+
 
 class AvailableItemsView(generics.ListAPIView):
     def get_queryset(self):
@@ -40,6 +46,14 @@ class CurrentUser(generics.GenericAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+@permission_required('buying.view_invoice', raise_exception=True)
+def invoice_pdf(request, id):
+    invoice = get_object_or_404(models.Invoice, pk=id)
 
-def invoice_pdf(request, invoice_id):
-    pass
+    filename = "DC Rechnung %d.pdf" % invoice.id
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = \
+        "attachment; filename=\"" + filename + "\""
+
+    InvoicePdfRenderer().render(invoice, response)
+    return response

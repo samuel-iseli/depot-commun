@@ -4,7 +4,7 @@
 
 {% block object-tools-items %}
     <li>
-        <a href="{% url 'invoice-pdf' original.pk %}?next={% url 'admin:buying_invoice_change' original.pk %}" class="historylink">Rechnung PDF</a>
+        <a href="{% url 'invoice-pdf' original.pk %}" class="historylink">Rechnung PDF</a>
     </li>
     <li>
         <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% trans "History" %}</a>
