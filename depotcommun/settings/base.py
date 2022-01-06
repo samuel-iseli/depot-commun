@@ -91,7 +91,6 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'buying.UserProfile'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Password validation

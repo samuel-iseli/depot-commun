@@ -16,12 +16,12 @@ def get_billable_purchases(end_date):
 
     billables = defaultdict(list)
     for p in purchases:
-        billables[p.user].append(p)
+        billables[p.customer].append(p)
 
     return billables
 
 
-def create_invoice(user, invoice_date, purchases):
+def create_invoice(customer, invoice_date, purchases):
     """
     create an invoice for a list of purchase items.
     """
@@ -29,7 +29,7 @@ def create_invoice(user, invoice_date, purchases):
 
     invoice = Invoice.objects.create(
         date=invoice_date,
-        user=user,
+        customer=customer,
         amount=total_amount
     )
     invoice.save()
@@ -49,8 +49,8 @@ def create_invoices(end_date, invoice_date):
     purch_per_user = get_billable_purchases(end_date)
 
     invoices = []
-    for user, items in purch_per_user.items():
-        invoice = create_invoice(user, invoice_date, items)
+    for customer, items in purch_per_user.items():
+        invoice = create_invoice(customer, invoice_date, items)
         invoices.append(invoice)
 
     return invoices

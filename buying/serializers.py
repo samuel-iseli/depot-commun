@@ -1,5 +1,5 @@
 from rest_framework import serializers, exceptions
-
+from django.contrib.auth.models import User
 from . import models
 from . import services
 
@@ -28,10 +28,9 @@ class UserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='username', read_only=True)
 
     class Meta:
-        model = models.UserProfile
-        fields = ['uuid', 'name', 'user', 'first_name', 'last_name', 'email']
+        model = User
+        fields = ['name', 'user', 'first_name', 'last_name', 'email']
 
     def update(self, instance, validated_data):
         raise AssertionError("Shouldn't get here")
-
 

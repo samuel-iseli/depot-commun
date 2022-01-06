@@ -3,14 +3,14 @@ from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
-from buying.models import UserProfile, Item, ItemGroup, Purchase
+from buying.models import Customer, Item, ItemGroup, Purchase
 from buying.billing import get_billable_purchases, create_invoice, create_invoices
 
 
 class InvoiceTestBase(TestCase):
 
     def setUp(self):
-        self.user = self.create_user('Thomas Test')
+        self.customer = self.create_user('Thomas Test')
 
         self.purchase_datetime = timezone.make_aware(
             datetime(2021, 10, 15, 15, 34)
@@ -25,17 +25,16 @@ class InvoiceTestBase(TestCase):
     # utility methods
     def create_user(self, name):
 
-        user = UserProfile.objects.create(
-            username=name,
+        customer = Customer.objects.create(
             first_name='Benno',
             last_name=name,
             street='Teststrasse 121',
             zip='8049',
             city='Zürich'
         )
-        user.save()
+        customer.save()
 
-        return user
+        return customer
 
     def create_test_items(self):
         # create a group
@@ -64,11 +63,11 @@ class InvoiceTestBase(TestCase):
 
         return [item1, item2]
 
-    def create_purchases(self, user, datetime, items):
+    def create_purchases(self, customer, datetime, items):
         purchases = []
         for item in items:
             i_p = Purchase.objects.create(
-                user=user,
+                customer=customer,
                 item=item,
                 date=datetime,
                 quantity=1,
@@ -84,7 +83,7 @@ class InvoiceTest(InvoiceTestBase):
 
     def test_get_billable_purchases(self):
         self.create_purchases(
-            self.user, self.purchase_datetime,
+            self.customer, self.purchase_datetime,
             self.items
         )
 
@@ -98,21 +97,21 @@ class InvoiceTest(InvoiceTestBase):
             self.purchase_datetime + timedelta(days=1)
         )
 
-        # we should get a dictionary with 1 purchase for 1 user
+        # we should get a dictionary with 1 purchase for 1 customer
         self.assertEquals(1, len(some_purchases.keys()))
         self.assertEquals(1, len(some_purchases.values()))
 
     def test_create_invoice(self):
         # create 2 item purchases
         p1 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[0],
             quantity=2,
             price=self.items[0].price
         )
         p1.save()
         p2 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[1],
             quantity=1,
             price=self.items[1].price
@@ -120,11 +119,11 @@ class InvoiceTest(InvoiceTestBase):
         p2.save()
 
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             [p1, p2]
             )
 
-        self.assertEquals(self.user, invoice.user)
+        self.assertEquals(self.customer, invoice.customer)
         self.assertEquals(2, len(invoice.purchases.all()))
         expected_amount = Decimal(
             f'{2 * self.items[0].price + self.items[1].price:.2f}')
@@ -137,14 +136,14 @@ class InvoiceTest(InvoiceTestBase):
         """
         # create 2 item purchases
         p1 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[0],
             quantity=2,
             price=self.items[0].price
         )
         p1.save()
         p2 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[1],
             quantity=2,
             price=self.items[1].price
@@ -153,7 +152,7 @@ class InvoiceTest(InvoiceTestBase):
 
         # create invoice with p1
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             [p1]
             )
 
@@ -174,16 +173,16 @@ class InvoiceTest(InvoiceTestBase):
     def test_validate_purchase(self):
         """
         add purchase to an invoice
-        make sure that user and price are set automatically
+        make sure that customer and price are set automatically
         by validation logic (clean())
         """
         # create empty invoice
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             []
             )
 
-        # add purchase without specifying price or user
+        # add purchase without specifying price or customer
         p1 = Purchase(
             invoice=invoice,
             item=self.items[0],
@@ -191,7 +190,7 @@ class InvoiceTest(InvoiceTestBase):
         )
         p1.clean()
         
-        self.assertEquals(self.user, p1.user)
+        self.assertEquals(self.customer, p1.customer)
         self.assertEquals(self.items[0].price, p1.price)
 
         p1.save()
@@ -207,14 +206,14 @@ class InvoiceTest(InvoiceTestBase):
         when a purchase is deleted.
         """
         p1 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[0],
             quantity=2,
             price=self.items[0].price
         )
         p1.save()
         p2 = Purchase(
-            user=self.user,
+            customer=self.customer,
             item=self.items[1],
             quantity=2,
             price=self.items[1].price
@@ -223,7 +222,7 @@ class InvoiceTest(InvoiceTestBase):
 
         # create invoice with p1 and ps
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             [p1, p2]
             )
         self.assertEquals(
@@ -247,12 +246,12 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         self.user2 = self.create_user('Hans Muster')
 
         self.purchases1 = self.create_purchases(
-            self.user, self.purchase_datetime,
+            self.customer, self.purchase_datetime,
             self.items
         )
 
         self.purchases2 = self.create_purchases(
-            self.user, self.purchase_datetime,
+            self.customer, self.purchase_datetime,
             self.items[0:1]
         )
 
@@ -268,13 +267,13 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         # we should get dictionary for 2 users
         self.assertEquals(2, len(billables))
 
-        # self.user has 3 purchases, user2 has 2
-        self.assertEquals(3, len(billables[self.user]))
+        # self.customer has 3 purchases, user2 has 2
+        self.assertEquals(3, len(billables[self.customer]))
         self.assertEquals(2, len(billables[self.user2]))
 
     def test_create_invoice(self):
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             self.purchases1 + self.purchases2)
 
         self.assertEquals(Decimal('6.9'), invoice.amount)
@@ -288,8 +287,8 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
 
         self.assertEquals(2, len(invoices))
 
-        self.assertEquals(self.user, invoices[0].user)
+        self.assertEquals(self.customer, invoices[0].customer)
         self.assertEquals(Decimal('6.9'), invoices[0].amount)
 
-        self.assertEquals(self.user2, invoices[1].user)
+        self.assertEquals(self.user2, invoices[1].customer)
         self.assertEquals(Decimal('5.7'), invoices[1].amount)

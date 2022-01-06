@@ -15,16 +15,16 @@ class InvoicePdfTest(InvoiceTestBase):
         ip1 = Purchase(
             item=self.items[0], quantity=1,
             price=self.items[0].price,
-            user=self.user)
+            customer=self.customer)
         ip1.save()
         
         ip2 = Purchase(
             item=self.items[1], quantity=2, price=self.items[1].price,
-            user=self.user)
+            customer=self.customer)
         ip2.save()
 
         invoice = create_invoice(
-            self.user, self.invoice_datetime,
+            self.customer, self.invoice_datetime,
             [ip1, ip2]
         )
         # test pdf rendering

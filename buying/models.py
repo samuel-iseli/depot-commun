@@ -4,10 +4,17 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
-class UserProfile(AbstractUser):
+
+class Customer(models.Model):
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    email = models.EmailField(max_length=50, blank=True)
     street = models.CharField(max_length=100, blank=True)
     zip = models.CharField(max_length=10, blank=True)
     city = models.CharField(max_length=50, blank=True)
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class ItemGroup(models.Model):
@@ -28,12 +35,12 @@ class Item(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.code} {self.name}'
 
 
 class Invoice(models.Model):
-    user = models.ForeignKey(
-        UserProfile, related_name='invoices', on_delete=models.PROTECT)
+    customer = models.ForeignKey(
+        Customer, related_name='invoices', on_delete=models.PROTECT)
     date = models.DateTimeField(default=timezone.now)
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
 
@@ -46,8 +53,8 @@ class Purchase(models.Model):
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=1)
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    user = models.ForeignKey(
-        UserProfile, related_name='purchases', on_delete=models.PROTECT)
+    customer = models.ForeignKey(
+        Customer, related_name='purchases', on_delete=models.PROTECT)
     invoice = models.ForeignKey(
         Invoice, related_name='purchases',
         on_delete=models.SET_NULL, null=True, blank=True)
@@ -58,7 +65,7 @@ class Purchase(models.Model):
 
     def clean(self):
         if self.invoice:
-            self.user = self.invoice.user
+            self.customer = self.invoice.customer
         if self.item:
             self.price = self.item.price
         super().clean()

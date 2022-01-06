@@ -87,16 +87,16 @@ class InvoicePdfRenderer(object):
         org_address = Paragraph(
             '<br/>'.join(lines),
             self.normal)
-        user = invoice.user
+        customer = invoice.customer
         memb_address = Paragraph(
             '<br/>'.join([
                 '%s %s' % (
-                    user.first_name,
-                    user.last_name),
-                user.street,
+                    customer.first_name,
+                    customer.last_name),
+                customer.street,
                 '%s %s' % (
-                    user.zip,
-                    user.city)]),
+                    customer.zip,
+                    customer.city)]),
             self.normal)
 
         address_table = Table(
@@ -127,10 +127,17 @@ class InvoicePdfRenderer(object):
             item_lines[(item, p_price)] += p_quantity
 
         lines = []
+        lines.append((
+            Paragraph(''),
+            Paragraph('<i>Menge</i>', self.normalright),
+            Paragraph('<i>Preis</i>', self.normalright),
+            Paragraph('<i>Betrag</i>', self.normalright)
+        ))
+
         for (item, price), quantity in item_lines.items():
             lines.append((
-                Paragraph(str(item), self.normal),
-                Paragraph(str(quantity)),
+                Paragraph(item.name, self.normal),
+                Paragraph(str(quantity), self.normalright),
                 Paragraph('%5.2f' % price, self.normalright),
                 Paragraph('%10.2f' % (quantity * price), self.normalright)
                 ))
@@ -140,7 +147,7 @@ class InvoicePdfRenderer(object):
             Paragraph(''),
             Paragraph('<b>%10.2f</b>' % invoice.amount, self.normalright)))
 
-        items_table = Table(lines, (None, 1 * cm, 2 * cm, 2 * cm), style=self.table_style)
+        items_table = Table(lines, (None, 2 * cm, 2 * cm, 2 * cm), style=self.table_style)
         story.append(items_table)
 
     def render_payslip(self, bill, story):

@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.utils import timezone
-from .models import Item, ItemGroup, Purchase, UserProfile, Invoice
+from .models import Customer, Item, ItemGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -13,7 +13,7 @@ class ItemAdmin(admin.ModelAdmin):
 
 class InvoicePurchaseInline(admin.TabularInline):
     model = Purchase
-    extra = 0
+    extra = 1
     fields = ('item', 'price', 'quantity', 'summe')
     readonly_fields = ('price', 'summe')
 
@@ -23,10 +23,9 @@ class InvoicePurchaseInline(admin.TabularInline):
         return 0.0
 
 
-
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ['query_pending_invoices', 'do_create_invoices']
-    list_display = ('id', 'user', 'date')
+    list_display = ('id', 'customer', 'date')
     inlines = (InvoicePurchaseInline,)
 
     def query_pending_invoices(self, request, queryset):
@@ -64,5 +63,5 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(UserProfile)
+admin.site.register(Customer)
 admin.site.register(ItemGroup)
