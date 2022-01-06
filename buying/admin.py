@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.utils import timezone
+from django.db import models
 from .models import UserProfile, Customer, Item, ItemGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
@@ -17,6 +18,19 @@ class InvoicePurchaseInline(admin.TabularInline):
     fields = ('item', 'price', 'quantity', 'summe')
     readonly_fields = ('price', 'summe')
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        """
+        override method to remove the add, change, delete buttons
+        from the related control (item) in this inline
+        """
+        formfield = super().formfield_for_dbfield(
+            db_field, request, **kwargs)
+        if isinstance(db_field, models.ForeignKey):
+            formfield.widget.can_add_related = False
+            formfield.widget.can_change_related = False
+            formfield.widget.can_delete_related = False  
+        return formfield
+ 
     def summe(self, purchase):
         if purchase.price:
             return purchase.price * purchase.quantity
