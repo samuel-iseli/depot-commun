@@ -1,13 +1,10 @@
 from django.core.management.base import BaseCommand
-from buying.models import Depot, Item, UserProfile, ItemGroup
-
+from buying.models import Item, ItemGroup
 
 class Command(BaseCommand):
     help = 'create some example data'
 
     def handle(self, *args, **options):
-        self.depot = self.get_or_create_depot('Heizenholz', 'Heizenholz')
-
         self.create_groups()
         self.create_items()
 
@@ -89,22 +86,9 @@ class Command(BaseCommand):
         self.create_item(521, 'Arriezu', 13.0, self.beverages)
         self.create_item(522, 'Chardonnay', 13.0, self.beverages)
 
-    def get_or_create_depot(self, name, location):
-        depots = Depot.objects.all()
-        if len(depots) > 0:
-            return depots[0]
-
-        depot = Depot(name=name, location=location)
-        users = UserProfile.objects.all()
-        for user in users:
-            user.depot = depot
-        depot.save()
-        return depot
-
     def create_item(self, number, name, price, group):
         item = Item(
             code=number, name=name, price=price,
-            depot=self.depot,
             group=group)
         item.save()
 
