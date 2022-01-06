@@ -17,6 +17,14 @@ class Customer(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
+class UserProfile(AbstractUser):
+    customer = models.ForeignKey(
+        Customer, 
+        related_name='users',
+        on_delete=models.SET_NULL,
+        null=True, blank=True)
+
+
 class ItemGroup(models.Model):
     idx = models.PositiveSmallIntegerField(default=0)
     name = models.CharField(max_length=50)

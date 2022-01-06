@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from django.utils import timezone
-from .models import Customer, Item, ItemGroup, Purchase, Invoice
+from .models import UserProfile, Customer, Item, ItemGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -64,4 +64,5 @@ class InvoiceAdmin(admin.ModelAdmin):
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(Customer)
+admin.site.register(UserProfile)
 admin.site.register(ItemGroup)
