@@ -201,6 +201,43 @@ class InvoiceTest(InvoiceTestBase):
             invoice.amount
         )
 
+    def test_delete_purchase(self):
+        """
+        for admin operations we need to invoice to be updated
+        when a purchase is deleted.
+        """
+        p1 = Purchase(
+            user=self.user,
+            item=self.items[0],
+            quantity=2,
+            price=self.items[0].price
+        )
+        p1.save()
+        p2 = Purchase(
+            user=self.user,
+            item=self.items[1],
+            quantity=2,
+            price=self.items[1].price
+        )
+        p2.save()
+
+        # create invoice with p1 and ps
+        invoice = create_invoice(
+            self.user, self.invoice_datetime,
+            [p1, p2]
+            )
+        self.assertEquals(
+            Decimal(f'{2 * self.items[0].price + 2 * self.items[1].price:.2f}'),
+            invoice.amount
+        )
+
+        # delete p1
+        p1.delete()
+
+        self.assertEquals(
+            Decimal(f'{2 * self.items[1].price:.2f}'),
+            invoice.amount
+        )
 
 
 class InvoiceTestsMultiUsers(InvoiceTestBase):

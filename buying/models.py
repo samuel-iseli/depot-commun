@@ -68,3 +68,11 @@ class Purchase(models.Model):
         # update price on invoice
         if self.invoice:
             self.invoice.update_amount()
+
+    def delete(self):
+        """
+        override delete to update invoice amount.
+        """
+        super().delete()
+        if self.invoice:
+            self.invoice.update_amount()

@@ -14,8 +14,14 @@ class ItemAdmin(admin.ModelAdmin):
 class InvoicePurchaseInline(admin.TabularInline):
     model = Purchase
     extra = 0
-    fields = ('item', 'quantity', 'price')
-    readonly_fields = ('price',)
+    fields = ('item', 'price', 'quantity', 'summe')
+    readonly_fields = ('price', 'summe')
+
+    def summe(self, purchase):
+        if purchase.price:
+            return purchase.price * purchase.quantity
+        return 0.0
+
 
 
 class InvoiceAdmin(admin.ModelAdmin):
