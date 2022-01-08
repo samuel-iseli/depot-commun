@@ -17,8 +17,8 @@ auth_patterns = [
 
 urlpatterns = [
     path('items/available-items/', views.AvailableItemsView.as_view()),
-    path('depots/<depot_uuid>/users/', views.DepotUsersView.as_view()),
-    path('users/<id>/purchases/', views.PurchaseView.as_view()),
+    path('depots/<depot_uuid>/users/', views.UsersView.as_view()),
     path('current-user/', views.CurrentUser.as_view()),
     path('auth/', include((auth_patterns, 'rest_framework'))),
+    path('invoice/pdf/<id>', views.invoice_pdf, name='invoice-pdf')
 ]

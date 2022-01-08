@@ -1,0 +1,7 @@
+{
+  "name": "buying-ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

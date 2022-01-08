@@ -10,10 +10,11 @@ gunicorn = "*"
 django-heroku = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
-
+reportlab = "*"
 
 [dev-packages]
 ipython = "*"
+flake8 = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"

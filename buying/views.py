@@ -1,5 +1,8 @@
 from django.db.models import Q
 from django.utils import timezone
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required, permission_required
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 
@@ -7,17 +10,7 @@ from . import models
 from . import permissions as my_permissions
 from . import serializers
 
-
-class PurchaseView(generics.ListCreateAPIView):
-    def get_queryset(self):
-        my_purchases = models.Purchase.objects \
-            .filter(user=self.request.user) \
-            .order_by('-datetime')
-
-        return my_purchases
-
-    serializer_class = serializers.PurchaseSerializer
-    permission_classes = [my_permissions.MayReadPurchases]
+from .invoice_pdf import InvoicePdfRenderer
 
 
 class AvailableItemsView(generics.ListAPIView):
@@ -32,13 +25,11 @@ class AvailableItemsView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class DepotUsersView(generics.ListCreateAPIView):
+class UsersView(generics.ListCreateAPIView):
     def get_queryset(self):
-        depot_uuid = self.kwargs['depot_uuid']
-        depot = models.Depot.objects.filter(uuid=depot_uuid).first()
-        return depot.users.all()
+        return models.UserProfile.objects.all()
 
-    serializer_class = serializers.DepotUserSerializer
+    serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -52,5 +43,17 @@ class CurrentUser(generics.GenericAPIView):
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 
-    serializer_class = serializers.DepotUserSerializer
+    serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+@permission_required('buying.view_invoice', raise_exception=True)
+def invoice_pdf(request, id):
+    invoice = get_object_or_404(models.Invoice, pk=id)
+
+    filename = "DC Rechnung %d.pdf" % invoice.id
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = \
+        "attachment; filename=\"" + filename + "\""
+
+    InvoicePdfRenderer().render(invoice, response)
+    return response
