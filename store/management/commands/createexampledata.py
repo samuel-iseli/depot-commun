@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from buying.models import Item, ItemGroup
+from store.models import Item, ItemGroup
 
 class Command(BaseCommand):
     help = 'create some example data'

@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'buying.apps.BuyingConfig',
+    'store.apps.Config',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,7 +91,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'buying.UserProfile'
+AUTH_USER_MODEL = 'store.UserProfile'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Password validation

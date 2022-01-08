@@ -3,8 +3,8 @@ from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
-from buying.models import Customer, Item, ItemGroup, Purchase
-from buying.billing import get_billable_purchases, create_invoice, create_invoices
+from store.models import Customer, Item, ItemGroup, Purchase
+from store.billing import get_billable_purchases, create_invoice, create_invoices
 
 
 class InvoiceTestBase(TestCase):
