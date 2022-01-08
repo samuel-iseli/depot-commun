@@ -7,9 +7,9 @@ from .billing import get_billable_purchases, create_invoices
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'price', 'group')
-    ordering = ('code',)
-    search = ('code', 'name')
+    list_display = ('name', 'price', 'group', 'active')
+    ordering = ('group__idx', 'sortidx', 'name')
+    search = ('name')
 
 
 class InvoicePurchaseInline(admin.TabularInline):

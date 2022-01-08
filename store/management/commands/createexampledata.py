@@ -11,84 +11,93 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Successfully created data'))
 
     def create_groups(self):
-        self.conserves = ItemGroup.objects.create(
-            idx=10,
-            name='Konserven'
-        )
-        self.grains = ItemGroup.objects.create(
-            idx=20,
-            name='Getreide / Hülsenfrüchte'
+        self.food = ItemGroup.objects.create(
+            idx=1,
+            name='Food'
         )
         self.sweets = ItemGroup.objects.create(
-            idx=30,
+            idx=2,
             name='Süsses'
         )
-        self.beverages = ItemGroup.objects.create(
-            idx=40,
-            name='Getränke'
+        self.unpackaged = ItemGroup.objects.create(
+            idx=3,
+            name='Unverpackt'
         )
         self.nonfood = ItemGroup.objects.create(
-            idx=50,
+            idx=4,
             name='Non-Food'
+        )
+        self.beverages = ItemGroup.objects.create(
+            idx=5,
+            name='Getränke'
         )
 
     def create_items(self):
-        # Konserven
-        self.create_item(100, 'Apfelmus bio', 6.0, self.conserves)
-        self.create_item(110, 'Basilikumsugo', 4.8, self.conserves)
-        self.create_item(120, 'Bratöl, Oliven', 11.0, self.conserves)
-        self.create_item(121, 'Balsamico', 11.0, self.conserves)
-        self.create_item(122, 'Essig', 5.1, self.conserves)
+        # Food
+        self.create_item('Apfelmus bio', 5.0, self.food)
+        self.create_item('Apfelmus bio', 5.0, self.food)
+        self.create_item('Basilikumsugo', 4.8, self.food)
+        self.create_item('Bratöl, Oliven', 11.0, self.food)
+        self.create_item('Balsamico', 11.0, self.food)
+        self.create_item('Essig', 5.1, self.food)
 
-        self.create_item(130, 'Essiggurken', 3.0, self.conserves)
+        self.create_item('Essiggurken', 3.0, self.food)
 
-        self.create_item(140, 'Gemüsebouillon', 15.0, self.conserves)
-        self.create_item(141, 'Ketchup', 2.5, self.conserves)
-        self.create_item(142, 'Kokosmilch', 1.8, self.conserves)
+        self.create_item('Gemüsebouillon', 15.0, self.food)
+        self.create_item('Ketchup', 2.5, self.food)
+        self.create_item('Kokosmilch', 1.8, self.food)
 
-        self.create_item(150, 'Kaffee 500g gemahlen', 13.0, self.conserves)
-        self.create_item(151, 'Kaffee 1kg ganz', 25.0, self.conserves)
+        self.create_item('Kaffee 500g gemahlen', 13.0, self.food)
+        self.create_item('Kaffee 1kg ganz', 25.0, self.food)
 
-        # Getreide
-        self.create_item(200, 'Bulgur', 4.0, self.grains)
-        self.create_item(201, 'Kichererbsen', 4.0, self.grains)
-        self.create_item(202, 'Linsen rot/schwarz', 7.1, self.grains)
-        self.create_item(203, 'Mehl weiss/ruch bio', 3.5, self.grains)
-        self.create_item(204, 'Mehl weiss', 1.5, self.grains)
+        self.create_item('Bulgur', 4.0, self.food)
+        self.create_item('Kichererbsen', 4.0, self.food)
+        self.create_item('Linsen rot/schwarz', 7.1, self.food)
+        self.create_item('Mehl weiss/ruch bio', 3.5, self.food)
+        self.create_item('Mehl weiss', 1.5, self.food)
 
-        self.create_item(210, 'Milch UHT', 3.5, self.grains)
+        self.create_item('Milch UHT', 3.5, self.food)
 
         # Süsses
-        self.create_item(301, 'Fruchtdessert', 4.5, self.sweets)
-        self.create_item(302, 'Glace Sorbetto', 3.0, self.sweets)
-        self.create_item(303, 'Guetzli alle Sorten', 3.5, self.sweets)
-        self.create_item(310, 'Honig gross', 14.0, self.sweets)
-        self.create_item(311, 'Honig klein', 8.5, self.sweets)
-        self.create_item(320, 'Lindt Orange, Excell., Chili', 3.5, self.sweets)
-        self.create_item(321, 'Lindt Milch', 2.5, self.sweets)
-        self.create_item(322, 'Maltesers', 1.3, self.sweets)
-        self.create_item(323, 'Branche Praliné', 1.0, self.sweets)
+        self.create_item('Fruchtdessert', 4.5, self.sweets)
+        self.create_item('Glace Sorbetto', 3.0, self.sweets)
+        self.create_item('Guetzli alle Sorten', 3.5, self.sweets)
+        self.create_item('Honig gross', 14.0, self.sweets)
+        self.create_item('Honig klein', 8.5, self.sweets)
+        self.create_item('Lindt Orange, Excell., Chili', 3.5, self.sweets)
+        self.create_item('Lindt Milch', 2.5, self.sweets)
+        self.create_item('Maltesers', 1.3, self.sweets)
+        self.create_item('Branche Praliné', 1.0, self.sweets)
+
+        # unverpackt
+        self.create_item('Basmati gross', 6, self.unpackaged)
+        self.create_item('Basmati mittel', 2.9, self.unpackaged)
+        self.create_item('Basmati klein', 1.2, self.unpackaged)
+        self.create_item('Couscous gross', 6.5, self.unpackaged)
+        self.create_item('Couscous mittel', 2.8, self.unpackaged)
+        self.create_item('Couscous klein', 1.2, self.unpackaged)
+
 
         # Nonfood
-        self.create_item(400, 'Backtrennpapier', 3.2, self.nonfood)
-        self.create_item(401, 'Haushaltpapier', 3.5, self.nonfood)
-        self.create_item(402, 'Regeneriersalz', 1.3, self.nonfood)
-        self.create_item(403, 'Sonnett Spülglanz', 6.0, self.nonfood)
+        self.create_item('Backtrennpapier', 3.2, self.nonfood)
+        self.create_item('Haushaltpapier', 3.5, self.nonfood)
+        self.create_item('Regeneriersalz', 1.3, self.nonfood)
+        self.create_item('Sonnett Spülglanz', 6.0, self.nonfood)
 
         # Getränke
-        self.create_item(500, 'Africola', 2.3, self.beverages)
-        self.create_item(501, 'Chinotto', 2.0, self.beverages)
-        self.create_item(502, 'Flauder', 1.5, self.beverages)
-        self.create_item(503, 'Gazosa', 2.0, self.beverages)
-        self.create_item(510, 'Bier 3.3dl', 1.7, self.beverages)
-        self.create_item(511, 'Bier Paul 08', 2.5, self.beverages)
-        self.create_item(520, 'Al Muvedre bio', 11.0, self.beverages)
-        self.create_item(521, 'Arriezu', 13.0, self.beverages)
-        self.create_item(522, 'Chardonnay', 13.0, self.beverages)
+        self.create_item('Africola', 2.3, self.beverages)
+        self.create_item('Chinotto', 2.0, self.beverages)
+        self.create_item('Flauder', 1.5, self.beverages)
+        self.create_item('Gazosa', 2.0, self.beverages)
+        self.create_item('Bier 3.3dl', 1.7, self.beverages)
+        self.create_item('Bier Paul 08', 2.5, self.beverages)
+        self.create_item('Al Muvedre bio', 11.0, self.beverages)
+        self.create_item('Arriezu', 13.0, self.beverages)
+        self.create_item('Chardonnay', 13.0, self.beverages)
 
-    def create_item(self, number, name, price, group):
+    def create_item(self, name, price, group):
         item = Item(
-            code=number, name=name, price=price,
+            name=name, price=price,
             group=group)
         item.save()
 

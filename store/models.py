@@ -6,20 +6,19 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Customer(models.Model):
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50, blank=True)
     street = models.CharField(max_length=100, blank=True)
     zip = models.CharField(max_length=10, blank=True)
     city = models.CharField(max_length=50, blank=True)
     
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.name
 
 
 class UserProfile(AbstractUser):
     customer = models.ForeignKey(
-        Customer, 
+        Customer,
         related_name='users',
         on_delete=models.SET_NULL,
         null=True, blank=True)
@@ -36,14 +35,22 @@ class ItemGroup(models.Model):
 class Item(models.Model):
     group = models.ForeignKey(
         ItemGroup, models.PROTECT, related_name='items')
-    code = models.PositiveSmallIntegerField()
+    sortidx = models.PositiveSmallIntegerField(default=0)
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=7, decimal_places=2)
-
     active = models.BooleanField(default=True)
 
+    @property
+    def code(self):
+        """
+        generate a 3 digit code for easy identification.
+        first digit is group idx afterward alphabetic index in group
+        """
+        # todo: implement
+        return '123'
+
     def __str__(self):
-        return f'{self.code} {self.name}'
+        return self.name
 
 
 class Invoice(models.Model):
