@@ -5,11 +5,15 @@ from .models import UserProfile, Customer, Item, ItemGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
 
+class CustomerAdmin(admin.ModelAdmin):
+    fields = ('name', 'email')
+
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'group', 'active')
     ordering = ('group__idx', 'sortidx', 'name')
     search = ('name')
+    list_filter = ('group', 'active')
 
 
 class InvoicePurchaseInline(admin.TabularInline):
@@ -74,9 +78,12 @@ class InvoiceAdmin(admin.ModelAdmin):
             f'{len(invoices)} invoices with a total amount of {total} have been generated.',
             messages.SUCCESS)
 
-
+# register model admins
+admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(Customer)
 admin.site.register(UserProfile)
 admin.site.register(ItemGroup)
+
+# customize site
+admin.site.site_header = 'Depot Commün'
