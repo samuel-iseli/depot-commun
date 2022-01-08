@@ -7,14 +7,14 @@ class AvailableItemsSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
 
     class Meta:
-        model = models.Item
+        model = models.Article
         fields = ['code', 'name', 'price', 'tags']
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
-    product_nr = serializers.IntegerField(source='item.code', )
-    name = serializers.CharField(source='item.name', read_only=True)
-    price = serializers.DecimalField(source='item.price', max_digits=7, decimal_places=2, required=False)
+    product_nr = serializers.IntegerField(source='article.code', )
+    name = serializers.CharField(source='article.name', read_only=True)
+    price = serializers.DecimalField(source='article.price', max_digits=7, decimal_places=2, required=False)
 
     class Meta:
         model = models.Purchase

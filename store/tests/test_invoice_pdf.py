@@ -13,13 +13,13 @@ class InvoicePdfTest(InvoiceTestBase):
 
         # 1x item0, 2x item1
         ip1 = Purchase(
-            item=self.items[0], quantity=1,
-            price=self.items[0].price,
+            article=self.articles[0], quantity=1,
+            price=self.articles[0].price,
             customer=self.customer)
         ip1.save()
         
         ip2 = Purchase(
-            item=self.items[1], quantity=2, price=self.items[1].price,
+            article=self.articles[1], quantity=2, price=self.articles[1].price,
             customer=self.customer)
         ip2.save()
 

@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
-from store.models import Customer, Item, ItemGroup, Purchase
+from store.models import Customer, Article, ArticleGroup, Purchase
 from store.billing import get_billable_purchases, create_invoice, create_invoices
 
 
@@ -20,14 +20,13 @@ class InvoiceTestBase(TestCase):
             datetime(2021, 10, 31, 12, 30)
         )
 
-        self.items = self.create_test_items()
+        self.articles = self.create_test_articles()
 
     # utility methods
     def create_user(self, name):
 
         customer = Customer.objects.create(
-            first_name='Benno',
-            last_name=name,
+            name=name,
             street='Teststrasse 121',
             zip='8049',
             city='Zürich'
@@ -36,42 +35,40 @@ class InvoiceTestBase(TestCase):
 
         return customer
 
-    def create_test_items(self):
+    def create_test_articles(self):
         # create a group
-        self.itemgroup = ItemGroup.objects.create(
+        self.articlegroup = ArticleGroup.objects.create(
             idx=1,
             name='Item Group'
         )
-        self.itemgroup.save()
+        self.articlegroup.save()
 
-        # create 2 items
-        item1 = Item.objects.create(
-            code=123,
+        # create 2 articles
+        article1 = Article.objects.create(
             name='Item 123',
-            group=self.itemgroup,
+            group=self.articlegroup,
             price=Decimal('1.20')
         )
-        item1.save()
+        article1.save()
 
-        item2 = Item.objects.create(
-            code=456,
+        article2 = Article.objects.create(
             name='Item 456',
-            group=self.itemgroup,
+            group=self.articlegroup,
             price=Decimal('4.50')
         )
-        item2.save()
+        article2.save()
 
-        return [item1, item2]
+        return [article1, article2]
 
-    def create_purchases(self, customer, datetime, items):
+    def create_purchases(self, customer, datetime, articles):
         purchases = []
-        for item in items:
+        for article in articles:
             i_p = Purchase.objects.create(
                 customer=customer,
-                item=item,
+                article=article,
                 date=datetime,
                 quantity=1,
-                price=item.price
+                price=article.price
             )
             i_p.save()
             purchases.append(i_p)
@@ -84,7 +81,7 @@ class InvoiceTest(InvoiceTestBase):
     def test_get_billable_purchases(self):
         self.create_purchases(
             self.customer, self.purchase_datetime,
-            self.items
+            self.articles
         )
 
         no_purchases = get_billable_purchases(
@@ -102,19 +99,19 @@ class InvoiceTest(InvoiceTestBase):
         self.assertEquals(1, len(some_purchases.values()))
 
     def test_create_invoice(self):
-        # create 2 item purchases
+        # create 2 purchases
         p1 = Purchase(
             customer=self.customer,
-            item=self.items[0],
+            article=self.articles[0],
             quantity=2,
-            price=self.items[0].price
+            price=self.articles[0].price
         )
         p1.save()
         p2 = Purchase(
             customer=self.customer,
-            item=self.items[1],
+            article=self.articles[1],
             quantity=1,
-            price=self.items[1].price
+            price=self.articles[1].price
         )
         p2.save()
 
@@ -126,7 +123,7 @@ class InvoiceTest(InvoiceTestBase):
         self.assertEquals(self.customer, invoice.customer)
         self.assertEquals(2, len(invoice.purchases.all()))
         expected_amount = Decimal(
-            f'{2 * self.items[0].price + self.items[1].price:.2f}')
+            f'{2 * self.articles[0].price + self.articles[1].price:.2f}')
         self.assertEquals(expected_amount, invoice.amount)
 
     def test_modify_invoice(self):
@@ -137,16 +134,16 @@ class InvoiceTest(InvoiceTestBase):
         # create 2 item purchases
         p1 = Purchase(
             customer=self.customer,
-            item=self.items[0],
+            article=self.articles[0],
             quantity=2,
-            price=self.items[0].price
+            price=self.articles[0].price
         )
         p1.save()
         p2 = Purchase(
             customer=self.customer,
-            item=self.items[1],
+            article=self.articles[1],
             quantity=2,
-            price=self.items[1].price
+            price=self.articles[1].price
         )
         p2.save()
 
@@ -157,7 +154,7 @@ class InvoiceTest(InvoiceTestBase):
             )
 
         self.assertEquals(
-            Decimal(f'{2 * self.items[0].price}'),
+            Decimal(f'{2 * self.articles[0].price}'),
             invoice.amount)
 
         # add purchase p2
@@ -166,7 +163,7 @@ class InvoiceTest(InvoiceTestBase):
         invoice.save()
 
         self.assertEquals(
-            Decimal(f'{2 * self.items[0].price + 2 * self.items[1].price:.2f}'),
+            Decimal(f'{2 * self.articles[0].price + 2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
 
@@ -185,13 +182,13 @@ class InvoiceTest(InvoiceTestBase):
         # add purchase without specifying price or customer
         p1 = Purchase(
             invoice=invoice,
-            item=self.items[0],
+            article=self.articles[0],
             quantity=2,
         )
         p1.clean()
         
         self.assertEquals(self.customer, p1.customer)
-        self.assertEquals(self.items[0].price, p1.price)
+        self.assertEquals(self.articles[0].price, p1.price)
 
         p1.save()
 
@@ -207,16 +204,16 @@ class InvoiceTest(InvoiceTestBase):
         """
         p1 = Purchase(
             customer=self.customer,
-            item=self.items[0],
+            article=self.articles[0],
             quantity=2,
-            price=self.items[0].price
+            price=self.articles[0].price
         )
         p1.save()
         p2 = Purchase(
             customer=self.customer,
-            item=self.items[1],
+            article=self.articles[1],
             quantity=2,
-            price=self.items[1].price
+            price=self.articles[1].price
         )
         p2.save()
 
@@ -226,7 +223,7 @@ class InvoiceTest(InvoiceTestBase):
             [p1, p2]
             )
         self.assertEquals(
-            Decimal(f'{2 * self.items[0].price + 2 * self.items[1].price:.2f}'),
+            Decimal(f'{2 * self.articles[0].price + 2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
 
@@ -234,7 +231,7 @@ class InvoiceTest(InvoiceTestBase):
         p1.delete()
 
         self.assertEquals(
-            Decimal(f'{2 * self.items[1].price:.2f}'),
+            Decimal(f'{2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
 
@@ -247,17 +244,17 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
 
         self.purchases1 = self.create_purchases(
             self.customer, self.purchase_datetime,
-            self.items
+            self.articles
         )
 
         self.purchases2 = self.create_purchases(
             self.customer, self.purchase_datetime,
-            self.items[0:1]
+            self.articles[0:1]
         )
 
         self.purchases3 = self.create_purchases(
             self.user2, self.purchase_datetime,
-            self.items
+            self.articles
         )
 
     def test_get_billable_purchases_multiple_user(self):

@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.utils import timezone
 from django.db import models
-from .models import UserProfile, Customer, Item, ItemGroup, Purchase, Invoice
+from .models import UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -19,13 +19,13 @@ class ItemAdmin(admin.ModelAdmin):
 class InvoicePurchaseInline(admin.TabularInline):
     model = Purchase
     extra = 1
-    fields = ('item', 'price', 'quantity', 'summe')
+    fields = ('article', 'price', 'quantity', 'summe')
     readonly_fields = ('price', 'summe')
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         """
         override method to remove the add, change, delete buttons
-        from the related control (item) in this inline
+        from the related control (article) in this inline
         """
         formfield = super().formfield_for_dbfield(
             db_field, request, **kwargs)
@@ -80,10 +80,10 @@ class InvoiceAdmin(admin.ModelAdmin):
 
 # register model admins
 admin.site.register(Customer, CustomerAdmin)
-admin.site.register(Item, ItemAdmin)
+admin.site.register(Article, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(UserProfile)
-admin.site.register(ItemGroup)
+admin.site.register(ArticleGroup)
 
 # customize site
 admin.site.site_header = 'Depot Commün'

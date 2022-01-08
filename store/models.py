@@ -24,7 +24,7 @@ class UserProfile(AbstractUser):
         null=True, blank=True)
 
 
-class ItemGroup(models.Model):
+class ArticleGroup(models.Model):
     idx = models.PositiveSmallIntegerField(default=0)
     name = models.CharField(max_length=50)
 
@@ -32,9 +32,9 @@ class ItemGroup(models.Model):
         return self.name
 
 
-class Item(models.Model):
+class Article(models.Model):
     group = models.ForeignKey(
-        ItemGroup, models.PROTECT, related_name='items')
+        ArticleGroup, models.PROTECT, related_name='items')
     sortidx = models.PositiveSmallIntegerField(default=0)
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=7, decimal_places=2)
@@ -65,7 +65,7 @@ class Invoice(models.Model):
 
 
 class Purchase(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.PROTECT)
+    article = models.ForeignKey(Article, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=1)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     customer = models.ForeignKey(
@@ -76,13 +76,13 @@ class Purchase(models.Model):
     date = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
-        return f"{self.quantity} x {self.item.name}"
+        return f"{self.quantity} x {self.article.name}"
 
     def clean(self):
         if self.invoice:
             self.customer = self.invoice.customer
-        if self.item:
-            self.price = self.item.price
+        if self.article:
+            self.price = self.article.price
         super().clean()
 
     def save(self, *args, **kwargs):

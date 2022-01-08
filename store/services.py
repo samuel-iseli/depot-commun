@@ -50,7 +50,7 @@ def _check_price_or_throw(item, item_data):
 def _find_item_or_throw(item_data):
     product_nr = item_data['product_nr']
 
-    items = models.Item.objects.filter(product_nr=product_nr)
+    items = models.Article.objects.filter(product_nr=product_nr)
     if not items:
         raise exceptions.ValidationError(detail=f"Didn't find any item with `product_nr' {product_nr}")
     item = items.first()

@@ -90,13 +90,9 @@ class InvoicePdfRenderer(object):
         customer = invoice.customer
         memb_address = Paragraph(
             '<br/>'.join([
-                '%s %s' % (
-                    customer.first_name,
-                    customer.last_name),
-                customer.street,
-                '%s %s' % (
-                    customer.zip,
-                    customer.city)]),
+                customer.name,
+                customer.email
+            ]),
             self.normal)
 
         address_table = Table(
@@ -118,13 +114,13 @@ class InvoicePdfRenderer(object):
         """
         render the list of purchases on the bill.
         """
-        # group item purchases by item and price
-        item_lines = defaultdict(lambda: 0)
+        # group purchases by article and price
+        article_lines = defaultdict(lambda: 0)
         for purchase in invoice.purchases.all():
-            item = purchase.item
+            article = purchase.article
             p_quantity = purchase.quantity
             p_price = purchase.price
-            item_lines[(item, p_price)] += p_quantity
+            article_lines[(article, p_price)] += p_quantity
 
         lines = []
         lines.append((
@@ -134,9 +130,9 @@ class InvoicePdfRenderer(object):
             Paragraph('<i>Betrag</i>', self.normalright)
         ))
 
-        for (item, price), quantity in item_lines.items():
+        for (article, price), quantity in article_lines.items():
             lines.append((
-                Paragraph(item.name, self.normal),
+                Paragraph(article.name, self.normal),
                 Paragraph(str(quantity), self.normalright),
                 Paragraph('%5.2f' % price, self.normalright),
                 Paragraph('%10.2f' % (quantity * price), self.normalright)
