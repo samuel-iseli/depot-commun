@@ -20,5 +20,6 @@ urlpatterns = [
     path('depots/<depot_uuid>/users/', views.UsersView.as_view()),
     path('current-user/', views.CurrentUser.as_view()),
     path('auth/', include((auth_patterns, 'rest_framework'))),
-    path('invoice/pdf/<id>', views.invoice_pdf, name='invoice-pdf')
+    path('invoice/pdf/<id>', views.invoice_pdf, name='invoice-pdf'),
+    path('articlelist', views.articles_pdf, name='articles-pdf')
 ]

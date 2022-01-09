@@ -11,6 +11,7 @@ from . import permissions as my_permissions
 from . import serializers
 
 from .invoice_pdf import InvoicePdfRenderer
+from .articles_pdf import ArticlesPdfRenderer
 
 
 class AvailableItemsView(generics.ListAPIView):
@@ -57,3 +58,19 @@ def invoice_pdf(request, id):
 
     InvoicePdfRenderer().render(invoice, response)
     return response
+
+
+def articles_pdf(request):
+    """
+    generate pdf of all active articles.
+    """
+    articles = models.Article.objects.filter(active=True)
+
+    filename = "Artikel Liste"
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = \
+        f'attachment; filename="{filename}"'
+
+    ArticlesPdfRenderer().render(articles, response)
+    return response
+
