@@ -1,9 +1,15 @@
 from django.contrib import admin, messages
+from django.contrib.auth.admin import UserAdmin
 from django.utils import timezone
 from django.db import models
 from .models import UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice
 
 from .billing import get_billable_purchases, create_invoices
+
+
+class UserProfileAdmin(UserAdmin):
+    model = UserProfile
+
 
 class CustomerAdmin(admin.ModelAdmin):
     fields = ('name', 'email')
@@ -82,7 +88,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Article, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(UserProfile)
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
 
 # customize site
