@@ -14,5 +14,9 @@ DATABASES = {
     }
 }
 
+# make sure http request are redirected to https
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
 import django_heroku
 django_heroku.settings(locals())
