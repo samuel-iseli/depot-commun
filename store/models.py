@@ -1,6 +1,7 @@
 import random
 
 from django.db import models
+from solo.models import SingletonModel
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
@@ -98,3 +99,18 @@ class Purchase(models.Model):
         super().delete()
         if self.invoice:
             self.invoice.update_amount()
+
+
+class Settings(SingletonModel):
+    payment_bank = models.CharField(
+        verbose_name='Bank',
+        max_length=50, blank=True)
+    payment_account_number = models.CharField(
+        verbose_name='Kontonummer',
+        max_length=50, blank=True)
+    payment_account_name = models.CharField(
+        verbose_name='Kontoname',
+        max_length=100, blank=True)
+
+    def __str__(self):
+        return "Settings"

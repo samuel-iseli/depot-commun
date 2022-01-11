@@ -1,8 +1,9 @@
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
+from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
-from .models import UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice
+from .models import UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -84,12 +85,25 @@ class InvoiceAdmin(admin.ModelAdmin):
             f'{len(invoices)} invoices with a total amount of {total} have been generated.',
             messages.SUCCESS)
 
+
+class SettingsAdmin(SingletonModelAdmin):
+    fieldsets = (
+        ('Zahlungskonto', {
+            'fields': (
+                'payment_bank', 
+                'payment_account_number',
+                'payment_account_name')
+        }),
+    )
+
+
 # register model admins
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Article, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
+admin.site.register(Settings, SettingsAdmin)
 
 # customize site
 admin.site.site_header = 'Depot Commün'

@@ -6,6 +6,7 @@ from reportlab.lib.units import cm
 from django.utils.formats import get_format
 from django.utils.dateformat import format
 from django.utils.translation import gettext as _
+from .models import Settings
 # from svglib.svglib import SvgRenderer
 # from lxml import etree
 
@@ -59,8 +60,8 @@ class InvoicePdfRenderer(object):
         self.render_header(bill, story)
         story.append(Spacer(1, 0.5 * cm))
         self.render_items(bill, story)
-
-        # self.render_payslip(bill, story)
+        story.append(Spacer(1, 1*cm))
+        self.render_paymentinfo(story)
 
         # build the pdf document
         doc = SimpleDocTemplate(outfile)
@@ -105,7 +106,7 @@ class InvoicePdfRenderer(object):
         render title and billing period
         """
         # table with title and date
-        title = Paragraph('Rechnung %d' % invoice.id, self.heading1)
+        title = Paragraph('Rechnung Nr %d' % invoice.id, self.heading1)
         date = Paragraph(self.date_format(invoice.date), self.normalright)
         title_table = Table([(title, date)], style=self.table_style)
         story.append(title_table)
@@ -145,6 +146,22 @@ class InvoicePdfRenderer(object):
 
         items_table = Table(lines, (None, 2 * cm, 2 * cm, 2 * cm), style=self.table_style)
         story.append(items_table)
+
+    def render_paymentinfo(self, story):
+        settings = Settings.get_solo()
+
+        story.append(
+            Paragraph('Bitte einzahlen mit Angabe von Rechnungsnummer auf:', self.text)
+        )
+
+        lines = (
+            settings.payment_bank,
+            settings.payment_account_number,
+            settings.payment_account_name
+        )
+        story.append(
+            Paragraph('<br/>'.join(lines), self.text)
+        )
 
     def render_payslip(self, bill, story):
         """

@@ -11,6 +11,7 @@ django-heroku = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
 reportlab = "*"
+django-solo = "*"
 
 [dev-packages]
 ipython = "*"

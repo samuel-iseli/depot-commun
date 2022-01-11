@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from store.models import Article, ArticleGroup
+from store.models import Article, ArticleGroup, Customer, Settings
+
 
 class Command(BaseCommand):
     help = 'create some example data'
@@ -7,6 +8,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.create_groups()
         self.create_articles()
+        self.create_customers()
+        self.create_settings()
 
         self.stdout.write(self.style.SUCCESS('Successfully created data'))
 
@@ -34,7 +37,6 @@ class Command(BaseCommand):
 
     def create_articles(self):
         # Food
-        self.create_article('Apfelmus bio', 5.0, self.food)
         self.create_article('Apfelmus bio', 5.0, self.food)
         self.create_article('Basilikumsugo', 4.8, self.food)
         self.create_article('Bratöl, Oliven', 11.0, self.food)
@@ -77,7 +79,6 @@ class Command(BaseCommand):
         self.create_article('Couscous mittel', 2.8, self.unpackaged)
         self.create_article('Couscous klein', 1.2, self.unpackaged)
 
-
         # Nonfood
         self.create_article('Backtrennpapier', 3.2, self.nonfood)
         self.create_article('Haushaltpapier', 3.5, self.nonfood)
@@ -102,3 +103,21 @@ class Command(BaseCommand):
         article.save()
 
         return article
+
+    def create_customers(self):
+        Customer(
+            name='Samuel Iseli',
+            email='samueliseli@hey.com'
+        ).save()
+
+        Customer(
+            name='Nadja Schüepp',
+            email='nadja_schuepp@hotmail.com'
+        ).save()
+
+    def create_settings(self):
+        settings = Settings.get_solo()
+        settings.payment_bank = 'Alternative Bank Schweiz AG'
+        settings.payment_account_number = 'CH09 0839 0035 4409 1000 8'
+        settings.payment_account_name = 'Nadja Schüepp, Regensdorferstrasse 194, 8049 Zürich'
+        settings.save()
