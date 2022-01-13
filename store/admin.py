@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
@@ -68,7 +69,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         # show message
         self.message_user(
             request,
-            f'{len(billables)} invoices with a total amount of {total} would be generated.',
+            _(f'{len(billables)} invoices with a total amount of {total} would be generated.'),
             messages.SUCCESS)
 
     def do_create_invoices(self, request, queryset):
@@ -82,15 +83,15 @@ class InvoiceAdmin(admin.ModelAdmin):
         # show created invoice count
         self.message_user(
             request,
-            f'{len(invoices)} invoices with a total amount of {total} have been generated.',
+            _(f'{len(invoices)} invoices with a total amount of {total} have been generated.'),
             messages.SUCCESS)
 
 
 class SettingsAdmin(SingletonModelAdmin):
     fieldsets = (
-        ('Zahlungskonto', {
+        ( _('Payment Account'), {
             'fields': (
-                'payment_bank', 
+                'payment_bank',
                 'payment_account_number',
                 'payment_account_name')
         }),
