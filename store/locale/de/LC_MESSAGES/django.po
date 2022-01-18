@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-13 23:24+0100\n"
+"POT-Creation-Date: 2022-01-18 23:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,17 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\store\admin.py:72
+#: .\store\admin.py:78
 msgid ""
 "{len(billables)} invoices with a total amount of {total} would be generated."
 msgstr "{len(billables)} Rechnungen mit Totalbetrag {total} würden generiert."
 
-#: .\store\admin.py:86
+#: .\store\admin.py:92
 msgid ""
 "{len(invoices)} invoices with a total amount of {total} have been generated."
 msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
 
-#: .\store\admin.py:92
+#: .\store\admin.py:98
 msgid "Payment Account"
 msgstr "Zahlungskonto"
 
@@ -61,7 +61,7 @@ msgid "City"
 msgstr "Ort"
 
 #: .\store\models.py:27 .\store\models.py:37 .\store\models.py:87
-#: .\store\models.py:116
+#: .\store\models.py:118
 msgid "Customer"
 msgstr "Kundin"
 
@@ -89,7 +89,7 @@ msgstr "Gruppe"
 msgid "Sort Index"
 msgstr "Sortier Index"
 
-#: .\store\models.py:62 .\store\models.py:113
+#: .\store\models.py:62 .\store\models.py:115
 msgid "Price"
 msgstr "Preis"
 
@@ -97,7 +97,7 @@ msgstr "Preis"
 msgid "Active"
 msgstr "Aktiv"
 
-#: .\store\models.py:79 .\store\models.py:109
+#: .\store\models.py:79 .\store\models.py:111
 msgid "Article"
 msgstr "Artikel"
 
@@ -105,51 +105,64 @@ msgstr "Artikel"
 msgid "Articles"
 msgstr "Artikel"
 
-#: .\store\models.py:89 .\store\models.py:122
+#: .\store\models.py:89 .\store\models.py:124
 msgid "Date"
 msgstr "Datum"
 
-#: .\store\models.py:91
+#: .\store\models.py:91 .\store\models.py:163
 msgid "Amount"
 msgstr "Betrag"
 
-#: .\store\models.py:98
+#: .\store\models.py:100
+#, python-format
 msgid "Invoice %d"
 msgstr "Rechnung %d"
 
-#: .\store\models.py:101 .\store\models.py:120
+#: .\store\models.py:103 .\store\models.py:122 .\store\models.py:167
 msgid "Invoice"
 msgstr "Rechnung"
 
-#: .\store\models.py:102
+#: .\store\models.py:104
 msgid "Invoices"
 msgstr "Rechnungen"
 
-#: .\store\models.py:111
+#: .\store\models.py:113
 msgid "Quantity"
 msgstr "Menge"
 
-#: .\store\models.py:149
+#: .\store\models.py:151
 msgid "Purchase"
 msgstr "Einkauf"
 
-#: .\store\models.py:150
+#: .\store\models.py:152
 msgid "Purchases"
 msgstr "Einkäufe"
 
-#: .\store\models.py:155
+#: .\store\models.py:161
+msgid "Text"
+msgstr "Text"
+
+#: .\store\models.py:184
+msgid "Extra Item"
+msgstr "Zusatzeintrag"
+
+#: .\store\models.py:185
+msgid "Extra Items"
+msgstr "Zusatzeinträge"
+
+#: .\store\models.py:190
 msgid "Bank"
 msgstr "Bank"
 
-#: .\store\models.py:158
+#: .\store\models.py:193
 msgid "Account Number"
 msgstr "Kontonummer (IBAN)"
 
-#: .\store\models.py:161
+#: .\store\models.py:196
 msgid "Account Name"
 msgstr "Konto Name"
 
-#: .\store\models.py:165 .\store\models.py:168
+#: .\store\models.py:200 .\store\models.py:203
 msgid "Settings"
 msgstr "Einstellungen"
 

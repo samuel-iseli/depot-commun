@@ -91,7 +91,9 @@ class Invoice(models.Model):
         max_digits=7, decimal_places=2, default=0, verbose_name=_('Amount'))
 
     def update_amount(self):
-        self.amount = sum([p.price * p.quantity for p in self.purchases.all()])
+        purchase_amount = sum([p.price * p.quantity for p in self.purchases.all()])
+        extra_amount = sum([itm.amount for itm in self.extra_items.all()])
+        self.amount = purchase_amount + extra_amount
         self.save()
 
     def __str__(self):
@@ -147,8 +149,41 @@ class Purchase(models.Model):
 
     class Meta:
         verbose_name = _('Purchase')
-        verbose_name = _('Purchases')
+        verbose_name_plural = _('Purchases')
 
+
+class ExtraItem(models.Model):
+    """
+    extra invoice item not based on an article.
+    may be used to charge other stuff to users.
+    """
+    text = models.CharField(
+        max_length=200, verbose_name=_('Text'))
+    amount = models.DecimalField(
+        max_digits=7, decimal_places=2, verbose_name=_('Amount'))
+    invoice = models.ForeignKey(
+        Invoice, related_name='extra_items',
+        on_delete=models.CASCADE,
+        verbose_name=_('Invoice'))
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # update amount on invoice
+        if self.invoice:
+            self.invoice.update_amount()
+
+    def delete(self):
+        """
+        override delete to update invoice amount.
+        """
+        super().delete()
+        if self.invoice:
+            self.invoice.update_amount()
+
+    class Meta:
+        verbose_name = _('Extra Item')
+        verbose_name_plural = _ ('Extra Items')
+    
 
 class Settings(SingletonModel):
     payment_bank = models.CharField(

@@ -77,17 +77,17 @@ class InvoicePdfRenderer(object):
         addr = self.get_own_address()
 
         lines = [
-            addr['name'],
-            addr['street'],
-            '%s %s' % (addr['zip'], addr['city'])
+            'Depot Commün',
+            'Siedlung Kraftwerk1 Heizenholz',
         ]
 
-        if addr.get('extra_line', ''):
-            lines.insert(1, addr['extra_line'])
-
         org_address = Paragraph(
-            '<br/>'.join(lines),
+            '<br/>'.join([
+                'Depot Commün',
+                'Siedlung Kraftwerk1 Heizenholz',
+            ]),
             self.normal)
+
         customer = invoice.customer
         memb_address = Paragraph(
             '<br/>'.join([
@@ -106,7 +106,7 @@ class InvoicePdfRenderer(object):
         render title and billing period
         """
         # table with title and date
-        title = Paragraph('Rechnung Nr %d' % invoice.id, self.heading1)
+        title = Paragraph('Rechnung Nr. %d' % invoice.id, self.heading1)
         date = Paragraph(self.date_format(invoice.date), self.normalright)
         title_table = Table([(title, date)], style=self.table_style)
         story.append(title_table)
@@ -131,6 +131,7 @@ class InvoicePdfRenderer(object):
             Paragraph('<i>Betrag</i>', self.normalright)
         ))
 
+        # add article lines
         for (article, price), quantity in article_lines.items():
             lines.append((
                 Paragraph(article.name, self.normal),
@@ -138,6 +139,15 @@ class InvoicePdfRenderer(object):
                 Paragraph('%5.2f' % price, self.normalright),
                 Paragraph('%10.2f' % (quantity * price), self.normalright)
                 ))
+
+        # add extra items
+        for itm in invoice.extra_items.all():
+            lines.append((
+                Paragraph(itm.text, self.normal),
+                '', '',
+                Paragraph('%10.2f' % itm.amount, self.normalright)
+            ))
+
         lines.append((
             Paragraph('<b>Total</b>', self.normal),
             Paragraph(''),
@@ -234,7 +244,7 @@ class InvoicePdfRenderer(object):
         get the address of the billing party (ourself)
         """
         return {
-            'name': 'Depot Comün',
+            'name': 'Depot Commün',
             'extra_line': 'Siedlung Kraftwerk1 Heizenholz',
             'street': 'Regensdorferstrasse 194',
             'zip': '8049',

@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
-from .models import UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
+from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -49,10 +49,16 @@ class InvoicePurchaseInline(admin.TabularInline):
         return 0.0
 
 
+class InvoiceExtraInline(admin.TabularInline):
+    model = ExtraItem
+    extra = 0
+    fields = ('text', 'amount')
+
+
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ['query_pending_invoices', 'do_create_invoices']
     list_display = ('id', 'customer', 'date')
-    inlines = (InvoicePurchaseInline,)
+    inlines = (InvoicePurchaseInline, InvoiceExtraInline)
 
     def query_pending_invoices(self, request, queryset):
         """
