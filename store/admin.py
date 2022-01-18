@@ -5,6 +5,7 @@ from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
 from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
+from .email import send_invoice_mails
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -56,10 +57,34 @@ class InvoiceExtraInline(admin.TabularInline):
 
 
 class InvoiceAdmin(admin.ModelAdmin):
-    actions = ['query_pending_invoices', 'do_create_invoices']
+    # actions = ['query_pending_invoices', 'do_create_invoices']
+    actions = ['send_invoices_email']
     list_display = ('id', 'customer', 'date')
     inlines = (InvoicePurchaseInline, InvoiceExtraInline)
 
+
+    def send_invoices_email(self, request, queryset):
+        """
+        send the selected invoices per e-mail.
+        """
+        invoices = queryset.all()
+        success_count, failed_addresses = send_invoice_mails(invoices)
+
+        for addr in failed_addresses:
+            self.message_user(
+                request,
+                _('failed to send e-mail to "%s".') % addr,
+                'WARNING'
+                )
+
+        if success_count > 0:
+            self.message_user(
+                request, 
+                _('successfully sent %d e-mails.') % success_count,
+                'SUCCESS'
+                )
+
+        
     def query_pending_invoices(self, request, queryset):
         """
         Display the number and total amount of invoices that
