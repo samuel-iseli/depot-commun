@@ -54,7 +54,7 @@ def invoice_pdf(request, id):
     filename = "DC Rechnung %d.pdf" % invoice.id
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = \
-        "attachment; filename=\"" + filename + "\""
+        f'attachment; filename="{filename}"'
 
     InvoicePdfRenderer().render(invoice, response)
     return response
@@ -66,7 +66,7 @@ def articles_pdf(request):
     """
     articles = models.Article.objects.filter(active=True)
 
-    filename = "Artikel Liste"
+    filename = "Artikel Liste.pdf"
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = \
         f'attachment; filename="{filename}"'
