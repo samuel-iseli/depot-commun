@@ -2,40 +2,42 @@ from io import BytesIO
 from smtplib import SMTPException
 from django.core import mail
 from .invoice_pdf import InvoicePdfRenderer
-
+from django.core.validators import validate_email
 
 def send_invoice_mails(invoices):
     """
     send out a list of invoices per e-mail.
     """
     success_count = 0
-    failed_addresses = []
+    failed_customers = []
 
     with mail.get_connection() as connection:
         for invoice in invoices:
-            message = create_invoice_message(connection, invoice)
             try:
+                # check if customer has e-mail address
+                validate_email(invoice.customer.email)
+
+                message = create_invoice_message(connection, invoice)
                 message.send(fail_silently=False)
                 success_count += 1
-            except SMTPException:
-                failed_addresses.append(invoice.customer.email)
+            except Exception:
+                failed_customers.append(invoice.customer)
 
-    return (success_count, failed_addresses)
+    return (success_count, failed_customers)
 
 
 def create_invoice_message(connection, invoice):
     """
     create an email message for an invoice.
     """
-
     # render pdf
     pdfstream = BytesIO()
     InvoicePdfRenderer().render(invoice, pdfstream)
 
     # create e-mail message
     message = mail.EmailMessage(
-        'Depot Commün Rechnung',
-        f'''Liebe/r {invoice.customer}
+        subject='Depot Commün Rechnung',
+        body=f'''Liebe/r {invoice.customer}
 
 Beiliegend erhältst du deine Depot Commün Rechnung als PDF.
 Bitte bezahle sie so bald wie möglich.
@@ -43,9 +45,8 @@ Bitte bezahle sie so bald wie möglich.
 Liebe Grüsse
 Dein Depot
 ''',
-    'mail@depotcommun.ch',
-    [invoice.customer.email],
-    connection=connection,
+        to=[invoice.customer.email],
+        connection=connection,
     )
 
     message.attach(

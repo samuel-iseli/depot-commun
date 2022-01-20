@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-18 23:07+0100\n"
+"POT-Creation-Date: 2022-01-20 23:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,25 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\store\admin.py:67
+msgid "Send selected invoices per e-mail"
+msgstr "Ausgewählte Rechnungen per E-Mail versenden"
+
 #: .\store\admin.py:78
+#, python-format
+msgid "Failed to send e-mail to %s (e-mail address '%s')."
+msgstr "Konnte keine E-Mail an %s (E-Mail Adresse '%s') senden."
+
+#: .\store\admin.py:86
+#, python-format
+msgid "Successfully sent %d e-mails."
+msgstr "%d E-Mails erfolgreich versandt."
+
+#: .\store\admin.py:105
 msgid ""
 "{len(billables)} invoices with a total amount of {total} would be generated."
 msgstr "{len(billables)} Rechnungen mit Totalbetrag {total} würden generiert."
 
-#: .\store\admin.py:92
+#: .\store\admin.py:119
 msgid ""
 "{len(invoices)} invoices with a total amount of {total} have been generated."
 msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
 
-#: .\store\admin.py:98
+#: .\store\admin.py:125
 msgid "Payment Account"
 msgstr "Zahlungskonto"
 
-#: .\store\invoice_pdf.py:196
+#: .\store\invoice_pdf.py:206
 msgid "Please pay specifying bill number to:"
 msgstr "Bitte einzahlen unter Angabe der Rechnungsnummer auf:"
 
-#: .\store\invoice_pdf.py:207
+#: .\store\invoice_pdf.py:217
 msgid "in favor of"
 msgstr "zugunsten von"
 
@@ -71,7 +85,7 @@ msgstr "Kundinnen"
 
 #: .\store\models.py:41
 msgid "Idx"
-msgstr ""
+msgstr "Idx"
 
 #: .\store\models.py:49
 msgid "Articlegroup"

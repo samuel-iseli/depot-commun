@@ -151,3 +151,14 @@ CORS_ALLOWED_ORIGINS = [
 # redirect to frontend after login
 LOGIN_REDIRECT_URL = '/'
 
+# need to set SessionStorage for messages to work in admin
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# email settings
+DEFAULT_FROM_EMAIL = 'mail@depotcommun.ch'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_HOST = 'mail.infomaniak.com'
+EMAIL_HOST_USER = 'mail@depotcommun.ch'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
