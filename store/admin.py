@@ -17,6 +17,7 @@ class UserProfileAdmin(UserAdmin):
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
     fields = ('name', 'email')
+    search_fields = ('name', 'email')
 
 
 class ItemAdmin(admin.ModelAdmin):
@@ -42,7 +43,7 @@ class InvoicePurchaseInline(admin.TabularInline):
         if isinstance(db_field, models.ForeignKey):
             formfield.widget.can_add_related = False
             formfield.widget.can_change_related = False
-            formfield.widget.can_delete_related = False  
+            formfield.widget.can_delete_related = False
         return formfield
  
     def summe(self, purchase):
@@ -60,9 +61,10 @@ class InvoiceExtraInline(admin.TabularInline):
 class InvoiceAdmin(admin.ModelAdmin):
     # actions = ['query_pending_invoices', 'do_create_invoices']
     actions = ['send_invoices_email']
-    list_display = ('id', 'customer', 'date', 'amount')
+    list_display = ('id', 'customer', 'date', 'amount', 'paid')
+    list_filter = ('paid',)
+    search_fields = ('id', 'customer__name')
     inlines = (InvoicePurchaseInline, InvoiceExtraInline)
-
 
     @admin.action(description=_('Send selected invoices per e-mail'))
     def send_invoices_email(self, request, queryset):
