@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'de-ch'
 
 TIME_ZONE = 'UTC'
 
@@ -127,6 +127,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+FORMAT_MODULE_PATH = ['depotcommun.formats']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
