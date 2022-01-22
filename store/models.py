@@ -89,12 +89,26 @@ class Invoice(models.Model):
         default=timezone.now, verbose_name=_('Date'))
     amount = models.DecimalField(
         max_digits=7, decimal_places=2, default=0, verbose_name=_('Amount'))
+    paid = models.BooleanField(_('Paid'), default=False)
+    payment_date = models.DateField(
+        null=True, blank=True,
+        verbose_name=_('Payment date'))
 
     def update_amount(self):
         purchase_amount = sum([p.price * p.quantity for p in self.purchases.all()])
         extra_amount = sum([itm.amount for itm in self.extra_items.all()])
         self.amount = purchase_amount + extra_amount
         self.save()
+
+    def save(self, *args, **kwargs):
+        """
+        override save to automatically set
+        payment date.
+        """
+        if self.paid and self.payment_date is None:
+            self.payment_date = timezone.now()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return gettext('Invoice %d') % self.id
@@ -122,7 +136,7 @@ class Purchase(models.Model):
         verbose_name=_('Invoice'))
     date = models.DateTimeField(
         default=timezone.now, verbose_name=_('Date'))
-    
+
     def __str__(self):
         return f"{self.quantity} x {self.article.name}"
 
