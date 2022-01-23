@@ -50,7 +50,7 @@ Dein Depot
     )
 
     message.attach(
-        f'Rechnung {invoice.id}',
+        f'Rechnung {invoice.id}.pdf',
         pdfstream.getvalue(),
         'application/pdf')
 
