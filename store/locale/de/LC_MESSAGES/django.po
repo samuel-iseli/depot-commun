@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-22 22:37+0100\n"
+"POT-Creation-Date: 2022-01-23 00:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,31 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\store\admin.py:67
+#: .\store\admin.py:69
 msgid "Send selected invoices per e-mail"
 msgstr "Ausgewählte Rechnungen per E-Mail versenden"
 
-#: .\store\admin.py:78
+#: .\store\admin.py:80
 #, python-format
 msgid "Failed to send e-mail to %s (e-mail address '%s')."
 msgstr "Konnte keine E-Mail an %s (E-Mail Adresse '%s') senden."
 
-#: .\store\admin.py:86
+#: .\store\admin.py:88
 #, python-format
 msgid "Successfully sent %d e-mails."
 msgstr "%d E-Mails erfolgreich versandt."
 
-#: .\store\admin.py:105
+#: .\store\admin.py:92
+msgid "Mark selected invoices as paid"
+msgstr "Ausgewählte Rechnungen als bezahlt markieren"
+
+#: .\store\admin.py:113
 msgid ""
 "{len(billables)} invoices with a total amount of {total} would be generated."
 msgstr "{len(billables)} Rechnungen mit Totalbetrag {total} würden generiert."
 
-#: .\store\admin.py:119
+#: .\store\admin.py:127
 msgid ""
 "{len(invoices)} invoices with a total amount of {total} have been generated."
 msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
 
-#: .\store\admin.py:125
+#: .\store\admin.py:133
 msgid "Payment Account"
 msgstr "Zahlungskonto"
 

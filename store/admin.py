@@ -60,7 +60,7 @@ class InvoiceExtraInline(admin.TabularInline):
 
 class InvoiceAdmin(admin.ModelAdmin):
     # actions = ['query_pending_invoices', 'do_create_invoices']
-    actions = ['send_invoices_email']
+    actions = ['send_invoices_email', 'mark_as_paid']
     list_display = ('id', 'customer', 'date', 'amount', 'paid')
     list_filter = ('paid',)
     search_fields = ('id', 'customer__name')
@@ -89,6 +89,12 @@ class InvoiceAdmin(admin.ModelAdmin):
                 'SUCCESS'
                 )
    
+    @admin.action(description=_('Mark selected invoices as paid'))
+    def mark_as_paid(self, request, queryset):
+        for invoice in queryset.all():
+            invoice.paid = True
+            invoice.save()
+
     def query_pending_invoices(self, request, queryset):
         """
         Display the number and total amount of invoices that
