@@ -64,7 +64,12 @@ class InvoicePdfRenderer(object):
         self.render_paymentinfo(story)
 
         # build the pdf document
-        doc = SimpleDocTemplate(outfile)
+        # need to set title and author to prevent firefox from
+        # displaying "anonymous"
+        doc = SimpleDocTemplate(
+            outfile,
+            title='',
+            author='')
         doc.build(
             story,
             onFirstPage=self.draw_payslip,

@@ -68,7 +68,10 @@ class ArticlesPdfRenderer(object):
 
         # build the pdf document
         # to show frame boundaries set showBoundary=1
-        doc = BaseDocTemplate(outfile)
+        doc = BaseDocTemplate(
+            outfile,
+            title='',
+            author='')
 
         # first page, has space for drawing header
         firstPageTemplate = PageTemplate(
