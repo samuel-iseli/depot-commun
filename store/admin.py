@@ -62,6 +62,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     # actions = ['query_pending_invoices', 'do_create_invoices']
     actions = ['send_invoices_email', 'mark_as_paid']
     list_display = ('id', 'customer', 'date', 'amount', 'paid')
+    ordering = ('-id',)
     list_filter = ('paid',)
     search_fields = ('id', 'customer__name')
     inlines = (InvoicePurchaseInline, InvoiceExtraInline)
