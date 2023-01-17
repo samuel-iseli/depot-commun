@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.db import models
 from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
 from .email import send_invoice_mails
+from admin_totals.admin import ModelAdminTotals
 
 from .billing import get_billable_purchases, create_invoices
 
@@ -58,10 +59,12 @@ class InvoiceExtraInline(admin.TabularInline):
     fields = ('text', 'amount')
 
 
-class InvoiceAdmin(admin.ModelAdmin):
+class InvoiceAdmin(ModelAdminTotals):
     # actions = ['query_pending_invoices', 'do_create_invoices']
     actions = ['send_invoices_email', 'mark_as_paid']
     list_display = ('id', 'customer', 'date', 'amount', 'paid')
+    list_totals = [('amount', models.Sum)]
+    date_hierarchy = 'date'
     ordering = ('-id',)
     list_filter = ('paid',)
     search_fields = ('id', 'customer__name')

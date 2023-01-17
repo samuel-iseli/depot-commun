@@ -12,6 +12,7 @@ djangorestframework = "*"
 django-cors-headers = "*"
 reportlab = "*"
 django-solo = "*"
+admin-totals = "*"
 
 [dev-packages]
 ipython = "*"

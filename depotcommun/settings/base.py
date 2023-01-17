@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'solo',     # singleton model
     'rest_framework',
     'corsheaders',
+    'admin_totals'
 ]
 
 MIDDLEWARE = [
