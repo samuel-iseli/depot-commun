@@ -1,0 +1,7 @@
+{
+  "name": "Depot Comün",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
