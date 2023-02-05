@@ -1,7 +1,10 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import { RecoilRoot } from 'recoil';
 import Home from './pages/Home';
+import ShoppingCart from './pages/ShoppingCart';
+import AddArticle from './pages/AddArticle';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -26,16 +29,19 @@ setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
+    <RecoilRoot>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route exact path="/cart">
+            <ShoppingCart />
+          </Route>
+          <Route exact path="/new" component={AddArticle} />
+          <Route exact path="/">
+            <Redirect to="/cart" />
+          </Route>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </RecoilRoot>
   </IonApp>
 );
 
