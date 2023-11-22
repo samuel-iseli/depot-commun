@@ -1,0 +1,4 @@
+# minimal requirements file for jelastic deployment
+# just install pipenv
+# pipenv install is then called by post deployment hook
+pipenv
