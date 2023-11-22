@@ -8,7 +8,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'depot-commun',
-        'USER': 'postgres',
+        'USER': os.environ['POSTGRES_USER'],
         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
         'HOST': os.environ['POSTGRES_HOST'],
         'PORT': '5432',
@@ -60,3 +60,5 @@ LOGGING = {
         }
     }
 }
+
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
