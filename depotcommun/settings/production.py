@@ -9,8 +9,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'depot-commun',
         'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['POSTGRES_HOST'],
         'PORT': '5432',
     }
 }
@@ -60,8 +60,3 @@ LOGGING = {
         }
     }
 }
-
-# apply heroku config
-# with logging=False our own logging configuration is used
-import django_heroku
-django_heroku.settings(locals(), logging=False)
