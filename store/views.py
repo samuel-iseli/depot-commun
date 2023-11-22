@@ -16,10 +16,10 @@ from .articles_pdf import ArticlesPdfRenderer
 
 class AvailableItemsView(generics.ListAPIView):
     def get_queryset(self):
-        now = timezone.now()
-        is_active_query = Q(active_from__lte=now) & (Q(active_until__isnull=True) | Q(active_until__gt=now))
+        # now = timezone.now()
+        # is_active_query = Q(active_from__lte=now) & (Q(active_until__isnull=True) | Q(active_until__gt=now))
 
-        queryset = models.Article.objects.filter(is_active_query)
+        queryset = models.Article.objects.all()
         return queryset
 
     serializer_class = serializers.AvailableItemsSerializer

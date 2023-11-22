@@ -6,7 +6,7 @@ import { CartItem } from '../components/CartItem';
 import NumKeyboard from '../components/NumKeyboard';
 import { articlesState, findArticle, ItemCategory } from '../state/Article';
 
-const AddArticle: React.FC = () => {
+const AddArticleKeys: React.FC = () => {
     const articles = useRecoilValue(articlesState);
     const [cart, setCart] = useRecoilState(cartState);
     const [articleNum, setArticleNum] = useState("");
@@ -142,4 +142,4 @@ const AddArticle: React.FC = () => {
     );
 };
 
-export default AddArticle;
+export default AddArticleKeys;

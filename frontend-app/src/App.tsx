@@ -4,7 +4,8 @@ import { IonReactRouter } from '@ionic/react-router';
 import { RecoilRoot } from 'recoil';
 import Home from './pages/Home';
 import ShoppingCart from './pages/ShoppingCart';
-import AddArticle from './pages/AddArticle';
+import AddArticleKeys from './pages/AddArticleKeys';
+import AddArticleList from './pages/AddArticleList';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -35,7 +36,8 @@ const App: React.FC = () => (
           <Route exact path="/cart">
             <ShoppingCart />
           </Route>
-          <Route exact path="/new" component={AddArticle} />
+          <Route exact path="/new_keys" component={AddArticleKeys} />
+          <Route exact path="/new_list" component={AddArticleList} />
           <Route exact path="/">
             <Redirect to="/cart" />
           </Route>

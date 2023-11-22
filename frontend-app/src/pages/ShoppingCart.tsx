@@ -1,7 +1,7 @@
-import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButtons, IonContent, IonFab, IonFabButton, IonFabList, IonHeader, IonIcon, IonList, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { CartItem }  from '../components/CartItem';
 import { RouteComponentProps } from 'react-router';
-import { add } from 'ionicons/icons';
+import { add, keypad, list } from 'ionicons/icons';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { cartState, cartDisplayState } from '../state/Cart';
 import { removeItemAtIndex, replaceItemAtIndex } from '../state/Utils';
@@ -62,9 +62,17 @@ const ShoppingCart: React.FC = () => {
             </IonToolbar>
           </IonHeader>
           <IonFab vertical="bottom" horizontal="center">
-            <IonFabButton routerLink="/new" >
+            <IonFabButton >
               <IonIcon icon={add} />
             </IonFabButton>
+            <IonFabList side="end">
+              <IonFabButton routerLink="/new_list" >
+                <IonIcon icon={list} />
+              </IonFabButton>
+              <IonFabButton routerLink="/new_keys" >
+                <IonIcon icon={keypad} />
+              </IonFabButton>
+            </IonFabList>
           </IonFab>
           <IonList>
             {cartDisplay.map((itm) => (

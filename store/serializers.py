@@ -4,11 +4,9 @@ from . import services
 
 
 class AvailableItemsSerializer(serializers.ModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
-
     class Meta:
         model = models.Article
-        fields = ['code', 'name', 'price', 'tags']
+        fields = ['group', 'name', 'price', 'sortidx']
 
 
 class PurchaseSerializer(serializers.ModelSerializer):

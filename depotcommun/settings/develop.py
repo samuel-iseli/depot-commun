@@ -6,13 +6,13 @@ from .base import *
 DATABASES = {
     'default': {
         # sqlite database
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'depotcommun.db',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': 'depotcommun.db',
         # postgres database
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': 'depot-commun',
-        # 'USER': 'depot',
-        # 'PASSWORD': 'KwCwHhW8q8RLzBT2VtJe',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'depot-commun',
+        'USER': 'depot',
+        'PASSWORD': 'KwCwHhW8q8RLzBT2VtJe',
     }
 }
 
