@@ -11,24 +11,47 @@ import os
 import sys
 import pathlib
 import logging
+import json
 
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'depotcommun.settings.production')
 
 # add parentdir of depotcommun to path to allow import of depotcommun
-parentdir = str(pathlib.Path(__file__).parent.parent)
+path = pathlib.Path(__file__)
+currentdir = str(path.parent)
+parentdir = str(path.parent.parent)
 sys.path.append(parentdir)
 
 env_vars_to_pass = ['DJANGO_SECRET_KEY', 'DJANGO_SETTINGS_MODULE', 'EMAIL_PASSWORD', 'POSTGRES_HOST', 'POSTGRES_USER', 'POSTGRES_PASSWORD']
 
 
-def application(environ, start_response):
-    # pass the WSGI environment variables on through to os.environ
+def write_env():
+    # write env variables to file to be able to load it in wsgi application
+    env_dict = {}
     for var in env_vars_to_pass:
-        value = environ.get(var, '')
+        value = os.environ.get(var, '')
+        if value:
+            env_dict[var] = value        
+
+    f = open(os.path.join(currentdir, 'wsgienv'), 'w')
+    json.dump(env_dict, f)
+    f.close()
+
+
+def load_env():
+    # load env variables from file
+    f = open(os.path.join(currentdir, 'wsgienv'), 'w')
+    env_dict = json.load(f)
+
+    for var in env_vars_to_pass:
+        value = env_dict.get(var, '')
         if value:
             os.environ[var] = value
-            
+
+
+def application(environ, start_response):
+    # pass the WSGI environment variables on through to os.environ
+    load_env()
     _application = get_wsgi_application()
     return _application(environ, start_response)
