@@ -23,7 +23,7 @@ currentdir = str(path.parent)
 parentdir = str(path.parent.parent)
 sys.path.append(parentdir)
 
-env_vars_to_pass = ['DJANGO_SECRET_KEY', 'DJANGO_SETTINGS_MODULE', 'EMAIL_PASSWORD', 'POSTGRES_HOST', 'POSTGRES_USER', 'POSTGRES_PASSWORD']
+env_vars_to_pass = ['DJANGO_SECRET_KEY', 'DJANGO_SETTINGS_MODULE', 'DJANGO_ALLOWED_HOSTS', 'EMAIL_PASSWORD', 'POSTGRES_HOST', 'POSTGRES_USER', 'POSTGRES_PASSWORD']
 
 
 def write_env():
@@ -33,7 +33,6 @@ def write_env():
         env_dict[var] = os.environ.get(var, '')
 
     filepath = os.path.join(currentdir, 'wsgienv')
-    print("writing wsgienv file to %s, dict: %s" % (filepath, env_dict))
     with open(filepath, 'w') as f:
         json.dump(env_dict, f)
 

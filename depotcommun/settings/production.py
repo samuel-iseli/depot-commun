@@ -61,4 +61,5 @@ LOGGING = {
     }
 }
 
+ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOSTS']]
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
