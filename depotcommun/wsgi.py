@@ -17,7 +17,7 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'depotcommun.settings.production')
 
 # add parentdir of depotcommun to path to allow import of depotcommun
-parentdir = str(pathlib.Path(__file__).parent)
+parentdir = str(pathlib.Path(__file__).parent.parent)
 logging.error("added %s to sys.path" % parentdir)
 sys.path.append(parentdir)
 
