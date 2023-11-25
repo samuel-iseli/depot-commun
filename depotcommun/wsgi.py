@@ -20,7 +20,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'depotcommun.settings.production
 parentdir = str(pathlib.Path(__file__).parent.parent)
 sys.path.append(parentdir)
 
-_application = get_wsgi_application()
 env_vars_to_pass = ['DJANGO_SECRET_KEY', 'DJANGO_SETTINGS_MODULE', 'EMAIL_PASSWORD', 'POSTGRES_HOST', 'POSTGRES_USER', 'POSTGRES_PASSWORD']
 
 
@@ -30,5 +29,6 @@ def application(environ, start_response):
         value = environ.get(var, '')
         if value:
             os.environ[var] = value
-
+            
+    _application = get_wsgi_application()
     return _application(environ, start_response)
