@@ -32,7 +32,9 @@ def write_env():
     for var in env_vars_to_pass:
         env_dict[var] = os.environ.get(var, '')
 
-    with open(os.path.join(currentdir, 'wsgienv'), 'w') as f:
+    filepath = os.path.join(currentdir, 'wsgienv')
+    print("writing wsgienv file to %s, dict: %s" % (filepath, env_dict))
+    with open(filepath, 'w') as f:
         json.dump(env_dict, f)
 
 
