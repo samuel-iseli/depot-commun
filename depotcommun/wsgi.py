@@ -30,19 +30,16 @@ def write_env():
     # write env variables to file to be able to load it in wsgi application
     env_dict = {}
     for var in env_vars_to_pass:
-        value = os.environ.get(var, '')
-        if value:
-            env_dict[var] = value        
+        env_dict[var] = os.environ.get(var, '')
 
-    f = open(os.path.join(currentdir, 'wsgienv'), 'w')
-    json.dump(env_dict, f)
-    f.close()
+    with open(os.path.join(currentdir, 'wsgienv'), 'w') as f:
+        json.dump(env_dict, f)
 
 
 def load_env():
     # load env variables from file
-    f = open(os.path.join(currentdir, 'wsgienv'), 'w')
-    env_dict = json.load(f)
+    with open(os.path.join(currentdir, 'wsgienv'), 'r') as f:
+        env_dict = json.load(f)
 
     for var in env_vars_to_pass:
         value = env_dict.get(var, '')
