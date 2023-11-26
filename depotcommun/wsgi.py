@@ -10,12 +10,9 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 import os
 import sys
 import pathlib
-import logging
 import json
 
 from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'depotcommun.settings.production')
 
 # add parentdir of depotcommun to path to allow import of depotcommun
 path = pathlib.Path(__file__)
@@ -48,8 +45,18 @@ def load_env():
             os.environ[var] = value
 
 
+_application = None
+
+
 def application(environ, start_response):
-    # pass the WSGI environment variables on through to os.environ
-    load_env()
-    _application = get_wsgi_application()
+    # get application function, cache it if already present
+    global _application
+    if not _application:
+        # load env variables from wsgienv file if present
+        try:
+            load_env()
+        except Exception:
+            pass
+        _application = get_wsgi_application()
+
     return _application(environ, start_response)
