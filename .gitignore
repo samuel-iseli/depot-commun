@@ -3,6 +3,10 @@ staticfiles
 __pycache__
 *.db
 
+# venv
+venv
+.venv
+
 # react stuff (frontend)
 node_modules
 .pnp.js
