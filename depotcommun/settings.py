@@ -122,7 +122,9 @@ WSGI_APPLICATION = 'depotcommun.wsgi.application'
 
 
 # Database
-DATABASES = env.db('DATABASE_URL')
+DATABASES = {
+    'default' : env.db('DATABASE_URL')
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':(
