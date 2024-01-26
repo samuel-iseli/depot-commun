@@ -12,22 +12,26 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+# initialize env with defaults
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
+# read .env file for local usage
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 't0wj*j*!e)=jrk4+jd5bkb*2)&9^6&xl0u6@5t*=#k3$z26(x4'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = env('DEBUG')
 
 # Application definition
 
@@ -47,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,23 +80,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'depotcommun.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'depot-commun',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
 
 AUTH_USER_MODEL = 'store.UserProfile'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -130,14 +118,11 @@ USE_TZ = True
 
 FORMAT_MODULE_PATH = ['depotcommun.formats']
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+WSGI_APPLICATION = 'depotcommun.wsgi.application'
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'buying-frontend/build/static')
-]
+
+# Database
+DATABASES = env.db('DATABASE_URL')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':(
@@ -161,6 +146,6 @@ DEFAULT_FROM_EMAIL = 'mail@depotcommun.ch'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 EMAIL_HOST = 'mail.infomaniak.com'
 EMAIL_HOST_USER = 'mail@depotcommun.ch'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
