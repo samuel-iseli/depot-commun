@@ -8,7 +8,7 @@ venv
 .venv
 
 # local env file
-.env
+.env*
 
 # react stuff (frontend)
 node_modules
