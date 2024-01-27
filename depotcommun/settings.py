@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    # 'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
     'solo',     # singleton model
     'rest_framework',
     'corsheaders',
@@ -80,6 +80,16 @@ TEMPLATES = [
         },
     },
 ]
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# not used at them moment...
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'buying-frontend/build/static')
+# ]
 
 AUTH_USER_MODEL = 'store.UserProfile'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
