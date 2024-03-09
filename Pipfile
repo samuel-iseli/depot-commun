@@ -13,6 +13,8 @@ django-cors-headers = "*"
 reportlab = "*"
 django-solo = "*"
 admin-totals = "*"
+qrbill = "*"
+svglib = "*"
 
 [dev-packages]
 ipython = "*"

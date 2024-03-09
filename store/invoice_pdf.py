@@ -1,14 +1,14 @@
-import datetime
 from collections import defaultdict
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from django.utils.formats import get_format
 from django.utils.dateformat import format
-from django.utils.translation import gettext as _
 from .models import Settings
-# from svglib.svglib import SvgRenderer
-# from lxml import etree
+from decimal import Decimal
+from qrbill.bill import QRBill
+from io import BytesIO, TextIOWrapper
+from svglib.svglib import svg2rlg
 
 
 class InvoicePdfRenderer(object):
@@ -46,6 +46,7 @@ class InvoicePdfRenderer(object):
             ('LEFTPADDING', (0, 0), (0, -1), 0)  # right align last row
         ]
 
+        self.settings = Settings.get_solo()
         self.qrpayslip_drawing = None
 
     def render(self, bill, outfile):
@@ -62,6 +63,7 @@ class InvoicePdfRenderer(object):
         self.render_items(bill, story)
         story.append(Spacer(1, 1*cm))
         self.render_paymentinfo(story)
+        self.render_payslip(bill, story)
 
         # build the pdf document
         # need to set title and author to prevent firefox from
@@ -79,13 +81,6 @@ class InvoicePdfRenderer(object):
         """
         render table with addresses
         """
-        addr = self.get_own_address()
-
-        lines = [
-            'Depot Commün',
-            'Siedlung Kraftwerk1 Heizenholz',
-        ]
-
         org_address = Paragraph(
             '<br/>'.join([
                 'Depot Commün',
@@ -163,67 +158,36 @@ class InvoicePdfRenderer(object):
         story.append(items_table)
 
     def render_paymentinfo(self, story):
-        settings = Settings.get_solo()
-
         story.append(
             Paragraph('Bitte einzahlen mit Angabe von Rechnungsnummer auf:', self.text)
         )
 
         lines = (
-            settings.payment_bank,
-            settings.payment_account_number,
-            settings.payment_account_name
+            self.settings.payment_bank,
+            self.settings.payment_account_number,
+            self.settings.payment_account_name
         )
         story.append(
             Paragraph('<br/>'.join(lines), self.text)
         )
 
-    def render_payslip(self, bill, story):
+    def render_payslip(self, invoice, story):
         """
         render payslip part with QR-Code
         the payslip is produced into a reporlab
         drawing, which is actually rendered by
         the page render function draw_payslip.
         """
-        settings = Settings.objects.first()
-        addr = Config.organisation_address()
+        bytes_stream = BytesIO()
+        wrapper = TextIOWrapper(bytes_stream, encoding='utf8')
+        self.get_qrbill_svg(invoice, wrapper)
+        
+        # save payslip drawing and
+        # offset bottom margin
+        bytes_stream.seek(0)
 
-        payment_type = settings.default_paymenttype
-        if is_qr_iban(payment_type.iban):
-            qr_svg = get_qrbill_svg(bill, payment_type)
-            svg_element = etree.fromstring(qr_svg)
-
-            renderer = SvgRenderer("")
-
-            # save payslip drawing and
-            # offset bottom margin
-            self.qrpayslip_drawing = renderer.render(svg_element)
-            self.bottom_margin = self.qrpayslip_drawing.height
-        else:
-            self.qrpayslip_drawing = None
-            self.bottom_margin = 2 * cm
-
-            story.append(Spacer(1, 2 * cm))
-
-            # if no qr payslip, display account info for payment
-            story.append(
-                Paragraph(
-                    _('Please pay specifying bill number to:'),
-                    self.text))
-            story.append(
-                Paragraph(
-                    '%s<br/>%s<br/>' % (
-                        payment_type.iban,
-                        payment_type.name),
-                    self.text))
-            story.append(
-                Paragraph(
-                    '%s<br/>%s, %s %s' % (
-                        _('in favor of'),
-                        addr['name'],
-                        addr['zip'],
-                        addr['city']),
-                    self.text))
+        self.qrpayslip_drawing = svg2rlg(bytes_stream)
+        self.bottom_margin = self.qrpayslip_drawing.height
 
     def draw_payslip(self, canvas, document):
         """
@@ -240,18 +204,32 @@ class InvoicePdfRenderer(object):
         self.qrpayslip_drawing.drawOn(canvas, 0, 0)
         canvas.restoreState()
 
+    def get_qrbill_svg(self, invoice, out_stream):
+        """
+        Get the QR-Bill payment part as SVG
+        """
+        qr = QRBill(
+            language='de',
+            account=self.settings.payment_account_number,
+            additional_information="Rechnung %d" % invoice.id,
+            amount=Decimal(invoice.amount),
+            creditor={
+                'name': self.settings.payment_account_name,
+                'line1': self.settings.payment_account_street,
+                'line2': self.settings.payment_account_place,
+                'country': 'CH',
+            },
+            debtor={
+                'name': invoice.customer.name,
+                'line1': invoice.customer.street,
+                'line2': '%s %s' % (
+                    invoice.customer.zip,
+                    invoice.customer.city),
+                'country': 'CH',
+            }
+        )
+        qr.as_svg(out_stream)
+
     def date_format(self, date):
         fmt = get_format('SHORT_DATE_FORMAT', 'de')
         return format(date, fmt)
-
-    def get_own_address(self):
-        """
-        get the address of the billing party (ourself)
-        """
-        return {
-            'name': 'Depot Commün',
-            'extra_line': 'Siedlung Kraftwerk1 Heizenholz',
-            'street': 'Regensdorferstrasse 194',
-            'zip': '8049',
-            'city': 'Zürich'
-        }
