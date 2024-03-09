@@ -138,7 +138,9 @@ class SettingsAdmin(SingletonModelAdmin):
             'fields': (
                 'payment_bank',
                 'payment_account_number',
-                'payment_account_name')
+                'payment_account_name',
+                'payment_account_street',
+                'payment_account_place')
         }),
     )
 

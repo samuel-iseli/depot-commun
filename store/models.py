@@ -209,6 +209,12 @@ class Settings(SingletonModel):
     payment_account_name = models.CharField(
         verbose_name=_('Account Name'),
         max_length=100, blank=True)
+    payment_account_street = models.CharField(
+        verbose_name=_('Account Street'),
+        max_length=100, blank=True)
+    payment_account_place = models.CharField(
+        verbose_name=_('Account Place'),
+        max_length=100, blank=True)
 
     def __str__(self):
         return gettext('Settings')

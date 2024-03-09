@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-23 00:58+0100\n"
+"POT-Creation-Date: 2024-03-09 10:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,45 +18,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\store\admin.py:69
+#: .\store\admin.py:73
 msgid "Send selected invoices per e-mail"
 msgstr "Ausgewählte Rechnungen per E-Mail versenden"
 
-#: .\store\admin.py:80
+#: .\store\admin.py:84
 #, python-format
 msgid "Failed to send e-mail to %s (e-mail address '%s')."
 msgstr "Konnte keine E-Mail an %s (E-Mail Adresse '%s') senden."
 
-#: .\store\admin.py:88
+#: .\store\admin.py:92
 #, python-format
 msgid "Successfully sent %d e-mails."
 msgstr "%d E-Mails erfolgreich versandt."
 
-#: .\store\admin.py:92
+#: .\store\admin.py:96
 msgid "Mark selected invoices as paid"
 msgstr "Ausgewählte Rechnungen als bezahlt markieren"
 
-#: .\store\admin.py:113
+#: .\store\admin.py:117
 msgid ""
 "{len(billables)} invoices with a total amount of {total} would be generated."
 msgstr "{len(billables)} Rechnungen mit Totalbetrag {total} würden generiert."
 
-#: .\store\admin.py:127
+#: .\store\admin.py:131
 msgid ""
 "{len(invoices)} invoices with a total amount of {total} have been generated."
 msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
 
-#: .\store\admin.py:133
+#: .\store\admin.py:137
 msgid "Payment Account"
 msgstr "Zahlungskonto"
-
-#: .\store\invoice_pdf.py:206
-msgid "Please pay specifying bill number to:"
-msgstr "Bitte einzahlen unter Angabe der Rechnungsnummer auf:"
-
-#: .\store\invoice_pdf.py:217
-msgid "in favor of"
-msgstr "zugunsten von"
 
 #: .\store\models.py:12 .\store\models.py:42 .\store\models.py:60
 msgid "Name"
@@ -188,10 +180,24 @@ msgstr "Kontonummer (IBAN)"
 msgid "Account Name"
 msgstr "Konto Name"
 
-#: .\store\models.py:214 .\store\models.py:217
+#: .\store\models.py:213
+msgid "Account Street"
+msgstr "Konto Strasse"
+
+#: .\store\models.py:216
+msgid "Account Place"
+msgstr "Konto Ort"
+
+#: .\store\models.py:220 .\store\models.py:223
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: .\store\templates\admin\store\invoice\change_form.html:10
 msgid "History"
 msgstr "Verlauf"
+
+#~ msgid "Please pay specifying bill number to:"
+#~ msgstr "Bitte einzahlen unter Angabe der Rechnungsnummer auf:"
+
+#~ msgid "in favor of"
+#~ msgstr "zugunsten von"
