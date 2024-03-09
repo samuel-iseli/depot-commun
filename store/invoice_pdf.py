@@ -1,5 +1,5 @@
 from collections import defaultdict
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.platypus import BaseDocTemplate, PageTemplate, Paragraph, Spacer, Table, Frame, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from django.utils.formats import get_format
@@ -63,19 +63,28 @@ class InvoicePdfRenderer(object):
         self.render_items(bill, story)
         story.append(Spacer(1, 1*cm))
         self.render_paymentinfo(story)
+        story.append(PageBreak('payslip'))
+        story.append(Spacer(1, 10 * cm))
+
+        # pagebreak for payslip page
         self.render_payslip(bill, story)
 
         # build the pdf document
         # need to set title and author to prevent firefox from
         # displaying "anonymous"
-        doc = SimpleDocTemplate(
+        doc = BaseDocTemplate(
             outfile,
             title='',
             author='')
-        doc.build(
-            story,
-            onFirstPage=self.draw_payslip,
-            onLaterPages=self.draw_payslip)
+
+        frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')
+
+        doc.addPageTemplates([
+            PageTemplate('invoice', frames=frame),
+            PageTemplate('payslip', frames=frame, onPage=self.draw_payslip)
+         ])
+
+        doc.build(story)
 
     def render_addresses(self, invoice, story):
         """
