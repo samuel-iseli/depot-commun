@@ -15,7 +15,7 @@ class Customer(models.Model):
     street = models.CharField(
         max_length=100, blank=True, verbose_name=_('Street'))
     zip = models.CharField(
-        max_length=10, blank=True, verbose_name=_('ZIP'))
+        max_length=10, verbose_name=_('ZIP'))
     city = models.CharField(
         max_length=50, blank=True, verbose_name=_('City'))
 
