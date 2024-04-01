@@ -17,7 +17,6 @@ class UserProfileAdmin(UserAdmin):
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'email')
-    fields = ('name', 'email')
     search_fields = ('name', 'email')
 
 
