@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
-from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings
+from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
 from .email import send_invoice_mails
 from admin_totals.admin import ModelAdminTotals
 
@@ -61,7 +61,7 @@ class InvoiceExtraInline(admin.TabularInline):
 class InvoiceAdmin(ModelAdminTotals):
     # actions = ['query_pending_invoices', 'do_create_invoices']
     actions = ['send_invoices_email', 'mark_as_paid']
-    list_display = ('id', 'customer', 'date', 'amount', 'paid')
+    list_display = ('id', 'customer', 'date', 'amount', 'paid', 'email_sent')
     list_totals = [('amount', models.Sum)]
     date_hierarchy = 'date'
     ordering = ('-id',)
@@ -75,21 +75,19 @@ class InvoiceAdmin(ModelAdminTotals):
         send the selected invoices per e-mail.
         """
         invoices = queryset.all()
-        success_count, failed_customers = send_invoice_mails(invoices)
+        success, message = send_invoice_mails(invoices)
 
-        for cust in failed_customers:
+        if success:
             self.message_user(
                 request,
-                _("Failed to send e-mail to %s (e-mail address '%s').") %
-                 (cust.name, cust.email),
-                'WARNING'
-                )
-
-        if success_count > 0:
-            self.message_user(
-                request, 
-                _('Successfully sent %d e-mails.') % success_count,
+                message,
                 'SUCCESS'
+                )
+        else:
+            self.message_user(
+                request,
+                message,
+                'WARNING'
                 )
    
     @admin.action(description=_('Mark selected invoices as paid'))
@@ -144,12 +142,17 @@ class SettingsAdmin(SingletonModelAdmin):
     )
 
 
+class EmailTaskAdmin(admin.ModelAdmin):
+    list_display = ('started', 'finished', 'successful', 'email_count')
+
+
 # register model admins
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Article, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
+admin.site.register(EmailTask, EmailTaskAdmin)
 admin.site.register(Settings, SettingsAdmin)
 
 # customize site

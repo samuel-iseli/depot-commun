@@ -93,6 +93,7 @@ class Invoice(models.Model):
     payment_date = models.DateField(
         null=True, blank=True,
         verbose_name=_('Payment date'))
+    email_sent = models.BooleanField('Email gesendet', default=False)
 
     def update_amount(self):
         purchase_amount = sum([p.price * p.quantity for p in self.purchases.all()])
@@ -197,7 +198,24 @@ class ExtraItem(models.Model):
     class Meta:
         verbose_name = _('Extra Item')
         verbose_name_plural = _ ('Extra Items')
-    
+
+
+class EmailTask(models.Model):
+    started = models.DateTimeField(
+        verbose_name='Gestartet',
+        default=timezone.now)
+    finished = models.DateTimeField(
+        verbose_name='Beendet',
+        null=True, blank=True)
+    email_count = models.IntegerField(
+        verbose_name='Anzahl E-Mails',
+        default=0)
+    successful = models.BooleanField(
+        verbose_name='Erfolgreich',
+        default=False)
+    log_text = models.TextField(
+        verbose_name='Log')
+
 
 class Settings(SingletonModel):
     payment_bank = models.CharField(
