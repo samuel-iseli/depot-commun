@@ -66,6 +66,7 @@ class InvoiceMailer:
                                 self.add_log("OK Invoice %d to %s" % (invoice.id, message.to[0]))
                                 self.success_count += 1
                                 invoice.email_sent = True
+                                invoice.save()
                             except Exception as e:
                                 success = False
                                 self.add_log("Error on sending message to %s: %s" % (message.to[0], str(e)))
