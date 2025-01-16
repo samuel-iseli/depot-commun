@@ -37,7 +37,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 # Application definition
 
 INSTALLED_APPS = [
-    'store.apps.Config',
+    'depotcommun',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,7 +91,7 @@ DATABASES = {
     'default': env.db()
 }
 
-AUTH_USER_MODEL = 'store.UserProfile'
+AUTH_USER_MODEL = 'depotcommun.UserProfile'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Password validation

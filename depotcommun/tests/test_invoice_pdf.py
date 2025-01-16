@@ -1,9 +1,9 @@
 from io import BytesIO
 
-from store.tests.test_invoice import InvoiceTestBase
-from store.models import Purchase
-from store.billing import create_invoice
-from store.invoice_pdf import InvoicePdfRenderer
+from tests.test_invoice import InvoiceTestBase
+from models import Purchase
+from billing import create_invoice
+from invoice_pdf import InvoicePdfRenderer
 
 
 class InvoicePdfTest(InvoiceTestBase):

@@ -47,7 +47,7 @@ class CurrentUser(generics.GenericAPIView):
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-@permission_required('store.view_invoice', raise_exception=True)
+@permission_required('view_invoice', raise_exception=True)
 def invoice_pdf(request, id):
     invoice = get_object_or_404(models.Invoice, pk=id)
 

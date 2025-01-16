@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from store.models import Article, ArticleGroup, Customer, Settings
+from models import Article, ArticleGroup, Customer, Settings
 
 
 class Command(BaseCommand):
