@@ -15,6 +15,7 @@ django-solo = "*"
 admin-totals = "*"
 qrbill = "*"
 svglib = "*"
+django-import-export = "*"
 
 [dev-packages]
 ipython = "*"

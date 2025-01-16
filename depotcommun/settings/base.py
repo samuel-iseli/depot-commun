@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'solo',     # singleton model
     'rest_framework',
     'corsheaders',
-    'admin_totals'
+    'admin_totals',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -164,3 +165,6 @@ EMAIL_HOST_USER = 'mail@depotcommun.ch'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+
+# import export settings
+IMPORT_EXPORT_SKIP_ADMIN_LOG = True
