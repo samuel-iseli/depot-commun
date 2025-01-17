@@ -20,10 +20,6 @@ urlpatterns = [
     # commented out frontend index.html
     # path('', TemplateView.as_view(template_name='index.html')),
     path('admin/', admin.site.urls),
-    path('store/items/available-items/', views.AvailableItemsView.as_view()),
-    path('store/depots/<depot_uuid>/users/', views.UsersView.as_view()),
-    path('store/current-user/', views.CurrentUser.as_view()),
-    path('store/auth/', include((auth_patterns, 'rest_framework'))),
-    path('store/invoice/pdf/<id>', views.invoice_pdf, name='invoice-pdf'),
-    path('store/articlelist', views.articles_pdf, name='articles-pdf')
+    path('invoicepdf/<id>', views.invoice_pdf, name='invoice-pdf'),
+    path('articlespdf', views.articles_pdf, name='articles-pdf')
 ]
