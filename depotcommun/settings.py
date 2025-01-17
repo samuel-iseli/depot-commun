@@ -10,23 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import environ
-
-from pathlib import Path
 import os
 
 # environment variables handler
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+env = environ.Env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+env.read_env(
+    os.path.join(BASE_DIR, '.env'),
+    overwrite=True)
 
 # False if not in os.environ because of casting above
-DEBUG = env('DEBUG')
+DEBUG = env.bool('DEBUG', False)
 
 # Raises Django's ImproperlyConfigured
 # exception if SECRET_KEY not in os.environ
