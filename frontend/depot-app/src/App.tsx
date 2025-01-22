@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import viteLogo from '/vite.svg'
-import { Grommet, Header, Page, PageContent, PageHeader, Text } from 'grommet';
+import { Grommet, Header, Page, PageContent, Text } from 'grommet';
+
+import { ShoppingCart } from './components/ShoppingCart';
 
 const theme = {
   global: {
@@ -12,7 +12,9 @@ const theme = {
   },
 };
 
-const AppBar = (props) => (
+import { HeaderExtendedProps } from 'grommet';
+
+const AppBar = (props: HeaderExtendedProps) => (
   <Header
     background="brand"
     pad={{ left: "medium", right: "small", vertical: "small" }}
@@ -23,28 +25,15 @@ const AppBar = (props) => (
 
 
   function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
     <Grommet theme={theme} full>
       <Page>
-        <AppBar>
+        <AppBar >
           <Text size="large">My App</Text>
         </AppBar>
         <PageContent>
-          <PageHeader title="Page Header"/>
-          <div className="card">
-            <button onClick={() => setCount((count) => count + 1)}>
-              count is {count}
-            </button>
-            <p>
-              Edit <code>src/App.tsx</code> and save to test HMR
-            </p>
-          </div>
-          <p className="read-the-docs">
-            Click on the Vite and React logos to learn more
-          </p>
+            <ShoppingCart />
         </PageContent>
       </Page>
     </Grommet>
