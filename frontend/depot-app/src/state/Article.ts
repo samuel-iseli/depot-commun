@@ -1,6 +1,6 @@
-// import { atom } from 'recoil';
+import { atom } from 'recoil';
 
-export enum ItemCategory {
+export enum ArticleCategory {
     Beer,
     Wine,
     Beverage,
@@ -11,35 +11,35 @@ export enum ItemCategory {
 
 export type Article =  {
     code: string
-    category: ItemCategory
+    category: ArticleCategory
     description: string
     price: number
 }
 
-/* export const articlesState = atom({
+export const articlesState = atom({
     key: 'articlesState',
     default: [
         <Article>({
             code : "123",
-            category: ItemCategory.Beer,
+            category: ArticleCategory.Beer,
             description: "Bier, Paul",
             price: 1.10
         }),
         <Article>({
             code : "124",
-            category: ItemCategory.Beer,
+            category: ArticleCategory.Beer,
             description: "Bier, Sprint",
             price: 1.10
         }),
         <Article>({
             code : "135",
-            category: ItemCategory.Wine,
+            category: ArticleCategory.Wine,
             description: "Prosecco, Volpi",
             price: 8.50
         }),
     ],
 });
- */
+
 export function findArticle(code: string, articles: Article[]): Article | undefined {
     return articles.find(a => a.code == code);
 } 

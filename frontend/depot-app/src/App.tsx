@@ -1,6 +1,10 @@
-import { Grommet, Header, Page, PageContent, Text } from 'grommet';
+import { Grommet, Page, PageContent } from 'grommet';
+import { Routes, Route } from 'react-router';
+import { AppBar } from './AppBar';
+import { ShoppingCart } from './pages/ShoppingCart';
+import { AddCartItem } from './pages/AddCartItem';
+import { Home } from './pages/Home';
 
-import { ShoppingCart } from './components/ShoppingCart';
 
 const theme = {
   global: {
@@ -12,33 +16,25 @@ const theme = {
   },
 };
 
-import { HeaderExtendedProps } from 'grommet';
-
-const AppBar = (props: HeaderExtendedProps) => (
-  <Header
-    background="brand"
-    pad={{ left: "medium", right: "small", vertical: "small" }}
-    elevation="medium"
-    {...props}
-  />
-  );
 
 
   function App() {
-  return (
-    <>
-    <Grommet theme={theme} full>
-      <Page>
-        <AppBar >
-          <Text size="large">My App</Text>
-        </AppBar>
-        <PageContent>
-            <ShoppingCart />
-        </PageContent>
-      </Page>
-    </Grommet>
-    </>
-  )
+    return (
+      <>
+      <Grommet theme={theme} full>
+        <Page>
+          <AppBar />
+          <PageContent>
+            <Routes>
+              <Route path="/" Component={Home} />
+              <Route path="/shopping-cart"  element={<ShoppingCart />} /> 
+              <Route path="/add-cart-item" element={<AddCartItem />} />
+            </Routes>
+          </PageContent>
+        </Page>
+      </Grommet>
+      </>
+    )
 }
 
 export default App
