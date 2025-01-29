@@ -1,21 +1,20 @@
 import { Box, Button, Grid } from 'grommet';
-import { ArticleCategory } from '../state/Article';
 import { Basket, Trash } from 'grommet-icons';
 import React from 'react';
 
 export interface ArticleItemProps {
     code: string;
-    category: ArticleCategory;
-    description: string;
+    group: string;
+    name: string;
     price: number;
     onRemove?: () => void | undefined;
 }
 
-const iconFromCategory = (cat : ArticleCategory) => {
-    if (cat == ArticleCategory.Beer) {
+const iconFromGroup = (group : string) => {
+    if (group == "Beer") {
         return Basket;
     } 
-    if (cat == ArticleCategory.Wine) {
+    if (group == "Wine") {
         return Basket;
     }
     else
@@ -44,10 +43,10 @@ export const ArticleItem = (props: ArticleItemProps) => {
         gap="small"
         areas={areas}>
         <Box gridArea="icon">
-            {React.createElement(iconFromCategory(props.category))}
+            {React.createElement(iconFromGroup(props.group))}
         </Box>
         <Box gridArea="description" >
-            {props.description}        
+            {props.name}        
         </Box>
         <Box gridArea="price" align="end">
             {props.price}

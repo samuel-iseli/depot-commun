@@ -1,24 +1,20 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { Box, List, Text } from 'grommet';
 import { ArticleItem } from '../components/ArticleItem';
-import { Article, ArticleCategory } from '../state/Article';
+import { Article } from '../state/Article';
+import { activeArticles } from '../state/Article';
 import { cartState } from '../state/Cart';
 import { NavState, navStateAtom } from '../state/NavState';
 
-const articles: Array<Article> = [
-    { code: "123", category: ArticleCategory.Beer, description: "Bier, Paul", price: 1.10},
-    { code: "125", category: ArticleCategory.Wine, description: "Ultimo Sogno", price: 1.10},
-    ]
-
 export const AddCartItem = () => {  
     const navigate = useNavigate();
+    const articles = useRecoilValue(activeArticles);
     const [cart, setCart] = useRecoilState(cartState);
     const [navState, setNavState] = useRecoilState<NavState>(navStateAtom);
 
     useEffect(() => {
-        console.log('AddCartItem effect: ', cart);
         setNavState({showBackButton: true});
         return () => {
             setNavState({showBackButton: false});
