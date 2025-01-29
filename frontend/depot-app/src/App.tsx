@@ -4,6 +4,7 @@ import { AppBar } from './AppBar';
 import { ShoppingCart } from './pages/ShoppingCart';
 import { AddCartItem } from './pages/AddCartItem';
 import { Home } from './pages/Home';
+import { FinishPurchase } from './pages/FinishPurchase';
 
 
 const theme = {
@@ -24,11 +25,12 @@ const theme = {
       <Grommet theme={theme} full>
         <Page>
           <AppBar />
-          <PageContent>
+          <PageContent pad={{ top: 'medium', horizontal: 'large' }}>
             <Routes>
               <Route path="/" Component={Home} />
               <Route path="/shopping-cart"  element={<ShoppingCart />} /> 
               <Route path="/add-cart-item" element={<AddCartItem />} />
+              <Route path="/finish-purchase" element={<FinishPurchase />} />
             </Routes>
           </PageContent>
         </Page>

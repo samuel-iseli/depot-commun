@@ -1,13 +1,11 @@
 import { atom } from 'recoil';
 
-export type NavState = 
-    {
-        showBackButton: boolean
-    }
+export const showBackButtonState = atom<boolean>({
+    key: 'showBackButton',
+    default: false 
+});
 
-export const navStateAtom = atom<NavState>({
-    key: 'navState',
-    default: {
-        showBackButton: false
-    }   
+export const headerTitleState = atom<string>({
+    key: 'headerTitle',
+    default: 'Depot Commün'
 });

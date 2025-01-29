@@ -6,18 +6,20 @@ import { ArticleItem } from '../components/ArticleItem';
 import { Article } from '../state/Article';
 import { activeArticles } from '../state/Article';
 import { cartState } from '../state/Cart';
-import { NavState, navStateAtom } from '../state/NavState';
+import { showBackButtonState, headerTitleState } from '../state/NavState';
 
 export const AddCartItem = () => {  
     const navigate = useNavigate();
     const articles = useRecoilValue(activeArticles);
     const [cart, setCart] = useRecoilState(cartState);
-    const [navState, setNavState] = useRecoilState<NavState>(navStateAtom);
+    const [showBackButton, setShowBackButton] = useRecoilState<boolean>(showBackButtonState);
+    const [headerTitle, setHeaderTitle] = useRecoilState<string>(headerTitleState);
 
     useEffect(() => {
-        setNavState({showBackButton: true});
+        setShowBackButton(true);
+        setHeaderTitle('Artikel hinzufügen');
         return () => {
-            setNavState({showBackButton: false});
+            setShowBackButton(false);
         }}, []);
 
     const articleClicked = ({ item, index }: { item: Article; index: number }) => {
