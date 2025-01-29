@@ -1,5 +1,5 @@
-import { Box, Button, Grid } from 'grommet';
-import { Basket, Trash } from 'grommet-icons';
+import { Box, Button, Grid, Text } from 'grommet';
+import { Bar, Basket, Cafeteria, Coffee, IceCream, Trash } from 'grommet-icons';
 import React from 'react';
 
 export interface ArticleItemProps {
@@ -11,15 +11,17 @@ export interface ArticleItemProps {
 }
 
 const iconFromGroup = (group : string) => {
-    if (group == "Beer") {
-        return Basket;
-    } 
-    if (group == "Wine") {
-        return Basket;
-    }
-    else
-        return Basket;
-};
+    switch (group) { 
+    case "Food":
+        return Cafeteria;   
+    case "Getränke":
+        return Bar;
+    case "Süsses & Snacks":
+        return IceCream; 
+    default:
+        return Basket;   
+    };
+}
 
 export const ArticleItem = (props: ArticleItemProps) => {
     const areas = [
@@ -27,7 +29,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
         { name: 'description', start: [1, 0], end: [1, 0] },
         { name: 'price', start: [2, 0], end: [2, 0] },
     ];
-    const columns = ['xxsmall', 'auto', 'xsmall'];
+    const columns = ['xxsmall', 'auto', 'xxsmall'];
 
     if (typeof props.onRemove === 'function') {
         areas.push({ name: 'remove', start: [3, 0], end: [3, 0] });
@@ -37,20 +39,16 @@ export const ArticleItem = (props: ArticleItemProps) => {
     return (
     <Grid
         align="center"
-        
         rows={['xxsmall']}
         columns={columns}
-        gap="small"
+        gap="none"
+        margin="none"
         areas={areas}>
         <Box gridArea="icon">
             {React.createElement(iconFromGroup(props.group))}
         </Box>
-        <Box gridArea="description" >
-            {props.name}        
-        </Box>
-        <Box gridArea="price" align="end">
-            {props.price}
-        </Box>
+        <Text gridArea="description">{props.name}</Text>        
+        <Text gridArea="price" textAlign="end">{props.price}</Text>
 
         {props.onRemove && (
         <Box gridArea="remove" align="end">

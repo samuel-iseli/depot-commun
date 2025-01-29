@@ -27,8 +27,7 @@ export const ShoppingCart = () => {
 
   return (
     <>
-      <Text size="medium">Warenkorb</Text>
-      <List data={cartItems} margin="none" >
+      <List data={cartItems} defaultItemProps={{ pad: 'none'}} >
           {(item, index) => (
               <ArticleItem {...item} onRemove={() => removeItem(index)} />
           )}

@@ -26,14 +26,13 @@ export const AddCartItem = () => {
     };
 
     return (
-        <Box direction="column" pad="medium" gap="medium">
-            <Text size="medium">Artikel auswählen</Text>
-            <List data={articles} onClickItem={articleClicked}>
+        <>
+            <List data={articles} onClickItem={articleClicked} defaultItemProps={{ pad: 'none'}}>
             {(item) => (
                 <ArticleItem {...item} />
             )}
             </List>
-        </Box>
+        </>
         );
     };
 
