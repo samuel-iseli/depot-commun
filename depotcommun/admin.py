@@ -1,14 +1,11 @@
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
-from django.utils import timezone
 from django.db import models
-from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
+from .models import ExtraItem, ShoppingBasket, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
 from .email import send_invoice_mails
 from admin_totals.admin import ModelAdminTotals
-
-from .billing import get_billable_purchases, create_invoices
 
 
 class UserProfileAdmin(UserAdmin):
@@ -45,7 +42,7 @@ class InvoicePurchaseInline(admin.TabularInline):
             formfield.widget.can_change_related = False
             formfield.widget.can_delete_related = False
         return formfield
- 
+
     def summe(self, purchase):
         if purchase.price:
             return purchase.price * purchase.quantity
@@ -89,49 +86,31 @@ class InvoiceAdmin(ModelAdminTotals):
                 message,
                 'WARNING'
                 )
-   
+
     @admin.action(description=_('Mark selected invoices as paid'))
     def mark_as_paid(self, request, queryset):
         for invoice in queryset.all():
             invoice.paid = True
             invoice.save()
 
-    def query_pending_invoices(self, request, queryset):
-        """
-        Display the number and total amount of invoices that
-        would be generated now.
-        """
-        billables = get_billable_purchases(timezone.now())
-        purchases = []
-        for plist in billables.values():
-            purchases.extend(plist)
 
-        total = sum([purchase.total_price for purchase in purchases])
+class BasketPurchaseInline(admin.TabularInline):
+    model = Purchase
+    extra = 1
+    fields = ('article', 'price', 'quantity')
 
-        # show message
-        self.message_user(
-            request,
-            _(f'{len(billables)} invoices with a total amount of {total} would be generated.'),
-            messages.SUCCESS)
 
-    def do_create_invoices(self, request, queryset):
-        """
-        create all pending invoices.
-        """
-        effective_date = timezone.now()
-        invoices = create_invoices(effective_date, effective_date)
-        total = sum([inv.amount for inv in invoices])
-
-        # show created invoice count
-        self.message_user(
-            request,
-            _(f'{len(invoices)} invoices with a total amount of {total} have been generated.'),
-            messages.SUCCESS)
+class ShoppingBasketAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'date')
+    date_hierarchy = 'date'
+    ordering = ('-date',)
+    search_fields = ('customer__name',)
+    inlines = (BasketPurchaseInline,)
 
 
 class SettingsAdmin(SingletonModelAdmin):
     fieldsets = (
-        ( _('Payment Account'), {
+        (_('Payment Account'), {
             'fields': (
                 'payment_bank',
                 'payment_account_number',
@@ -150,6 +129,7 @@ class EmailTaskAdmin(admin.ModelAdmin):
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Article, ItemAdmin)
 admin.site.register(Invoice, InvoiceAdmin)
+admin.site.register(ShoppingBasket, ShoppingBasketAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
 admin.site.register(EmailTask, EmailTaskAdmin)
