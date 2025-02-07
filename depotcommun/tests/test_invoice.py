@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
 from models import Customer, Article, ArticleGroup, Purchase
-from billing import get_billable_purchases, create_invoice, create_invoices
+from billing import create_invoice
 
 
 class InvoiceTestBase(TestCase):
@@ -78,54 +78,6 @@ class InvoiceTestBase(TestCase):
 
 class InvoiceTest(InvoiceTestBase):
 
-    def test_get_billable_purchases(self):
-        self.create_purchases(
-            self.customer, self.purchase_datetime,
-            self.articles
-        )
-
-        no_purchases = get_billable_purchases(
-            self.purchase_datetime + timedelta(days=-1)
-        )
-
-        self.assertEquals(0, len(no_purchases))
-
-        some_purchases = get_billable_purchases(
-            self.purchase_datetime + timedelta(days=1)
-        )
-
-        # we should get a dictionary with 1 purchase for 1 customer
-        self.assertEquals(1, len(some_purchases.keys()))
-        self.assertEquals(1, len(some_purchases.values()))
-
-    def test_create_invoice(self):
-        # create 2 purchases
-        p1 = Purchase(
-            customer=self.customer,
-            article=self.articles[0],
-            quantity=2,
-            price=self.articles[0].price
-        )
-        p1.save()
-        p2 = Purchase(
-            customer=self.customer,
-            article=self.articles[1],
-            quantity=1,
-            price=self.articles[1].price
-        )
-        p2.save()
-
-        invoice = create_invoice(
-            self.customer, self.invoice_datetime,
-            [p1, p2]
-            )
-
-        self.assertEquals(self.customer, invoice.customer)
-        self.assertEquals(2, len(invoice.purchases.all()))
-        expected_amount = Decimal(
-            f'{2 * self.articles[0].price + self.articles[1].price:.2f}')
-        self.assertEquals(expected_amount, invoice.amount)
-
     def test_modify_invoice(self):
         """
         add an additional item to an invoice.
@@ -186,8 +138,7 @@ class InvoiceTest(InvoiceTestBase):
             quantity=2,
         )
         p1.clean()
-        
-        self.assertEquals(self.customer, p1.customer)
+
         self.assertEquals(self.articles[0].price, p1.price)
 
         p1.save()
@@ -257,17 +208,6 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
             self.articles
         )
 
-    def test_get_billable_purchases_multiple_user(self):
-
-        billables = get_billable_purchases(self.purchase_datetime)
-
-        # we should get dictionary for 2 users
-        self.assertEquals(2, len(billables))
-
-        # self.customer has 3 purchases, user2 has 2
-        self.assertEquals(3, len(billables[self.customer]))
-        self.assertEquals(2, len(billables[self.user2]))
-
     def test_create_invoice(self):
         invoice = create_invoice(
             self.customer, self.invoice_datetime,
@@ -277,15 +217,3 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         self.assertEquals(self.invoice_datetime, invoice.date)
         # purchase1 has 2 items, purchase2 1
         self.assertEquals(3, len(invoice.purchases.all()))
-
-    def test_create_invoices(self):
-        invoices = create_invoices(
-            self.invoice_datetime, self.invoice_datetime)
-
-        self.assertEquals(2, len(invoices))
-
-        self.assertEquals(self.customer, invoices[0].customer)
-        self.assertEquals(Decimal('6.9'), invoices[0].amount)
-
-        self.assertEquals(self.user2, invoices[1].customer)
-        self.assertEquals(Decimal('5.7'), invoices[1].amount)

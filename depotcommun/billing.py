@@ -1,24 +1,4 @@
-from .models import Invoice, Purchase
-from collections import defaultdict
-
-
-def get_billable_purchases(end_date):
-    """
-    Get all billable purchases until end_date
-    for a certain depot.
-    This includes all purchases that are not yet on an invoice.
-    Returns a dictionary of users with their purchase items.
-    """
-    purchases = Purchase.objects.filter(
-        date__lte=end_date,
-        invoice__isnull=True
-    )
-
-    billables = defaultdict(list)
-    for p in purchases:
-        billables[p.customer].append(p)
-
-    return billables
+from .models import Invoice
 
 
 def create_invoice(customer, invoice_date, purchases):
@@ -40,20 +20,3 @@ def create_invoice(customer, invoice_date, purchases):
         item.save()
 
     return invoice
-
-def create_invoices(end_date, invoice_date):
-    """
-    Create invoices for all billable purchases
-    until end_date
-    """
-    purch_per_user = get_billable_purchases(end_date)
-
-    invoices = []
-    for customer, items in purch_per_user.items():
-        invoice = create_invoice(customer, invoice_date, items)
-        invoices.append(invoice)
-
-    return invoices
-
-
-

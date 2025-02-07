@@ -1,4 +1,3 @@
-import random
 from django.db import models
 from django.utils.translation import gettext_lazy as _, gettext
 from solo.models import SingletonModel
@@ -128,22 +127,19 @@ class Purchase(models.Model):
         default=1, verbose_name=_('Quantity'))
     price = models.DecimalField(
         max_digits=7, decimal_places=2, verbose_name=_('Price'))
-    customer = models.ForeignKey(
-        Customer, related_name='purchases', on_delete=models.PROTECT,
-        verbose_name=_('Customer'))
     invoice = models.ForeignKey(
         Invoice, related_name='purchases',
         on_delete=models.SET_NULL, null=True, blank=True,
         verbose_name=_('Invoice'))
-    date = models.DateTimeField(
-        default=timezone.now, verbose_name=_('Date'))
+    basket = models.ForeignKey(
+        'ShoppingBasket', related_name='purchases',
+        on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name=_('Basket'))
 
     def __str__(self):
         return f"{self.quantity} x {self.article.name}"
 
     def clean(self):
-        if self.invoice:
-            self.customer = self.invoice.customer
         if self.article:
             self.price = self.article.price
         super().clean()
@@ -165,6 +161,23 @@ class Purchase(models.Model):
     class Meta:
         verbose_name = _('Purchase')
         verbose_name_plural = _('Purchases')
+
+
+class ShoppingBasket(models.Model):
+    date = models.DateTimeField(
+        default=timezone.now, verbose_name=_('Date'))
+    customer = models.ForeignKey(
+        Customer, related_name='shopping_baskets',
+        on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_('Customer'))
+    invoice = models.ForeignKey(
+        Invoice, related_name='baskets',
+        on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_('Invoice'))
+
+    class Meta:
+        verbose_name = _('Shopping Basket')
+        verbose_name_plural = _('Shopping Baskets')
 
 
 class ExtraItem(models.Model):
