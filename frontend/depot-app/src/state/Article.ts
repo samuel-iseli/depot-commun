@@ -1,10 +1,11 @@
-import { atom, selector } from 'recoil';
+import {selector } from 'recoil';
 
 export type Article =  {
     code: string
     group: string
     name: string
     price: number
+    id: number
 }
 
 // export const activeArticles = atom({

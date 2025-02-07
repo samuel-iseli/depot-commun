@@ -1,4 +1,4 @@
-import {Box, Button, Header, Markdown, Paragraph} from 'grommet';
+import {Box, Button, Paragraph} from 'grommet';
 import { headerTitleState } from '../state/NavState';
 import { useRecoilState } from 'recoil';
 import { useEffect } from 'react';

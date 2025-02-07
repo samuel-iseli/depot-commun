@@ -1,4 +1,4 @@
-import { useRecoilValue, useRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { Accordion, AccordionPanel, Box, Button, List, Notification, Text } from "grommet";
 import { ArticleItem } from "../components/ArticleItem";
 import { cartState } from "../state/Cart";
@@ -10,12 +10,11 @@ import { useNavigate } from "react-router";
 export const FinishPurchase = () => {
     const [showBackButton, setShowBackButton] = useRecoilState(showBackButtonState);
     const [headerTitle, setHeaderTitle] = useRecoilState<string>(headerTitleState);
-    const cartItems = useRecoilValue(cartState);
+    const [cartItems, setCartItems] = useRecoilState(cartState);
     const itemCount = cartItems.length;
     const priceSum = cartItems.reduce<number>((sum: number, item: Article) => sum + Number(item.price), 0);
     const navigate = useNavigate();
     const [notificationVisible, setNotificationVisible] = useState(false);
-    const [cart, setCart] = useRecoilState(cartState);
 
     useEffect(() => {
         setShowBackButton(true);
@@ -24,8 +23,29 @@ export const FinishPurchase = () => {
             setShowBackButton(false);
         }}, []);
         
-    const finishPurchase = () => {
-        setCart([]);
+    const finishPurchase = async () => {
+        const cartData = {
+            date: new Date().toISOString(),
+            customer_id: 32, // samuel iseli
+            purchases: cartItems.map((item) => {
+                return {
+                    article_id: item.id,
+                    price: item.price,
+                    quantity: 1
+                }
+            })
+        };
+
+        await fetch('http://localhost:8000/api/shopping_baskets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(cartData),
+        }
+        )
+
+        setCartItems([]);
         setNotificationVisible(true);
     };
 
