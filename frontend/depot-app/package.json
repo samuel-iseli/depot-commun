@@ -12,6 +12,7 @@
   "dependencies": {
     "grommet": "^2.43.0",
     "grommet-icons": "^4.12.1",
+    "qr-scanner": "^1.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^7.1.3",

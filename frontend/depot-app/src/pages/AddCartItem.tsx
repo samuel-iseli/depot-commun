@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Box, List, Text } from 'grommet';
+import { Box, List, Tabs, Tab, Text } from 'grommet';
 import { ArticleItem } from '../components/ArticleItem';
 import { Article } from '../state/Article';
 import { activeArticles } from '../state/Article';
 import { cartState } from '../state/Cart';
 import { showBackButtonState, headerTitleState } from '../state/NavState';
+import { QrScannerComponent } from '../components/QrScannerComponent';
 
 export const AddCartItem = () => {  
     const navigate = useNavigate();
@@ -28,13 +29,20 @@ export const AddCartItem = () => {
     };
 
     return (
-        <>
-            <List data={articles} onClickItem={articleClicked} defaultItemProps={{ pad: 'none'}}>
-            {(item) => (
-                <ArticleItem {...item} />
-            )}
-            </List>
-        </>
+        <Tabs>
+            <Tab title="QR-Code">
+                <Box pad="medium" gap="xlarge" justify="between" fill="vertical" direction="column">
+                    <QrScannerComponent />
+                </Box>
+            </Tab>
+            <Tab title="Artikel wählen">
+                <List data={articles} onClickItem={articleClicked} defaultItemProps={{ pad: 'none'}}>
+                {(item) => (
+                    <ArticleItem {...item} />
+                )}
+                </List>
+            </Tab>
+        </Tabs>
         );
     };
 
