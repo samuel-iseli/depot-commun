@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('invoicepdf/<id>', views.invoice_pdf, name='invoice-pdf'),
     path('articlespdf', views.articles_pdf, name='articles-pdf'),
+    path('articlesqrpdf', views.articles_qr_pdf, name='articles-qr-pdf'),
     path("api/", api.urls),
 ]

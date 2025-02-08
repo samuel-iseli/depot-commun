@@ -12,6 +12,7 @@ from . import serializers
 
 from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
+from .articles_qr_pdf import ArticlesQrPdfRenderer
 
 
 class AvailableItemsView(generics.ListAPIView):
@@ -72,5 +73,19 @@ def articles_pdf(request):
         f'attachment; filename="{filename}"'
 
     ArticlesPdfRenderer().render(articles, response)
+    return response
+
+def articles_qr_pdf(request):
+    """
+    generate pdf of all active articles QR codes
+    """
+    articles = models.Article.objects.filter(active=True)
+
+    filename = "Artikel QR Codes.pdf"
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = \
+        f'attachment; filename="{filename}"'
+
+    ArticlesQrPdfRenderer().render(articles, response)
     return response
 
