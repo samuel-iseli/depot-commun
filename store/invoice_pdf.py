@@ -13,7 +13,9 @@ from svglib.svglib import svg2rlg
 
 class InvoicePdfRenderer(object):
 
-    def __init__(self):
+    def __init__(self, is_reminder=False):
+        self.is_reminder = is_reminder
+
         #
         # define styles
         #
@@ -115,10 +117,20 @@ class InvoicePdfRenderer(object):
         render title and billing period
         """
         # table with title and date
-        title = Paragraph('Rechnung Nr. %d' % invoice.id, self.heading1)
+        
+        if self.is_reminder:
+            title_text = 'Zahlungserinnerung %d' % invoice.id
+        else:
+            title_text = 'Rechnung %d' % invoice.id
+        title = Paragraph(title_text, self.heading1)
         date = Paragraph(self.date_format(invoice.date), self.normalright)
         title_table = Table([(title, date)], style=self.table_style)
         story.append(title_table)
+
+        if self.is_reminder:
+            story.append(
+                Paragraph('Diese Rechnung ist schon lange offen, bitte raschmöglichst bezahlen.', self.text)
+            )
 
     def render_items(self, invoice, story):
         """
