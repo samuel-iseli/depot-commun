@@ -40,6 +40,14 @@ export const activeArticles = selector({
     }
 })
 
+export const activeGroups = selector({
+    key: 'activeGroups', 
+    get: async () => {
+        const response = await fetch('http://localhost:8000/api/active_groups');    
+        return response.json();
+    }
+})
+
 export function findArticle(code: string, articles: Article[]): Article | undefined {
     return articles.find(a => a.code == code);
 } 

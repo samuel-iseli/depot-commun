@@ -1,6 +1,6 @@
 from ninja import NinjaAPI, Schema, ModelSchema, Field
 from typing import List
-from depotcommun.models import Article, Purchase, ShoppingBasket
+from depotcommun.models import Article, ArticleGroup, Purchase, ShoppingBasket
 from datetime import datetime
 
 api = NinjaAPI()
@@ -22,6 +22,11 @@ def hello(request):
 @api.get("/active_articles", response=List[ArticleSchema])
 def active_articles(request):
     return Article.objects.filter(active=True)
+
+
+@api.get("/active_groups", response=List[str])
+def active_groups(request):
+    return ArticleGroup.objects.values_list('name', flat=True).distinct()
 
 
 class PurchaseIn(Schema):
