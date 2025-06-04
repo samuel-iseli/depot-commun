@@ -2,11 +2,13 @@ import { Header, Menu, Text } from 'grommet';
 import { Menu as MenuIcon, Previous } from 'grommet-icons';
 import { useNavigate } from 'react-router';
 import { useRecoilValue } from 'recoil';
-import { headerTitleState, showBackButtonState } from './state/NavState.ts';
+import { useBackButton } from './context/BackButtonContext';
+import { headerTitleState, showBackButtonState } from './state/NavState';
 
 export const AppBar = () => {
     const navigate = useNavigate();
     const showBackButton = useRecoilValue<boolean>(showBackButtonState);
+    const { backButtonCallback } = useBackButton();
     const title = useRecoilValue<string>(headerTitleState);
 
     return (
@@ -17,7 +19,13 @@ export const AppBar = () => {
         height="xxsmall"
     >
     { showBackButton ? (
-        <Previous onClick={() => navigate(-1)} />
+        <Previous onClick={() =>  {
+            if (backButtonCallback !== undefined) {
+                backButtonCallback();
+            } else {
+                navigate(-1);   
+            }
+        }} />
     ) : (
         <Menu icon={<MenuIcon/>}
         items={[

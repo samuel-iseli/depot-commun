@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { Box, Tabs, Tab } from 'grommet';
 import { Article } from '../state/Article';
 import { activeArticles, activeGroups } from '../state/Article';
 import { cartState } from '../state/Cart';
@@ -13,8 +12,8 @@ export const AddCartItem = () => {
     const articles = useRecoilValue(activeArticles);
     const groups = useRecoilValue(activeGroups);
     const [cart, setCart] = useRecoilState(cartState);
-    const [showBackButton, setShowBackButton] = useRecoilState<boolean>(showBackButtonState);
-    const [headerTitle, setHeaderTitle] = useRecoilState<string>(headerTitleState);
+    const [, setShowBackButton] = useRecoilState<boolean>(showBackButtonState);
+    const [, setHeaderTitle] = useRecoilState<string>(headerTitleState);
 
     useEffect(() => {
         setShowBackButton(true);
@@ -29,11 +28,7 @@ export const AddCartItem = () => {
     };
 
     return (
-        <Tabs>
-            <Tab title="Artikel wählen">
-                <ArticleSelector groups={groups} articles={articles} articleSelected={articleSelected} />
-            </Tab>
-        </Tabs>
+        <ArticleSelector groups={groups} articles={articles} articleSelected={articleSelected} />
         );
     };
 

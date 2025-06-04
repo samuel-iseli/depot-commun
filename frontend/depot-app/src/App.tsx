@@ -1,5 +1,6 @@
 import { Grommet, Page, PageContent } from 'grommet';
 import { Routes, Route } from 'react-router';
+import { BackButtonProvider } from './context/BackButtonContext';
 import { AppBar } from './AppBar';
 import { ShoppingCart } from './pages/ShoppingCart';
 import { AddCartItem } from './pages/AddCartItem';
@@ -24,15 +25,17 @@ const theme = {
       <>
       <Grommet theme={theme} full>
         <Page>
-          <AppBar />
-          <PageContent pad={{ top: 'medium', horizontal: 'large' }}>
-            <Routes>
-              <Route path="/" Component={Home} />
-              <Route path="/shopping-cart"  element={<ShoppingCart />} /> 
-              <Route path="/add-cart-item" element={<AddCartItem />} />
-              <Route path="/finish-purchase" element={<FinishPurchase />} />
-            </Routes>
-          </PageContent>
+          <BackButtonProvider>
+            <AppBar />
+            <PageContent pad={{ top: 'medium', horizontal: 'large' }}>
+              <Routes>
+                <Route path="/" Component={Home} />
+                <Route path="/shopping-cart"  element={<ShoppingCart />} /> 
+                <Route path="/add-cart-item" element={<AddCartItem />} />
+                <Route path="/finish-purchase" element={<FinishPurchase />} />
+              </Routes>
+            </PageContent>
+          </BackButtonProvider>
         </Page>
       </Grommet>
       </>
