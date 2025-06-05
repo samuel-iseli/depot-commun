@@ -7,7 +7,9 @@ export interface ArticleItemProps {
     group: string;
     name: string;
     price: number;
+    count: number;
     onRemove?: () => void | undefined;
+    onClick?: (e: React.MouseEvent<HTMLElement>) => void | undefined;
 }
 
 const iconFromGroup = (group : string) => {
@@ -36,6 +38,10 @@ export const ArticleItem = (props: ArticleItemProps) => {
         columns.push('xxsmall');
     };
 
+    // prepare description and amount
+    const description = props.count > 1 ? `${props.count} ${props.name}` : props.name
+    const amount = props.count > 1 ? (props.price * props.count).toFixed(2) : props.price;
+
     return (
     <Grid
         align="center"
@@ -43,17 +49,20 @@ export const ArticleItem = (props: ArticleItemProps) => {
         columns={columns}
         gap="none"
         margin="none"
-        areas={areas}>
+        areas={areas}
+        onClick={props.onClick}
+        style={{ cursor: props.onClick ? 'pointer' : undefined }}
+    >
         <Box gridArea="icon">
             {React.createElement(iconFromGroup(props.group))}
         </Box>
-        <Text gridArea="description">{props.name}</Text>        
-        <Text gridArea="price" textAlign="end">{props.price}</Text>
-
+        <Text gridArea="description">{description}</Text>
+        <Text gridArea="price" textAlign="end">{amount}</Text>
         {props.onRemove && (
         <Box gridArea="remove" align="end">
-            <Button icon={<Trash/>} onClick={() => props.onRemove && props.onRemove()}/>
-        </Box>)}
+            <Button icon={<Trash/>} onClick={e => { e.stopPropagation(); props.onRemove && props.onRemove(); }} />
+        </Box>
+        )}
     </Grid>
 )};
 

@@ -6,6 +6,7 @@ export type Article =  {
     name: string
     price: number
     id: number
+    count: number
 }
 
 // export const activeArticles = atom({
@@ -50,4 +51,4 @@ export const activeGroups = selector({
 
 export function findArticle(code: string, articles: Article[]): Article | undefined {
     return articles.find(a => a.code == code);
-} 
+}

@@ -7,9 +7,9 @@ export const cartState = atom({
     default: new Array<Article>(),
 })
 
+// Utility to add an article to the cart with count defaulting to 1 if not set
 export const addArticleToCart = (article: Article) => {
     const [cart, setCart] = useRecoilState(cartState);
-
-    setCart([...cart, article]);
-}   
+    setCart([...cart, { ...article, count: article.count ?? 1 }]);
+}
 
