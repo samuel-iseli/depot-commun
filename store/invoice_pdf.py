@@ -236,16 +236,18 @@ class InvoicePdfRenderer(object):
             amount=Decimal(invoice.amount),
             creditor={
                 'name': self.settings.payment_account_name,
-                'line1': self.settings.payment_account_street,
-                'line2': self.settings.payment_account_place,
+                'street': self.settings.payment_account_street,
+                'house_num': self.settings.payment_account_house_number,
+                'pcode': self.settings.payment_account_postal_code,
+                'city': self.settings.payment_account_place,
                 'country': 'CH',
             },
             debtor={
                 'name': invoice.customer.name,
-                'line1': invoice.customer.street,
-                'line2': '%s %s' % (
-                    invoice.customer.zip,
-                    invoice.customer.city),
+                'street': invoice.customer.street,  # e.g. "Musterweg"
+                'house_num': invoice.customer.house_number,  # e.g. "5"
+                'pcode': invoice.customer.zip,  # e.g. "3000"
+                'city': invoice.customer.city,  # e.g. "Bern"
                 'country': 'CH',
             }
         )

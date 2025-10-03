@@ -157,6 +157,8 @@ class SettingsAdmin(SingletonModelAdmin):
                 'payment_account_number',
                 'payment_account_name',
                 'payment_account_street',
+                'payment_account_house_number',
+                'payment_account_postal_code',
                 'payment_account_place')
         }),
     )
