@@ -1,0 +1,25 @@
+:root {
+  --bg: #f7f7fb;
+  --text: #1f2937;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+header {
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #e6e6ef;
+}
+
+.example {
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  margin-top: 1rem;
+}

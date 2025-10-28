@@ -1,0 +1,20 @@
+{
+  "name": "depot-app",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "solid-js": "^1.7.14"
+  },
+  "devDependencies": {
+    "install": "^0.13.0",
+    "typescript": "^5.0.0",
+    "typescriptnpm": "^1.0.1",
+    "vite": "^5.4.21",
+    "vite-plugin-solid": "^2.11.10"
+  }
+}
