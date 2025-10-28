@@ -8,9 +8,9 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-      "heroku-prebuild": "NODE_ENV=production cd buying-frontend/ && npm install && npm run build && cd .."
+      "heroku-prebuild": "NODE_ENV=production cd frontend-solid/depot-app && npm install && npm run build && cd ../.."
     },
     "cacheDirectories": [
-      "buying-frontend/node_modules"
+        "frontend-solid/depot-app/node_modules"
     ]
   }

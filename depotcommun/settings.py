@@ -64,7 +64,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'buying-frontend/build'),
+            # point to the built Solid frontend app output directory
+            os.path.join(BASE_DIR, 'frontend-solid', 'depot-app', 'dist'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -131,7 +132,7 @@ FORMAT_MODULE_PATH = ['depotcommun.formats']
 STATIC_URL = '/static/'
 STATIC_ROOT = env.path('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'buying-frontend/build/static')
+    os.path.join(BASE_DIR, 'frontend-solid', 'depot-app', 'dist', 'assets')
 ]
 
 REST_FRAMEWORK = {
