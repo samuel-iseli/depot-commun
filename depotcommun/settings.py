@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'solo',     # singleton model
     'rest_framework',
     'corsheaders',
-    'admin_totals'
+    'admin_totals',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -160,3 +161,6 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = env.int('EMAIL_PORT', 465)
 EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', True)
+
+# import export settings
+IMPORT_EXPORT_SKIP_ADMIN_LOG = True

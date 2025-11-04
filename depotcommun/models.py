@@ -13,6 +13,8 @@ class Customer(models.Model):
         max_length=50, blank=True, verbose_name=_('E-Mail'))
     street = models.CharField(
         max_length=100, blank=True, verbose_name=_('Street'))
+    house_number = models.CharField(
+        max_length=10, blank=True, verbose_name=_('House Number'))
     zip = models.CharField(
         max_length=10, verbose_name=_('ZIP'))
     city = models.CharField(
@@ -243,9 +245,15 @@ class Settings(SingletonModel):
     payment_account_street = models.CharField(
         verbose_name=_('Account Street'),
         max_length=100, blank=True)
+    payment_account_house_number = models.CharField(
+        verbose_name=_('Account House Number'),
+        max_length=10, blank=True)
     payment_account_place = models.CharField(
         verbose_name=_('Account Place'),
         max_length=100, blank=True)
+    payment_account_postal_code = models.CharField(
+        verbose_name=_('Account Postal Code'),
+        max_length=10, blank=True)
 
     def __str__(self):
         return gettext('Settings')

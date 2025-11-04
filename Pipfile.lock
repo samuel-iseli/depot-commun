@@ -65,6 +65,14 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.7.0"
         },
+        "diff-match-patch": {
+            "hashes": [
+                "sha256:93cea333fb8b2bc0d181b0de5e16df50dd344ce64828226bda07728818936782",
+                "sha256:beae57a99fa48084532935ee2968b8661db861862ec82c6f21f4acdd6d835073"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==20241021"
+        },
         "dj-database-url": {
             "hashes": [
                 "sha256:ae52e8e634186b57e5a45e445da5dc407a819c2ceed8a53d1fac004cc5288787",
@@ -562,6 +570,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.4.3"
+        },
+        "tablib": {
+            "hashes": [
+                "sha256:9a6930037cfe0f782377963ca3f2b1dae3fd4cdbf0883848f22f1447e7bb718b",
+                "sha256:f9db84ed398df5109bd69c11d46613d16cc572fb9ad3213f10d95e2b5f12c18e"
+            ],
+            "markers": "python_version >= '3.9'",
+            "version": "==3.7.0"
         },
         "tinycss2": {
             "hashes": [

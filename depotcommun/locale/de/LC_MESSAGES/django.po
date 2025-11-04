@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-09 10:13+0100\n"
+"POT-Creation-Date: 2025-10-03 21:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\store\admin.py:73
+#: .\store\admin.py:71
 msgid "Send selected invoices per e-mail"
 msgstr "Ausgewählte Rechnungen per E-Mail versenden"
 
@@ -50,7 +50,7 @@ msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
 msgid "Payment Account"
 msgstr "Zahlungskonto"
 
-#: .\store\models.py:12 .\store\models.py:42 .\store\models.py:60
+#: .\store\models.py:12 .\store\models.py:44 .\store\models.py:62
 msgid "Name"
 msgstr "Name"
 
@@ -63,132 +63,144 @@ msgid "Street"
 msgstr "Strasse"
 
 #: .\store\models.py:18
+msgid "House Number"
+msgstr "Hausnummer"
+
+#: .\store\models.py:20
 msgid "ZIP"
 msgstr "PLZ"
 
-#: .\store\models.py:20
+#: .\store\models.py:22
 msgid "City"
 msgstr "Ort"
 
-#: .\store\models.py:27 .\store\models.py:37 .\store\models.py:87
-#: .\store\models.py:132
+#: .\store\models.py:29 .\store\models.py:39 .\store\models.py:89
+#: .\store\models.py:135
 msgid "Customer"
 msgstr "Kundin"
 
-#: .\store\models.py:28
+#: .\store\models.py:30
 msgid "Customers"
 msgstr "Kundinnen"
 
-#: .\store\models.py:41
+#: .\store\models.py:43
 msgid "Idx"
 msgstr "Idx"
 
-#: .\store\models.py:49
+#: .\store\models.py:51
 msgid "Articlegroup"
 msgstr "Artikelgruppe"
 
-#: .\store\models.py:50
+#: .\store\models.py:52
 msgid "Articlegroups"
 msgstr "Artikelgruppen"
 
-#: .\store\models.py:56
+#: .\store\models.py:58
 msgid "Group"
 msgstr "Gruppe"
 
-#: .\store\models.py:58
+#: .\store\models.py:60
 msgid "Sort Index"
 msgstr "Sortier Index"
 
-#: .\store\models.py:62 .\store\models.py:129
+#: .\store\models.py:64 .\store\models.py:132
 msgid "Price"
 msgstr "Preis"
 
-#: .\store\models.py:64
+#: .\store\models.py:66
 msgid "Active"
 msgstr "Aktiv"
 
-#: .\store\models.py:79 .\store\models.py:125
+#: .\store\models.py:81 .\store\models.py:128
 msgid "Article"
 msgstr "Artikel"
 
-#: .\store\models.py:80
+#: .\store\models.py:82
 msgid "Articles"
 msgstr "Artikel"
 
-#: .\store\models.py:89 .\store\models.py:138
+#: .\store\models.py:91 .\store\models.py:141
 msgid "Date"
 msgstr "Datum"
 
-#: .\store\models.py:91 .\store\models.py:177
+#: .\store\models.py:93 .\store\models.py:180
 msgid "Amount"
 msgstr "Betrag"
 
-#: .\store\models.py:92
+#: .\store\models.py:94
 msgid "Paid"
 msgstr "Bezahlt"
 
-#: .\store\models.py:95
+#: .\store\models.py:97
 msgid "Payment date"
 msgstr "Zahlungsdatum"
 
-#: .\store\models.py:114
+#: .\store\models.py:117
 #, python-format
 msgid "Invoice %d"
 msgstr "Rechnung %d"
 
-#: .\store\models.py:117 .\store\models.py:136 .\store\models.py:181
+#: .\store\models.py:120 .\store\models.py:139 .\store\models.py:184
 msgid "Invoice"
 msgstr "Rechnung"
 
-#: .\store\models.py:118
+#: .\store\models.py:121
 msgid "Invoices"
 msgstr "Rechnungen"
 
-#: .\store\models.py:127
+#: .\store\models.py:130
 msgid "Quantity"
 msgstr "Menge"
 
-#: .\store\models.py:165
+#: .\store\models.py:168
 msgid "Purchase"
 msgstr "Einkauf"
 
-#: .\store\models.py:166
+#: .\store\models.py:169
 msgid "Purchases"
 msgstr "Einkäufe"
 
-#: .\store\models.py:175
+#: .\store\models.py:178
 msgid "Text"
 msgstr "Text"
 
-#: .\store\models.py:198
+#: .\store\models.py:201
 msgid "Extra Item"
 msgstr "Zusatzeintrag"
 
-#: .\store\models.py:199
+#: .\store\models.py:202
 msgid "Extra Items"
 msgstr "Zusatzeinträge"
 
-#: .\store\models.py:204
+#: .\store\models.py:224
 msgid "Bank"
 msgstr "Bank"
 
-#: .\store\models.py:207
+#: .\store\models.py:227
 msgid "Account Number"
 msgstr "Kontonummer (IBAN)"
 
-#: .\store\models.py:210
+#: .\store\models.py:230
 msgid "Account Name"
 msgstr "Konto Name"
 
-#: .\store\models.py:213
+#: .\store\models.py:233
 msgid "Account Street"
 msgstr "Konto Strasse"
 
-#: .\store\models.py:216
+#: .\store\models.py:236
+msgid "Account House Number"
+msgstr "Konto Hausnummer"
+
+#: .\store\models.py:239
 msgid "Account Place"
 msgstr "Konto Ort"
 
-#: .\store\models.py:220 .\store\models.py:223
+#: .\store\models.py:242
+msgid "Account Postal Code"
+msgstr "Konto PLZ"
+
+#: .\store\models.py:246 .\store\models.py:249
 msgid "Settings"
 msgstr "Einstellungen"
 

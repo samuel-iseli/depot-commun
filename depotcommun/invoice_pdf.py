@@ -13,7 +13,9 @@ from svglib.svglib import svg2rlg
 
 class InvoicePdfRenderer(object):
 
-    def __init__(self):
+    def __init__(self, is_reminder=False):
+        self.is_reminder = is_reminder
+
         #
         # define styles
         #
@@ -115,10 +117,20 @@ class InvoicePdfRenderer(object):
         render title and billing period
         """
         # table with title and date
-        title = Paragraph('Rechnung Nr. %d' % invoice.id, self.heading1)
+        
+        if self.is_reminder:
+            title_text = 'Zahlungserinnerung %d' % invoice.id
+        else:
+            title_text = 'Rechnung %d' % invoice.id
+        title = Paragraph(title_text, self.heading1)
         date = Paragraph(self.date_format(invoice.date), self.normalright)
         title_table = Table([(title, date)], style=self.table_style)
         story.append(title_table)
+
+        if self.is_reminder:
+            story.append(
+                Paragraph('Diese Rechnung ist schon lange offen, bitte raschmöglichst bezahlen.', self.text)
+            )
 
     def render_items(self, invoice, story):
         """
@@ -224,16 +236,18 @@ class InvoicePdfRenderer(object):
             amount=Decimal(invoice.amount),
             creditor={
                 'name': self.settings.payment_account_name,
-                'line1': self.settings.payment_account_street,
-                'line2': self.settings.payment_account_place,
+                'street': self.settings.payment_account_street,
+                'house_num': self.settings.payment_account_house_number,
+                'pcode': self.settings.payment_account_postal_code,
+                'city': self.settings.payment_account_place,
                 'country': 'CH',
             },
             debtor={
                 'name': invoice.customer.name,
-                'line1': invoice.customer.street,
-                'line2': '%s %s' % (
-                    invoice.customer.zip,
-                    invoice.customer.city),
+                'street': invoice.customer.street,  # e.g. "Musterweg"
+                'house_num': invoice.customer.house_number,  # e.g. "5"
+                'pcode': invoice.customer.zip,  # e.g. "3000"
+                'city': invoice.customer.city,  # e.g. "Bern"
                 'country': 'CH',
             }
         )

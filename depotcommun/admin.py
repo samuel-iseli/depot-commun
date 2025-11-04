@@ -5,6 +5,8 @@ from solo.admin import SingletonModelAdmin
 from django.db import models
 from .models import ExtraItem, ShoppingBasket, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
 from .email import send_invoice_mails
+from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
+from .email import send_invoice_mails, send_reminder_mails
 from admin_totals.admin import ModelAdminTotals
 
 
@@ -56,8 +58,7 @@ class InvoiceExtraInline(admin.TabularInline):
 
 
 class InvoiceAdmin(ModelAdminTotals):
-    # actions = ['query_pending_invoices', 'do_create_invoices']
-    actions = ['send_invoices_email', 'mark_as_paid']
+    actions = ['send_invoices_email', 'send_reminder_email', 'mark_as_paid']
     list_display = ('id', 'customer', 'date', 'amount', 'paid', 'email_sent')
     list_totals = [('amount', models.Sum)]
     date_hierarchy = 'date'
@@ -73,6 +74,27 @@ class InvoiceAdmin(ModelAdminTotals):
         """
         invoices = queryset.all()
         success, message = send_invoice_mails(invoices)
+
+        if success:
+            self.message_user(
+                request,
+                message,
+                'SUCCESS'
+                )
+        else:
+            self.message_user(
+                request,
+                message,
+                'WARNING'
+                )
+
+    @admin.action(description='Zahlungserinnerungen für ausgewählte Rechnungen senden')
+    def send_reminder_email(self, request, queryset):
+        """
+        send the selected invoices per e-mail.
+        """
+        invoices = queryset.all()
+        success, message = send_reminder_mails(invoices)
 
         if success:
             self.message_user(
@@ -116,6 +138,8 @@ class SettingsAdmin(SingletonModelAdmin):
                 'payment_account_number',
                 'payment_account_name',
                 'payment_account_street',
+                'payment_account_house_number',
+                'payment_account_postal_code',
                 'payment_account_place')
         }),
     )

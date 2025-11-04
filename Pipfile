@@ -17,6 +17,7 @@ qrbill = "*"
 svglib = "*"
 django-environ = "*"
 django-ninja = "*"
+django-import-export = "*"
 
 [dev-packages]
 ipython = "*"
