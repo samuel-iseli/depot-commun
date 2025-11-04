@@ -1,0 +1,25 @@
+[project]
+name = "depot-commun"
+version = "0.1.0"
+description = "Depot commun app"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "django",
+    "django-postgresql",
+    "djangorestframework",
+    "django-cors-headers",
+    "django-solo",
+    "django-import-export",
+    "django-ninja",
+    "django-environ",
+    "admin-totals",
+    "reportlab",
+    "qrbill",
+    "svglib"
+]
+
+ [dependency-groups]
+ dev = [
+    "flake8"
+ ]
