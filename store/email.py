@@ -21,8 +21,19 @@ def send_invoice_mails(invoices):
     return mailer.success, mailer.progress_message
 
 
+def send_reminder_mails(invoices):
+    """
+    send out a list of reminders per e-mail.
+    """
+    mailer = InvoiceMailer(invoices, is_reminder=True)
+    mailer.send()
+
+    return mailer.success, mailer.progress_message  
+
+
 class InvoiceMailer:
-    def __init__(self, invoices):
+    def __init__(self, invoices, is_reminder=False):
+        self.is_reminder = is_reminder
         self.invoices = invoices
         self.log_lines = []
         self.success = False
@@ -32,10 +43,14 @@ class InvoiceMailer:
         if len(self.invoices) <= BATCH_SIZE:
             # send e-mail directly without starting a thread
             self.internal_send_invoice_mails()
-            if self.success:
-                self.progress_message = "%d Rechnungen verschickt" % self.success_count
+            if self.is_reminder:
+                term = "Zahlungserinnerungen"
             else:
-                self.progress_message = "%d Rechnungen verschickt, %d Fehler" % (self.success_count, len(self.invoices)-self.success_count)
+                term = "Rechnungen"
+            if self.success:
+                self.progress_message = "%d %s verschickt" % (self.success_count, term)
+            else:
+                self.progress_message = "%d %s verschickt, %d Fehler" % (self.success_count, term, len(self.invoices)-self.success_count)
             return
 
         # start a thread to send e-mails
@@ -104,14 +119,19 @@ class InvoiceMailer:
         """
         # render pdf
         pdfstream = BytesIO()
-        InvoicePdfRenderer().render(invoice, pdfstream)
+        InvoicePdfRenderer(is_reminder = self.is_reminder).render(invoice, pdfstream)
+
+        if self.is_reminder:
+            term = "Zahlungserinnerung"
+        else:
+            term = "Rechnung"
 
         # create e-mail message
         message = mail.EmailMessage(
-            subject='Depot Commün Rechnung',
+            subject=f'Depot Commün {term}',
             body=f'''Liebe/r {invoice.customer}
 
-    Beiliegend erhältst du deine Depot Commün Rechnung als PDF.
+    Beiliegend erhältst du deine Depot Commün {term} als PDF.
     Bitte bezahle sie so bald wie möglich.
 
     Liebe Grüsse
@@ -122,7 +142,7 @@ class InvoiceMailer:
         )
 
         message.attach(
-            f'Rechnung {invoice.id}.pdf',
+            f'{term} {invoice.id}.pdf',
             pdfstream.getvalue(),
             'application/pdf')
 

@@ -16,6 +16,7 @@ admin-totals = "*"
 qrbill = "*"
 svglib = "*"
 django-environ = "*"
+django-import-export = "*"
 
 [dev-packages]
 ipython = "*"
