@@ -1,2 +1,2 @@
-release: python manage.py migrate --settings=depotcommun.settings.production
+release: python manage.py migrate
 web: gunicorn depotcommun.wsgi
