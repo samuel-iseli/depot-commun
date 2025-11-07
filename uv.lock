@@ -155,6 +155,7 @@ dependencies = [
     { name = "qrbill" },
     { name = "reportlab" },
     { name = "svglib" },
+    { name = "whitenoise" },
 ]
 
 [package.dev-dependencies]
@@ -177,6 +178,7 @@ requires-dist = [
     { name = "qrbill" },
     { name = "reportlab" },
     { name = "svglib" },
+    { name = "whitenoise" },
 ]
 
 [package.metadata.requires-dev]
