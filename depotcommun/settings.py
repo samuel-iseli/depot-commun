@@ -131,9 +131,9 @@ FORMAT_MODULE_PATH = ['depotcommun.formats']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = env.path('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'buying-frontend/build/static')
-]
+# STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'buying-frontend/build/static')
+# ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':(
