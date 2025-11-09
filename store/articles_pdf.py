@@ -37,7 +37,7 @@ class ArticlesPdfRenderer(object):
             spaceBefore=6, spaceAfter=2)
 
         # header on first page
-        self.header_height = 3 * cm
+        self.header_height = 2 * cm
 
         # article table style
         self.table_style = [
@@ -71,7 +71,9 @@ class ArticlesPdfRenderer(object):
         doc = BaseDocTemplate(
             outfile,
             title='',
-            author='')
+            author='',
+            topMargin=1*cm,
+            bottomMargin=1*cm)
 
         # first page, has space for drawing header
         firstPageTemplate = PageTemplate(
@@ -97,10 +99,13 @@ class ArticlesPdfRenderer(object):
         doc.build(story)
 
     def render_header(self, story):
-        table = Table([[
-            Paragraph('Name', self.heading1),
-            Paragraph('E-Mail', self.heading1)
-        ]])
+        table = Table(
+            [[
+                Paragraph('Name', self.heading1),
+                Paragraph('E-Mail', self.heading1),
+            ]],
+            [8*cm, 8*cm],
+            )
 
         story.append(table)
         story.append(FrameBreak())
