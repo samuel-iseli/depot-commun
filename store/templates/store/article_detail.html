@@ -1,0 +1,14 @@
+{% extends 'store/base.html' %}
+
+{% block navbar_title %}Artikel wählen{% endblock %}
+
+{% block content %}
+<div class="uk-container">
+    <ul class="uk-list uk-list-divider">
+    {% for article in articles %}
+        <li>{{ article.name }} - {{ article.price }}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

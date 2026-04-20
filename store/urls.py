@@ -2,6 +2,8 @@ from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from . import views
 
+app_name = 'store'
+
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 
@@ -16,6 +18,7 @@ auth_patterns = [
 ]
 
 urlpatterns = [
+    path('', include('store.urls_frontend')),
     path('items/available-items/', views.AvailableItemsView.as_view()),
     path('depots/<depot_uuid>/users/', views.UsersView.as_view()),
     path('current-user/', views.CurrentUser.as_view()),

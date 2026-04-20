@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import permission_required
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 

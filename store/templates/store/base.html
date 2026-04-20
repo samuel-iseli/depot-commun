@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{% block title %}Depot Commun{% endblock %}</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/css/uikit.min.css" />
+        {% block extra_css %}{% endblock %}
+    </head>
+    <body>
+        <div class="uk-container uk-container-small">
+            <div class="uk-navbar-container" uk-sticky>
+                <nav uk-navbar="mode: click">
+                    <div class="uk-navbar-left uk-margin-small-left">
+                        <a class="uk-navbar-toggle" uk-navbar-toggle-icon href="#"></a>
+                    </div>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">Einkäufe</a></li>
+                            <li><a href="#">Einstellungen</a></li>
+                        </ul>
+                    </div>
+                    <div class="uk-navbar-center">
+                        <div class="uk-navbar-item">Depot Commun</div>
+                    </div>
+                    <div class="uk-navbar-right uk-margin-small-right">
+                        {% if request.user.is_authenticated %}
+                        <div class="uk-navbar-item uk-text-meta">
+                            <span class="uk-margin-small-right">{{ request.user.get_full_name|default:request.user.username }}</span>
+                            <span uk-icon="icon: user"></span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </nav>
+
+                <div class="uk-padding-small uk-padding-remove-top uk-border-top uk-text-center">
+                    <h1 class="uk-h3 uk-margin-remove">
+                        {% block navbar_title %}Title{% endblock %}
+                    </h1>
+                </div>
+            </div>
+
+            <main class="uk-section uk-container uk-container-small uk-section-small">
+                    {% block content %}{% endblock %}
+            </main>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/js/uikit.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/js/uikit-icons.min.js"></script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>

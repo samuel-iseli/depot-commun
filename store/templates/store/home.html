@@ -1,0 +1,17 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Home{% endblock %}
+{% block navbar_title %}Home{% endblock %}
+
+{% block content %}
+<div class="uk-card uk-card-default uk-card-body uk-text-center">
+    <h1 class="uk-card-title">Depot Commun</h1>
+    <p class="uk-text-muted">
+        Welcome, {{ request.user.get_full_name|default:request.user.username }}.
+    </p>
+
+    <a href="{% url 'store:new-purchase' %}" class="uk-button uk-button-primary">
+        New Purchase
+    </a>
+</div>
+{% endblock %}

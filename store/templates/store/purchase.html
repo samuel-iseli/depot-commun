@@ -1,0 +1,32 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Einkauf{% endblock %}
+{% block navbar_title %}Einkauf{% endblock %}
+
+{% block content %}
+<div class="uk-card uk-card-default uk-card-body uk-text-center">
+    <h1 class="uk-card-title">Einkauf</h1>
+    <p class="uk-text-muted">
+        Aktueller Einkauf:
+
+    </p>
+</div>
+
+<div class="uk-card uk-card-default uk-card-body">
+    <h2 class="uk-card-title">Bier Paul</h2>
+    <div class="uk-grid">
+        <div class="uk-width-1-3">5</div>
+        <div class="uk-width-2-3 uk-text-right">25.00</div>
+    </div>
+</div>
+
+<div uk-sticky="bottom: true;">
+    <a href="{% url 'store:add-article' %}" class="uk-button uk-button-primary">
+        Artikel hinzufügen
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}
