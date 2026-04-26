@@ -139,6 +139,10 @@ class Purchase(models.Model):
         verbose_name=_('Invoice'))
     date = models.DateTimeField(
         default=timezone.now, verbose_name=_('Date'))
+    basket = models.ForeignKey(
+        'ShoppingBasket', related_name='purchases',
+        on_delete=models.CASCADE, null=True, blank=True,
+        verbose_name=_('Basket'))
 
     def __str__(self):
         return f"{self.quantity} x {self.article.name}"
@@ -168,6 +172,22 @@ class Purchase(models.Model):
         verbose_name = _('Purchase')
         verbose_name_plural = _('Purchases')
 
+
+class ShoppingBasket(models.Model):
+    date = models.DateTimeField(
+        default=timezone.now, verbose_name=_('Date'))
+    customer = models.ForeignKey(
+        Customer, related_name='shopping_baskets',
+        on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_('Customer'))
+    invoice = models.ForeignKey(
+        Invoice, related_name='baskets',
+        on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_('Invoice'))
+
+    class Meta:
+        verbose_name = _('Shopping Basket')
+        verbose_name_plural = _('Shopping Baskets')
 
 class ExtraItem(models.Model):
     """
