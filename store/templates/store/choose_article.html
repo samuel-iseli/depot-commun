@@ -3,12 +3,11 @@
 {% block navbar_title %}Artikel wählen{% endblock %}
 
 {% block content %}
-<div class="uk-container">
+<div class="uk-container"> 
     <ul class="uk-list uk-list-divider">
     {% for article in articles %}
-        <li>{{ article.name }} - {{ article.price }}</li>
+        <li hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}" hx-target="#body">{{ article.name }} - {{ article.price }}</li>
     {% endfor %}
     </ul>
 </div>
-
 {% endblock %}

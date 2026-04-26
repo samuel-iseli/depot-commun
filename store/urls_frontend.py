@@ -5,7 +5,11 @@ from . import views_frontend
 
 urlpatterns = [
     path('', views_frontend.home, name='home'),
-    path('purchase/new/', views_frontend.new_purchase, name='new-purchase'),
-    path('purchase/add-article/', views_frontend.add_article, name='add-article'),
+    path('basket/new/', views_frontend.new_basket, name='new-basket'),
+    path('basket/<int:basket_id>/', views_frontend.show_basket, name='show-basket'),
+    path('basket/<int:basket_id>/choose-article/', views_frontend.choose_article, name='choose-article'),
+    path('basket/<int:basket_id>/create-purchase/<int:article_id>/', views_frontend.create_purchase, name='create-purchase'),
+    path('purchase/<int:purchase_id>/inc-quantity/', views_frontend.inc_quantity, name='inc-quantity'),
+    path('purchase/<int:purchase_id>/dec-quantity/', views_frontend.dec_quantity, name='dec-quantity'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
