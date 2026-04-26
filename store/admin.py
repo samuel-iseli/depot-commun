@@ -1,10 +1,12 @@
+from dataclasses import field
+
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
 from django.db import models
-from .models import ExtraItem, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
+from .models import ExtraItem, ShoppingBasket, UserProfile, Customer, Article, ArticleGroup, Purchase, Invoice, Settings, EmailTask
 from .email import send_invoice_mails, send_reminder_mails
 from admin_totals.admin import ModelAdminTotals
 
@@ -13,6 +15,9 @@ from .billing import get_billable_purchases, create_invoices
 
 class UserProfileAdmin(UserAdmin):
     model = UserProfile
+    fieldsets = UserAdmin.fieldsets + (
+        (_('Customer'), {'fields': ('customer',)}), )
+    list_display = UserAdmin.list_display + ('customer',)
 
 
 class CustomerAdmin(admin.ModelAdmin):
@@ -176,6 +181,7 @@ admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
 admin.site.register(EmailTask, EmailTaskAdmin)
 admin.site.register(Settings, SettingsAdmin)
+admin.site.register(ShoppingBasket)
 
 # customize site
 admin.site.site_header = 'Depot Commün'
