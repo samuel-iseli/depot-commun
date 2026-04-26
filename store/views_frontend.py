@@ -25,7 +25,8 @@ def show_basket(request, basket_id):
         return HttpResponseForbidden("You do not have permission to view this basket.")
     
     purchases = basket.purchases.all()
-    return render(request, 'store/show_basket.html', {'basket': basket, 'purchases': purchases})
+    purchases_total = sum(purchase.total_price for purchase in purchases)
+    return render(request, 'store/show_basket.html', {'basket': basket, 'purchases': purchases, 'purchases_count': len(purchases), 'purchases_total': purchases_total})
 
 @login_required
 def choose_article(request, basket_id):

@@ -153,6 +153,11 @@ class InvoiceAdmin(ModelAdminTotals):
             _(f'{len(invoices)} invoices with a total amount of {total} have been generated.'),
             messages.SUCCESS)
 
+class ShoppingBasketAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'invoice', 'date')
+    search_fields = ('customer__name',)
+    ordering = ('-date',)
+    inlines = (InvoicePurchaseInline,)
 
 class SettingsAdmin(SingletonModelAdmin):
     fieldsets = (
@@ -181,7 +186,7 @@ admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(ArticleGroup)
 admin.site.register(EmailTask, EmailTaskAdmin)
 admin.site.register(Settings, SettingsAdmin)
-admin.site.register(ShoppingBasket)
+admin.site.register(ShoppingBasket, ShoppingBasketAdmin)
 
 # customize site
 admin.site.site_header = 'Depot Commün'

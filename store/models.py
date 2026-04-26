@@ -144,6 +144,10 @@ class Purchase(models.Model):
         on_delete=models.CASCADE, null=True, blank=True,
         verbose_name=_('Basket'))
 
+    @property
+    def total_price(self):
+        return self.price * self.quantity
+
     def __str__(self):
         return f"{self.quantity} x {self.article.name}"
 
