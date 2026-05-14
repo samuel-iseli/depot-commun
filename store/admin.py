@@ -16,13 +16,10 @@ from .billing import get_billable_purchases, create_invoices
 
 class UserProfileAdmin(UserAdmin):
     model = UserProfile
-    fieldsets = UserAdmin.fieldsets + (
-        (_('Customer'), {'fields': ('customer',)}), )
-    list_display = UserAdmin.list_display + ('customer',)
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email')
+    list_display = ('name', 'email', 'user')
     search_fields = ('name', 'email')
 
 

@@ -19,8 +19,9 @@ class BasketFrontendViewTests(TestCase):
         self.user = user_model.objects.create_user(
             username='frontend-user',
             password='test-pass-123',
-            customer=self.customer,
         )
+        self.customer.user = self.user
+        self.customer.save()
         self.client.force_login(self.user)
 
         self.group = ArticleGroup.objects.create(idx=1, name='Food')

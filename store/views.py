@@ -11,7 +11,7 @@ from .articles_pdf import ArticlesPdfRenderer
 @login_required
 def home(request):
     open_baskets = ShoppingBasket.objects.filter(
-        customer=request.user.customer,
+        customer__user=request.user,
         completed__isnull=True,
     ).order_by('-date')
     return render(request, 'store/home.html', {'open_baskets': open_baskets})
@@ -23,14 +23,18 @@ def new_basket(request):
         return HttpResponseForbidden("Invalid request method.")
 
     open_basket = ShoppingBasket.objects.filter(
-        customer=request.user.customer,
+        customer__user=request.user,
         completed__isnull=True,
     ).order_by('-date').first()
     if open_basket is not None:
         return HttpResponseRedirect(f'/store/basket/{open_basket.id}/')
 
+    customer = request.user.customers.first()
+    if customer is None:
+        return HttpResponseForbidden("No customer account associated with this user.")
+
     # create a new shopping basket for the user
-    basket = ShoppingBasket.objects.create(customer=request.user.customer)
+    basket = ShoppingBasket.objects.create(customer=customer)
     basket.save()
     return HttpResponseRedirect(f'/store/basket/{basket.id}/')
 
@@ -38,7 +42,7 @@ def new_basket(request):
 @login_required
 def show_basket(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
-    if basket.customer != request.user.customer:
+    if basket.customer is None or basket.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to view this basket.")
     if basket.completed is not None:
         return HttpResponseRedirect('/store/')
@@ -51,7 +55,7 @@ def show_basket(request, basket_id):
 @login_required
 def choose_article(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
-    if basket.customer != request.user.customer:
+    if basket.customer is None or basket.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to modify this basket.")
     if basket.completed is not None:
         return HttpResponseForbidden("This basket is already completed.")
@@ -74,7 +78,7 @@ def create_purchase(request, basket_id, article_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
 
     # check if basket belongs to user
-    if basket.customer != request.user.customer:
+    if basket.customer is None or basket.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to add to this basket.")
     if basket.completed is not None:
         return HttpResponseForbidden("This basket is already completed.")
@@ -84,7 +88,7 @@ def create_purchase(request, basket_id, article_id):
             article=article,
             quantity=1,
             price=article.price,
-            customer=request.user.customer,
+            customer=basket.customer,
             basket=basket,
     )
     purchase.save()
@@ -109,7 +113,7 @@ def delete_purchase(request, purchase_id):
     purchase = Purchase.objects.get(id=purchase_id)
 
     # check if purchase belongs to user
-    if purchase.customer != request.user.customer:
+    if purchase.customer is None or purchase.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to edit this purchase.")
     if purchase.basket.completed is not None:
         return HttpResponseForbidden("This basket is already completed.")
@@ -129,7 +133,7 @@ def inc_dec_quantity(request, purchase_id, delta):
     purchase = Purchase.objects.get(id=purchase_id)
 
     # check if purchase belongs to user
-    if purchase.customer != request.user.customer:
+    if purchase.customer is None or purchase.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to edit this purchase.")
     if purchase.basket.completed is not None:
         return HttpResponseForbidden("This basket is already completed.")
@@ -148,7 +152,7 @@ def finish_basket(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
 
     # check if basket belongs to user
-    if basket.customer != request.user.customer:
+    if basket.customer is None or basket.customer.user != request.user:
         return HttpResponseForbidden("You do not have permission to finish this basket.")
     if basket.completed is not None:
         return HttpResponseRedirect('/store/')

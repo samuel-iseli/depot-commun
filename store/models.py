@@ -7,6 +7,12 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Customer(models.Model):
+    user = models.ForeignKey(
+        'UserProfile',
+        related_name='customers',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name=_('User'))
     name = models.CharField(
         max_length=50,
         verbose_name=_('Name'))
@@ -31,12 +37,7 @@ class Customer(models.Model):
 
 
 class UserProfile(AbstractUser):
-    customer = models.ForeignKey(
-        Customer,
-        related_name='users',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        verbose_name=_('Customer'))
+    pass
 
 
 class ArticleGroup(models.Model):
