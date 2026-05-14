@@ -176,5 +176,5 @@ class BasketFrontendViewTests(TestCase):
     def test_logout_endpoint_logs_user_out(self):
         response = self.client.post(reverse('store:logout'))
 
-        self.assertRedirects(response, '/admin/login/')
+        self.assertRedirects(response, '/store/login/')
         self.assertNotIn('_auth_user_id', self.client.session)

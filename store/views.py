@@ -1,12 +1,89 @@
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import get_user_model, login as auth_login, logout as auth_logout
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMultiAlternatives
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils import timezone
+from urllib.parse import urlencode
 from . import models
 from .models import Article, Purchase, ShoppingBasket
 from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
+
+
+def _get_safe_next_url(request, fallback='/store/'):
+    next_url = request.POST.get('next') or request.GET.get('next') or fallback
+    if not url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return fallback
+    return next_url
+
+
+def email_login_request(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/store/')
+
+    next_url = _get_safe_next_url(request)
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        user = get_user_model().objects.filter(
+            is_active=True,
+            email__iexact=email,
+        ).order_by('id').first()
+
+        if user is not None:
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            query_string = urlencode({'next': next_url})
+            confirm_url = f'/store/login/confirm/{uidb64}/{token}/?{query_string}'
+            confirmation_link = request.build_absolute_uri(confirm_url)
+
+            text_body = (
+                'Hallo\n\n'
+                'bitte bestätige Deine Anmeldung mit folgendem Link:\n'
+                f'{confirmation_link}\n\n'
+                'Wenn Du diese Anmeldung nicht angefordert hast, ignoriere diese E-Mail.'
+            )
+            html_body = (
+                '<p>Hallo</p>'
+                '<p>bitte bestätige Deine Anmeldung mit folgendem Link:</p>'
+                f'<p><a href="{confirmation_link}">{confirmation_link}</a></p>'
+                '<p>Wenn Du diese Anmeldung nicht angefordert hast, ignoriere diese E-Mail.</p>'
+            )
+            msg = EmailMultiAlternatives(
+                subject='Depot Commün: Anmeldung bestätigen',
+                body=text_body,
+                from_email=None,
+                to=[user.email],
+            )
+            msg.attach_alternative(html_body, 'text/html')
+            msg.send(fail_silently=False)
+
+        return render(request, 'store/login_email_sent.html', {'email': email})
+
+    return render(request, 'store/login_email.html', {'next': next_url})
+
+
+def email_login_confirm(request, uidb64, token):
+    user_model = get_user_model()
+    user = None
+    try:
+        user_id = force_str(urlsafe_base64_decode(uidb64))
+        user = user_model.objects.get(pk=user_id)
+    except (TypeError, ValueError, OverflowError, user_model.DoesNotExist):
+        user = None
+
+    if user is not None and user.is_active and default_token_generator.check_token(user, token):
+        auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        return HttpResponseRedirect(_get_safe_next_url(request))
+
+    return render(request, 'store/login_email_invalid.html', status=400)
 
 
 def _get_selected_customer(request):
@@ -80,7 +157,7 @@ def logout_view(request):
         return HttpResponseForbidden("Invalid request method.")
 
     auth_logout(request)
-    return HttpResponseRedirect('/admin/login/')
+    return HttpResponseRedirect('/store/login/')
 
 
 @login_required

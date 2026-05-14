@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commün | Login{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>E-Mail gesendet</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <p>Wenn die E-Mail-Adresse bekannt ist, wurde ein Anmelde-Link gesendet.</p>
+        <ion-button href="{% url 'store:email-login' %}" fill="outline" size="small">
+            Zurück
+        </ion-button>
+        <p style="font-size: 0.82rem; color: var(--app-muted); margin-top: 14px;">
+            Alternativ: <a href="{% url 'admin:login' %}">Benutzername/Passwort</a>
+        </p>
+    </ion-card-content>
+</ion-card>
+{% endblock %}

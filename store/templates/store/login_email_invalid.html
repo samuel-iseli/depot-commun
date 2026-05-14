@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commün | Login{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Link ungültig</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <p>Der Login-Link ist ungültig oder abgelaufen.</p>
+        <ion-button href="{% url 'store:email-login' %}" expand="block">
+            Neuen Link anfordern
+        </ion-button>
+        <p style="font-size: 0.82rem; color: var(--app-muted); margin-top: 14px;">
+            Alternativ: <a href="{% url 'admin:login' %}">Benutzername/Passwort</a>
+        </p>
+    </ion-card-content>
+</ion-card>
+{% endblock %}

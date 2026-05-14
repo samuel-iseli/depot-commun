@@ -1,0 +1,37 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commün | Login{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Anmelden</ion-card-title>
+        <ion-card-subtitle>Login per E-Mail-Link</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+        <p>Bitte gib Deine E-Mail-Adresse ein. Du erhältst einen Link zur Anmeldung.</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <ion-item>
+                <ion-input
+                    name="email"
+                    type="email"
+                    label="E-Mail"
+                    label-placement="stacked"
+                    autocomplete="email"
+                    required="true"
+                ></ion-input>
+            </ion-item>
+            <ion-button expand="block" type="submit" class="ion-margin-top">
+                Login-Link senden
+            </ion-button>
+        </form>
+
+        <p style="font-size: 0.82rem; color: var(--app-muted); margin-top: 14px;">
+            Lieber klassisch anmelden?
+            <a href="{% url 'admin:login' %}">Benutzername/Passwort</a>
+        </p>
+    </ion-card-content>
+</ion-card>
+{% endblock %}

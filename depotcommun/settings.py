@@ -132,6 +132,7 @@ STATIC_ROOT = env.path('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 # ]
 
 # redirect to frontend after login
+LOGIN_URL = '/store/login/'
 LOGIN_REDIRECT_URL = '/'
 
 # need to set SessionStorage for messages to work in admin
