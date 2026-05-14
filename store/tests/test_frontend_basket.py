@@ -171,7 +171,7 @@ class BasketFrontendViewTests(TestCase):
         )
 
         response = self.client.get(reverse('store:home'))
-        self.assertContains(response, 'Aktiver Kunde: Second Customer')
+        self.assertContains(response, 'Second Customer')
 
     def test_logout_endpoint_logs_user_out(self):
         response = self.client.post(reverse('store:logout'))

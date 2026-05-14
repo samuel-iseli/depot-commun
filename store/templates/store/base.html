@@ -62,14 +62,9 @@
         <ion-app>
             {% if request.user.is_authenticated %}
             <ion-menu side="end" content-id="main-content" type="overlay">
-                <ion-header>
-                    <ion-toolbar>
-                        <ion-title>Menue</ion-title>
-                    </ion-toolbar>
-                </ion-header>
                 <ion-content>
                     <ion-list>
-                        <ion-item lines="none">
+                        <ion-item lines="full">
                             <ion-icon name="person-outline" slot="start"></ion-icon>
                             <ion-label class="app-menu-user">{{ request.user.get_full_name|default:request.user.username }}</ion-label>
                         </ion-item>
@@ -90,9 +85,9 @@
                     <ion-title>
                         <span class="app-navbar-customer">
                             {% if selected_customer %}
-                            Aktiver Kunde: {{ selected_customer.name }}
+                            {{ selected_customer.name }}
                             {% else %}
-                            Depot Commun
+                            Depot Commün
                             {% endif %}
                         </span>
                     </ion-title>
