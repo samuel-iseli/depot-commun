@@ -3,11 +3,113 @@
 {% block navbar_title %}Artikel wählen{% endblock %}
 
 {% block content %}
-<div class="uk-container"> 
-    <ul class="uk-list uk-list-divider">
-    {% for article in articles %}
-        <li hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}" hx-target="#body">{{ article.name }} - {{ article.price }}</li>
-    {% endfor %}
-    </ul>
-</div>
+<style>
+    .search-card {
+        position: sticky;
+        top: 40px;
+        z-index: 2;
+        margin-bottom: 0;
+    }
+
+    .article-item {
+        display: none;
+    }
+
+    .article-item.visible {
+        display: flex;
+    }
+
+    .no-results {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: var(--ion-color-medium);
+    }
+
+    .no-results.visible {
+        display: block;
+    }
+</style>
+
+<ion-card class="search-card">
+    <ion-card-content>
+        <ion-searchbar
+            id="articleSearch"
+            placeholder="Artikel durchsuchen..."
+            debounce="200"
+        ></ion-searchbar>
+    </ion-card-content>
+</ion-card>
+
+<ion-card>
+    <ion-list inset="true">
+        {% for article in articles %}
+        <ion-item
+            button="true"
+            detail="true"
+            class="article-item visible"
+            data-article-name="{{ article.name|lower }}"
+            data-article-price="{{ article.price }}"
+            hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}"
+            hx-target="#body"
+            hx-push-url="true"
+        >
+            <ion-label>{{ article.name }}</ion-label>
+            <ion-note slot="end">{{ article.price }}</ion-note>
+        </ion-item>
+        {% endfor %}
+    </ion-list>
+    <ion-card-content class="no-results" id="noResults">
+        Keine Artikel gefunden.
+    </ion-card-content>
+</ion-card>
+
+<script>
+    function initArticleSearch(root) {
+        const container = root || document;
+        const searchbar = container.querySelector('#articleSearch');
+
+        if (!searchbar || searchbar.dataset.initialized === 'true') {
+            return;
+        }
+
+        searchbar.dataset.initialized = 'true';
+
+        const articleItems = container.querySelectorAll('.article-item');
+        const noResults = container.querySelector('#noResults');
+
+        searchbar.addEventListener('ionInput', function(event) {
+            const searchTerm = (event.detail.value || '').toLowerCase().trim();
+            let visibleCount = 0;
+
+            articleItems.forEach(item => {
+                const name = item.getAttribute('data-article-name') || '';
+                const matches = name.includes(searchTerm);
+
+                if (matches) {
+                    item.classList.add('visible');
+                    visibleCount++;
+                } else {
+                    item.classList.remove('visible');
+                }
+            });
+
+            if (noResults) {
+                if (visibleCount === 0 && searchTerm !== '') {
+                    noResults.classList.add('visible');
+                } else {
+                    noResults.classList.remove('visible');
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initArticleSearch(document);
+    });
+
+    document.addEventListener('htmx:load', function(event) {
+        initArticleSearch(event.target);
+    });
+</script>
 {% endblock %}

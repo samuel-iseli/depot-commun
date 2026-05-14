@@ -4,14 +4,15 @@
 {% block navbar_title %}Home{% endblock %}
 
 {% block content %}
-<div class="uk-card uk-card-default uk-card-body uk-text-center">
-    <h1 class="uk-card-title">Depot Commun</h1>
-    <p class="uk-text-muted">
-        Welcome, {{ request.user.get_full_name|default:request.user.username }}.
-    </p>
-
-    <button hx-post="{% url 'store:new-basket' %}" hx-target="#body" class="uk-button uk-button-primary">
-        Neuer Einkauf
-    </button>
-</div>
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Depot Commun</ion-card-title>
+        <ion-card-subtitle>Willkommen, {{ request.user.get_full_name|default:request.user.username }}.</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+        <ion-button expand="block" hx-post="{% url 'store:new-basket' %}" hx-target="#body" hx-push-url="true">
+            Neuer Einkauf
+        </ion-button>
+    </ion-card-content>
+</ion-card>
 {% endblock %}

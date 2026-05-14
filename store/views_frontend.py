@@ -85,3 +85,19 @@ def inc_dec_quantity(request, purchase_id, delta):
         purchase.save()
     return HttpResponseRedirect(f'/store/basket/{purchase.basket.id}/')
 
+@login_required
+def finish_basket(request, basket_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden("Invalid request method.")
+    
+    basket = ShoppingBasket.objects.get(id=basket_id)
+
+    # check if basket belongs to user
+    if basket.customer != request.user.customer:
+        return HttpResponseForbidden("You do not have permission to finish this basket.")
+
+    # here you would typically trigger the checkout process, e.g. by sending a message to a message queue
+    # for now, we just mark the basket as finished
+    # basket.is_finished = True
+    # basket.save()
+    return HttpResponseRedirect('/store/')

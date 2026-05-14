@@ -1,36 +1,90 @@
 {% extends 'store/base.html' %}
 
 {% block title %}Depot Commun | Einkauf{% endblock %}
+{% block navbar_title %}Einkauf{% endblock %}
 
 {% block content %}
-<div class="uk-card uk-card-default uk-card-body uk-text-center" uk-sticky="offset:80" >
-    <div uk-grid>
-        <div>{{ purchases_count }} Artikel</div>
-        <div>Total {{ purchases_total }}</div>
-    </div>
-</div>
-<div uk-sticky="position: bottom; offset: -20">
-    <a uk-icon="plus" class="uk-icon-button" hx-get="{% url 'store:choose-article' basket_id=basket.id %}" hx-target="#body" class="uk-button uk-button-primary"></a>
-</div>
+<style>
+    .basket-summary {
+        position: sticky;
+        top: 40px;
+        z-index: 2;
+    }
 
-{% for purchase in purchases %}
-<div class="uk-card uk-card-default uk-card-body">
-    <h2 class="uk-card-title">{{ purchase.article.name }}</h2>
-    <div uk-grid>
-        <div class="uk-width-expand">
-            <div uk-grid class="uk-grid-collapse">
-                <a uk-icon="minus" class="uk-icon-button uk-width-1-3" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}" hx-target="#body"></a>
-                <div class="uk-width-1-3 uk-text-center">{{ purchase.quantity }}</div>
-                <a uk-icon="plus" class="uk-icon-button uk-width-1-3" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}" hx-target="#body"></a>
+    .basket-items {
+        display: grid;
+    }
+
+    .basket-items ion-card {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .purchase-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0px;
+    }
+
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+    }
+</style>
+
+<ion-card class="basket-summary">
+    <ion-card-content>
+        <ion-item lines="none">
+            <ion-label>{{ purchases_count }} Artikel</ion-label>
+            <ion-note slot="end"><strong>Total {{ purchases_total }}</strong></ion-note>
+        </ion-item>
+    </ion-card-content>
+</ion-card>
+
+<section class="basket-items">
+    {% for purchase in purchases %}
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title>{{ purchase.article.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <div class="purchase-row">
+                <div class="qty-controls">
+                    <ion-button fill="outline" size="small" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}" hx-target="#body">
+                        <ion-icon name="remove-outline"></ion-icon>
+                    </ion-button>
+                    <strong>{{ purchase.quantity }}</strong>
+                    <ion-button fill="outline" size="small" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}" hx-target="#body">
+                        <ion-icon name="add-outline"></ion-icon>
+                    </ion-button>
+                </div>
+                <ion-note>{{ purchase.price }}</ion-note>
+                <ion-note><strong>{{ purchase.total_price }}</strong></ion-note>
             </div>
-        </div>
-        <div class="uk-width-1-4 uk-text-right">{{ purchase.price }}</div>
-        <div class="uk-width-1-4 uk-text-right">{{ purchase.total_price }}</div>
-    </div>
-</div>
-{% endfor %}
+        </ion-card-content>
+    </ion-card>
+    {% empty %}
+    <ion-card>
+        <ion-card-content>Dein Einkaufskorb ist leer.</ion-card-content>
+    </ion-card>
+    {% endfor %}
+</section>
+{% endblock %}
 
-
+{% block fixed_actions %}
+<ion-fab slot="fixed" vertical="bottom" horizontal="center">
+    <ion-fab-button hx-get="{% url 'store:choose-article' basket_id=basket.id %}" hx-target="#body" hx-push-url="true">
+        <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
+<ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="success" hx-get="{% url 'store:finish-basket' basket_id=basket.id %}" hx-target="#body" hx-push-url="true">
+        <ion-icon name="checkmark-outline"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
 {% endblock %}
 
 {% block extra_js %}

@@ -2,48 +2,67 @@
 <html lang="de">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <title>{% block title %}Depot Commun{% endblock %}</title>
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/css/uikit.min.css" />
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core@7/dist/ionic/ionic.esm.js"></script>
+        <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core@7/dist/ionic/ionic.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core@7/css/ionic.bundle.css" />
+        <style>
+            :root {
+                --app-bg: #f7f8f5;
+                --app-surface: #ffffff;
+                --app-text: #152418;
+                --app-accent: #2e7d4d;
+                --app-muted: #5b6f62;
+            }
+
+            body {
+                margin: 0;
+                background:
+                    radial-gradient(circle at 100% -5%, #eaf6cf 0, transparent 40%),
+                    radial-gradient(circle at -10% 20%, #e7f4ff 0, transparent 45%),
+                    var(--app-bg);
+                color: var(--app-text);
+            }
+
+            ion-content {
+                --background: transparent;
+            }
+
+            .page-shell {
+                max-width: 560px;
+                margin: 0 auto;
+                padding-bottom: 20px;
+            }
+        </style>
         {% block extra_css %}{% endblock %}
     </head>
     <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
-        <div class="uk-container uk-container-small">
-            <div class="uk-navbar-container" uk-sticky>
-                <nav uk-navbar="mode: click">
-                    <div class="uk-navbar-left uk-margin-small-left">
-                        <a class="uk-navbar-toggle" uk-navbar-toggle-icon href="#"></a>
-                    </div>
-                    <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Einkäufe</a></li>
-                            <li><a href="#">Einstellungen</a></li>
-                        </ul>
-                    </div>
-                    <div class="uk-navbar-center">
-                        <div class="uk-navbar-item">Depot Commun</div>
-                    </div>
-                    <div class="uk-navbar-right uk-margin-small-right">
-                        {% if request.user.is_authenticated %}
-                        <div class="uk-navbar-item uk-text-meta">
-                            <span class="uk-margin-small-right">{{ request.user.get_full_name|default:request.user.username }}</span>
-                            <span uk-icon="icon: user"></span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </nav>
-            </div>
+        <ion-app>
+            <ion-header translucent="true">
+                <ion-toolbar>
+                    <ion-title>{% block navbar_title %}Depot Commun{% endblock %}</ion-title>
+                    {% if request.user.is_authenticated %}
+                    <ion-buttons slot="end">
+                        <ion-chip>
+                            <ion-icon name="person-outline"></ion-icon>
+                            <ion-label>{{ request.user.get_full_name|default:request.user.username }}</ion-label>
+                        </ion-chip>
+                    </ion-buttons>
+                    {% endif %}
+                </ion-toolbar>
+            </ion-header>
 
-            <main class="uk-section uk-container uk-container-small uk-section-small">
+            <ion-content fullscreen="true">
+                <div class="page-shell ion-padding">
                     {% block content %}{% endblock %}
-            </main>
-        </div>
+                </div>
+                {% block fixed_actions %}{% endblock %}
+            </ion-content>
+        </ion-app>
 
-        <script src="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/js/uikit.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/uikit@3.25.15/dist/js/uikit-icons.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
         {% block extra_js %}{% endblock %}
     </body>
 </html>
