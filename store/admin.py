@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
+from django import forms
 from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
@@ -27,8 +28,32 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter = ('group', 'active')
 
 
+class InvoicePurchaseForm(forms.ModelForm):
+    class Meta:
+        model = Purchase
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # adjust article choices to only show active articles, but include the currently selected article if it is inactive
+        article_field = self.fields['article']
+        visible_queryset = Article.objects.filter(active=True)
+        if self.instance.pk and self.instance.article_id:
+            visible_queryset = Article.objects.filter(
+                models.Q(active=True) | models.Q(pk=self.instance.article_id)
+            )
+
+        article_field.widget.choices = forms.ModelChoiceField(
+            queryset=visible_queryset,
+            required=article_field.required,
+            empty_label=article_field.empty_label,
+        ).choices
+
+
 class InvoicePurchaseInline(admin.TabularInline):
     model = Purchase
+    form = InvoicePurchaseForm
     extra = 1
     fields = ('article', 'price', 'quantity', 'summe')
     readonly_fields = ('price', 'summe')
