@@ -20,6 +20,13 @@
             Neuer Einkauf
         </ion-button>
         {% endif %}
+
+        {% if is_staff %}
+            <p style="text-align:center">
+                <a href="{% url 'admin:index' %}">Zum Admin-Bereich</a>
+            </p>
+        {% endif %}
+
     </ion-card-content>
 </ion-card>
 
@@ -71,4 +78,5 @@
     </ion-list>
 </ion-card>
 {% endif %}
+
 {% endblock %}

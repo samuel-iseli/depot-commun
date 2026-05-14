@@ -118,6 +118,8 @@ def home(request):
         customer=selected_customer,
         completed__isnull=True,
     ).order_by('-date')
+    is_staff = request.user.is_staff
+
     return render(
         request,
         'store/home.html',
@@ -125,6 +127,7 @@ def home(request):
             'open_baskets': open_baskets,
             'customers': customers,
             'selected_customer': selected_customer,
+            'is_staff': is_staff,
         },
     )
 
