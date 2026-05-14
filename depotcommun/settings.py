@@ -42,8 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'solo',     # singleton model
-    'rest_framework',
-    'corsheaders',
     'admin_totals',
     'import_export'
 ]
@@ -57,7 +55,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'depotcommun.urls'
@@ -65,9 +62,6 @@ ROOT_URLCONF = 'depotcommun.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'buying-frontend/build'),
-        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,17 +129,6 @@ STATIC_ROOT = env.path('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 # STATICFILES_DIRS = [
 #    os.path.join(BASE_DIR, 'buying-frontend/build/static')
 # ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES':(
-                'rest_framework.permissions.IsAuthenticated',
-    ),
-}
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
 
 # redirect to frontend after login
 LOGIN_REDIRECT_URL = '/'
