@@ -40,6 +40,26 @@
                 margin: 0 auto;
                 padding-bottom: 20px;
             }
+
+            .app-navbar-customer {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--app-text);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 68vw;
+            }
+
+            .app-navbar-user-chip {
+                max-width: 28vw;
+            }
+
+            .app-navbar-user-chip ion-label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
         </style>
         {% block extra_css %}{% endblock %}
     </head>
@@ -47,10 +67,18 @@
         <ion-app>
             <ion-header translucent="true">
                 <ion-toolbar>
-                    <ion-title>{% block navbar_title %}Depot Commun{% endblock %}</ion-title>
+                    <ion-title>
+                        <span class="app-navbar-customer">
+                            {% if selected_customer %}
+                            {{ selected_customer.name }}
+                            {% else %}
+                            Depot Commun
+                            {% endif %}
+                        </span>
+                    </ion-title>
                     {% if request.user.is_authenticated %}
                     <ion-buttons slot="end">
-                        <ion-chip>
+                        <ion-chip class="app-navbar-user-chip">
                             <ion-icon name="person-outline"></ion-icon>
                             <ion-label>{{ request.user.get_full_name|default:request.user.username }}</ion-label>
                         </ion-chip>

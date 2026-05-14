@@ -119,3 +119,56 @@ class BasketFrontendViewTests(TestCase):
 
         self.assertRedirects(response, f'/store/basket/{basket.id}/')
         self.assertFalse(Purchase.objects.filter(id=purchase.id).exists())
+
+    def test_home_shows_all_customers_for_user(self):
+        second_customer = Customer.objects.create(
+            user=self.user,
+            name='Second Customer',
+            street='Side Street 2',
+            zip='9000',
+            city='St. Gallen',
+        )
+
+        response = self.client.get(reverse('store:home'))
+
+        self.assertContains(response, self.customer.name)
+        self.assertContains(response, second_customer.name)
+        self.assertContains(response, 'Kunde waehlen')
+
+    def test_new_basket_uses_selected_customer(self):
+        second_customer = Customer.objects.create(
+            user=self.user,
+            name='Second Customer',
+            street='Side Street 2',
+            zip='9000',
+            city='St. Gallen',
+        )
+
+        select_response = self.client.post(
+            reverse('store:home'),
+            {'customer_id': second_customer.id},
+        )
+        self.assertRedirects(select_response, '/store/')
+
+        create_response = self.client.post(reverse('store:new-basket'))
+        basket = ShoppingBasket.objects.get()
+
+        self.assertRedirects(create_response, f'/store/basket/{basket.id}/')
+        self.assertEqual(basket.customer, second_customer)
+
+    def test_navbar_displays_selected_customer(self):
+        second_customer = Customer.objects.create(
+            user=self.user,
+            name='Second Customer',
+            street='Side Street 2',
+            zip='9000',
+            city='St. Gallen',
+        )
+
+        self.client.post(
+            reverse('store:home'),
+            {'customer_id': second_customer.id},
+        )
+
+        response = self.client.get(reverse('store:home'))
+        self.assertContains(response, 'Kunde: Second Customer')

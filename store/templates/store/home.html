@@ -10,6 +10,9 @@
         <ion-card-subtitle>Willkommen, {{ request.user.get_full_name|default:request.user.username }}.</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
+        {% if selected_customer %}
+        <ion-note color="medium">Aktiver Kunde: {{ selected_customer.name }}</ion-note>
+        {% endif %}
         {% if open_baskets %}
         <ion-note color="warning">Ein Einkauf ist noch offen. Bitte diesen zuerst abschliessen.</ion-note>
         <ion-button expand="block" disabled="true">
@@ -23,10 +26,34 @@
     </ion-card-content>
 </ion-card>
 
+{% if customers|length > 1 %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Kunde waehlen</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+        {% for customer in customers %}
+        <ion-item>
+            <ion-label>{{ customer.name }}</ion-label>
+            {% if selected_customer and selected_customer.id == customer.id %}
+            <ion-note slot="end" color="success">Aktiv</ion-note>
+            {% else %}
+            <form hx-post="{% url 'store:home' %}" hx-target="#body" hx-push-url="false">
+                {% csrf_token %}
+                <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                <ion-button size="small" type="submit">Auswaehlen</ion-button>
+            </form>
+            {% endif %}
+        </ion-item>
+        {% endfor %}
+    </ion-list>
+</ion-card>
+{% endif %}
+
 {% if open_baskets %}
 <ion-card>
     <ion-card-header>
-        <ion-card-title>Offene Einkaeufe</ion-card-title>
+        <ion-card-title>Offene Einkaeufe{% if selected_customer %} fuer {{ selected_customer.name }}{% endif %}</ion-card-title>
     </ion-card-header>
     <ion-list>
         {% for basket in open_baskets %}

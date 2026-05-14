@@ -8,13 +8,47 @@ from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
 
 
+def _get_selected_customer(request):
+    customers = request.user.customers.order_by('name', 'id')
+    selected_customer_id = request.session.get('selected_customer_id')
+
+    selected_customer = None
+    if selected_customer_id is not None:
+        selected_customer = customers.filter(id=selected_customer_id).first()
+
+    if selected_customer is None:
+        selected_customer = customers.first()
+        if selected_customer is not None:
+            request.session['selected_customer_id'] = selected_customer.id
+
+    return selected_customer, customers
+
+
 @login_required
 def home(request):
+    selected_customer, customers = _get_selected_customer(request)
+
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer_id')
+        customer = customers.filter(id=customer_id).first()
+        if customer is None:
+            return HttpResponseForbidden("You do not have permission to select this customer.")
+        request.session['selected_customer_id'] = customer.id
+        return HttpResponseRedirect('/store/')
+
     open_baskets = ShoppingBasket.objects.filter(
-        customer__user=request.user,
+        customer=selected_customer,
         completed__isnull=True,
     ).order_by('-date')
-    return render(request, 'store/home.html', {'open_baskets': open_baskets})
+    return render(
+        request,
+        'store/home.html',
+        {
+            'open_baskets': open_baskets,
+            'customers': customers,
+            'selected_customer': selected_customer,
+        },
+    )
 
 
 @login_required
@@ -22,19 +56,19 @@ def new_basket(request):
     if request.method != 'POST':
         return HttpResponseForbidden("Invalid request method.")
 
+    selected_customer, _ = _get_selected_customer(request)
+    if selected_customer is None:
+        return HttpResponseForbidden("No customer account associated with this user.")
+
     open_basket = ShoppingBasket.objects.filter(
-        customer__user=request.user,
+        customer=selected_customer,
         completed__isnull=True,
     ).order_by('-date').first()
     if open_basket is not None:
         return HttpResponseRedirect(f'/store/basket/{open_basket.id}/')
 
-    customer = request.user.customers.first()
-    if customer is None:
-        return HttpResponseForbidden("No customer account associated with this user.")
-
     # create a new shopping basket for the user
-    basket = ShoppingBasket.objects.create(customer=customer)
+    basket = ShoppingBasket.objects.create(customer=selected_customer)
     basket.save()
     return HttpResponseRedirect(f'/store/basket/{basket.id}/')
 
