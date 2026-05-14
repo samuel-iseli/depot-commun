@@ -99,7 +99,7 @@ class BasketFrontendViewTests(TestCase):
 
         response = self.client.get(reverse('store:home'))
 
-        self.assertContains(response, 'Offene Einkaeufe')
+        self.assertContains(response, 'Offene Einkäufe')
         self.assertContains(response, f'/store/basket/{basket.id}/')
         self.assertContains(response, 'disabled="true"')
 
@@ -133,7 +133,7 @@ class BasketFrontendViewTests(TestCase):
 
         self.assertContains(response, self.customer.name)
         self.assertContains(response, second_customer.name)
-        self.assertContains(response, 'Kunde waehlen')
+        self.assertContains(response, 'Kunde wählen')
 
     def test_new_basket_uses_selected_customer(self):
         second_customer = Customer.objects.create(
@@ -171,4 +171,10 @@ class BasketFrontendViewTests(TestCase):
         )
 
         response = self.client.get(reverse('store:home'))
-        self.assertContains(response, 'Kunde: Second Customer')
+        self.assertContains(response, 'Aktiver Kunde: Second Customer')
+
+    def test_logout_endpoint_logs_user_out(self):
+        response = self.client.post(reverse('store:logout'))
+
+        self.assertRedirects(response, '/admin/login/')
+        self.assertNotIn('_auth_user_id', self.client.session)

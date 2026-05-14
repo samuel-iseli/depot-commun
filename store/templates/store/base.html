@@ -51,26 +51,46 @@
                 max-width: 68vw;
             }
 
-            .app-navbar-user-chip {
-                max-width: 28vw;
-            }
-
-            .app-navbar-user-chip ion-label {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+            .app-menu-user {
+                font-size: 0.95rem;
+                color: var(--app-text);
             }
         </style>
         {% block extra_css %}{% endblock %}
     </head>
     <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
         <ion-app>
+            {% if request.user.is_authenticated %}
+            <ion-menu side="end" content-id="main-content" type="overlay">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Menue</ion-title>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content>
+                    <ion-list>
+                        <ion-item lines="none">
+                            <ion-icon name="person-outline" slot="start"></ion-icon>
+                            <ion-label class="app-menu-user">{{ request.user.get_full_name|default:request.user.username }}</ion-label>
+                        </ion-item>
+                        <ion-item lines="full">
+                            <ion-label>Abmelden</ion-label>
+                            <form method="post" action="{% url 'store:logout' %}" slot="end">
+                                {% csrf_token %}
+                                <ion-button type="submit" color="danger" size="small">Logout</ion-button>
+                            </form>
+                        </ion-item>
+                    </ion-list>
+                </ion-content>
+            </ion-menu>
+            {% endif %}
+
             <ion-header translucent="true">
                 <ion-toolbar>
                     <ion-title>
                         <span class="app-navbar-customer">
                             {% if selected_customer %}
-                            {{ selected_customer.name }}
+                            Aktiver Kunde: {{ selected_customer.name }}
                             {% else %}
                             Depot Commun
                             {% endif %}
@@ -78,16 +98,13 @@
                     </ion-title>
                     {% if request.user.is_authenticated %}
                     <ion-buttons slot="end">
-                        <ion-chip class="app-navbar-user-chip">
-                            <ion-icon name="person-outline"></ion-icon>
-                            <ion-label>{{ request.user.get_full_name|default:request.user.username }}</ion-label>
-                        </ion-chip>
+                        <ion-menu-button auto-hide="false"></ion-menu-button>
                     </ion-buttons>
                     {% endif %}
                 </ion-toolbar>
             </ion-header>
 
-            <ion-content fullscreen="true">
+            <ion-content id="main-content" fullscreen="true">
                 <div class="page-shell ion-padding">
                     {% block content %}{% endblock %}
                 </div>

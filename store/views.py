@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import logout as auth_logout
 from django.utils import timezone
 from . import models
 from .models import Article, Purchase, ShoppingBasket
@@ -71,6 +72,15 @@ def new_basket(request):
     basket = ShoppingBasket.objects.create(customer=selected_customer)
     basket.save()
     return HttpResponseRedirect(f'/store/basket/{basket.id}/')
+
+
+@login_required
+def logout_view(request):
+    if request.method != 'POST':
+        return HttpResponseForbidden("Invalid request method.")
+
+    auth_logout(request)
+    return HttpResponseRedirect('/admin/login/')
 
 
 @login_required
