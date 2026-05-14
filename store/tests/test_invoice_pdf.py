@@ -1,13 +1,21 @@
 from io import BytesIO
 
 from store.tests.test_invoice import InvoiceTestBase
-from store.models import Purchase
+from store.models import Purchase, Settings
 from store.billing import create_invoice
 from store.invoice_pdf import InvoicePdfRenderer
 
 
 class InvoicePdfTest(InvoiceTestBase):
     def test_generate_invoice_pdf(self):
+        settings = Settings.get_solo()
+        settings.payment_account_number = 'CH9300762011623852957'
+        settings.payment_account_name = 'Depot Commun'
+        settings.payment_account_street = 'Siedlung Kraftwerk1'
+        settings.payment_account_house_number = '1'
+        settings.payment_account_postal_code = '8049'
+        settings.payment_account_place = 'Zuerich'
+        settings.save()
 
         total_amount = 1.20 + 2 * 4.5
 

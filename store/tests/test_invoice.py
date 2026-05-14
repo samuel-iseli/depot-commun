@@ -88,15 +88,15 @@ class InvoiceTest(InvoiceTestBase):
             self.purchase_datetime + timedelta(days=-1)
         )
 
-        self.assertEquals(0, len(no_purchases))
+        self.assertEqual(0, len(no_purchases))
 
         some_purchases = get_billable_purchases(
             self.purchase_datetime + timedelta(days=1)
         )
 
         # we should get a dictionary with 1 purchase for 1 customer
-        self.assertEquals(1, len(some_purchases.keys()))
-        self.assertEquals(1, len(some_purchases.values()))
+        self.assertEqual(1, len(some_purchases.keys()))
+        self.assertEqual(1, len(some_purchases.values()))
 
     def test_create_invoice(self):
         # create 2 purchases
@@ -120,11 +120,11 @@ class InvoiceTest(InvoiceTestBase):
             [p1, p2]
             )
 
-        self.assertEquals(self.customer, invoice.customer)
-        self.assertEquals(2, len(invoice.purchases.all()))
+        self.assertEqual(self.customer, invoice.customer)
+        self.assertEqual(2, len(invoice.purchases.all()))
         expected_amount = Decimal(
             f'{2 * self.articles[0].price + self.articles[1].price:.2f}')
-        self.assertEquals(expected_amount, invoice.amount)
+        self.assertEqual(expected_amount, invoice.amount)
 
     def test_modify_invoice(self):
         """
@@ -153,7 +153,7 @@ class InvoiceTest(InvoiceTestBase):
             [p1]
             )
 
-        self.assertEquals(
+        self.assertEqual(
             Decimal(f'{2 * self.articles[0].price}'),
             invoice.amount)
 
@@ -162,7 +162,7 @@ class InvoiceTest(InvoiceTestBase):
         p2.save()
         invoice.save()
 
-        self.assertEquals(
+        self.assertEqual(
             Decimal(f'{2 * self.articles[0].price + 2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
@@ -187,12 +187,12 @@ class InvoiceTest(InvoiceTestBase):
         )
         p1.clean()
         
-        self.assertEquals(self.customer, p1.customer)
-        self.assertEquals(self.articles[0].price, p1.price)
+        self.assertEqual(self.customer, p1.customer)
+        self.assertEqual(self.articles[0].price, p1.price)
 
         p1.save()
 
-        self.assertEquals(
+        self.assertEqual(
             Decimal(f'{2 * p1.price:0.2f}'),
             invoice.amount
         )
@@ -222,7 +222,7 @@ class InvoiceTest(InvoiceTestBase):
             self.customer, self.invoice_datetime,
             [p1, p2]
             )
-        self.assertEquals(
+        self.assertEqual(
             Decimal(f'{2 * self.articles[0].price + 2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
@@ -230,7 +230,7 @@ class InvoiceTest(InvoiceTestBase):
         # delete p1
         p1.delete()
 
-        self.assertEquals(
+        self.assertEqual(
             Decimal(f'{2 * self.articles[1].price:.2f}'),
             invoice.amount
         )
@@ -262,30 +262,30 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         billables = get_billable_purchases(self.purchase_datetime)
 
         # we should get dictionary for 2 users
-        self.assertEquals(2, len(billables))
+        self.assertEqual(2, len(billables))
 
         # self.customer has 3 purchases, user2 has 2
-        self.assertEquals(3, len(billables[self.customer]))
-        self.assertEquals(2, len(billables[self.user2]))
+        self.assertEqual(3, len(billables[self.customer]))
+        self.assertEqual(2, len(billables[self.user2]))
 
     def test_create_invoice(self):
         invoice = create_invoice(
             self.customer, self.invoice_datetime,
             self.purchases1 + self.purchases2)
 
-        self.assertEquals(Decimal('6.9'), invoice.amount)
-        self.assertEquals(self.invoice_datetime, invoice.date)
+        self.assertEqual(Decimal('6.9'), invoice.amount)
+        self.assertEqual(self.invoice_datetime, invoice.date)
         # purchase1 has 2 items, purchase2 1
-        self.assertEquals(3, len(invoice.purchases.all()))
+        self.assertEqual(3, len(invoice.purchases.all()))
 
     def test_create_invoices(self):
         invoices = create_invoices(
             self.invoice_datetime, self.invoice_datetime)
 
-        self.assertEquals(2, len(invoices))
+        self.assertEqual(2, len(invoices))
 
-        self.assertEquals(self.customer, invoices[0].customer)
-        self.assertEquals(Decimal('6.9'), invoices[0].amount)
+        self.assertEqual(self.customer, invoices[0].customer)
+        self.assertEqual(Decimal('6.9'), invoices[0].amount)
 
-        self.assertEquals(self.user2, invoices[1].customer)
-        self.assertEquals(Decimal('5.7'), invoices[1].amount)
+        self.assertEqual(self.user2, invoices[1].customer)
+        self.assertEqual(Decimal('5.7'), invoices[1].amount)
