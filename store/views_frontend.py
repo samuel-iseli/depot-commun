@@ -50,7 +50,12 @@ def choose_article(request, basket_id):
     if basket.completed is not None:
         return HttpResponseForbidden("This basket is already completed.")
 
-    articles = Article.objects.filter(active=True).order_by('group__idx', 'sortidx')
+    articles = Article.objects.filter(active=True).order_by(
+        'group__idx',
+        'group__name',
+        'sortidx',
+        'name',
+    )
     return render(request, 'store/choose_article.html', {'articles': articles, 'basket_id': basket_id})
 
 @login_required

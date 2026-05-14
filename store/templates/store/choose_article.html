@@ -43,20 +43,28 @@
 
 <ion-card>
     <ion-list inset="true">
-        {% for article in articles %}
-        <ion-item
-            button="true"
-            detail="true"
-            class="article-item visible"
-            data-article-name="{{ article.name|lower }}"
-            data-article-price="{{ article.price }}"
-            hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}"
-            hx-target="#body"
-            hx-push-url="true"
-        >
-            <ion-label>{{ article.name }}</ion-label>
-            <ion-note slot="end">{{ article.price }}</ion-note>
-        </ion-item>
+        {% regroup articles by group as article_groups %}
+        {% for group in article_groups %}
+        <div class="article-group visible">
+            <ion-item-divider>
+                <ion-label>{{ group.grouper.name }}</ion-label>
+            </ion-item-divider>
+            {% for article in group.list %}
+            <ion-item
+                button="true"
+                detail="true"
+                class="article-item visible"
+                data-article-name="{{ article.name|lower }}"
+                data-article-price="{{ article.price }}"
+                hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}"
+                hx-target="#body"
+                hx-push-url="true"
+            >
+                <ion-label>{{ article.name }}</ion-label>
+                <ion-note slot="end">{{ article.price }}</ion-note>
+            </ion-item>
+            {% endfor %}
+        </div>
         {% endfor %}
     </ion-list>
     <ion-card-content class="no-results" id="noResults">
@@ -76,6 +84,7 @@
         searchbar.dataset.initialized = 'true';
 
         const articleItems = container.querySelectorAll('.article-item');
+        const articleGroups = container.querySelectorAll('.article-group');
         const noResults = container.querySelector('#noResults');
 
         searchbar.addEventListener('ionInput', function(event) {
@@ -91,6 +100,17 @@
                     visibleCount++;
                 } else {
                     item.classList.remove('visible');
+                }
+            });
+
+            articleGroups.forEach(group => {
+                const visibleItems = group.querySelectorAll('.article-item.visible');
+                if (visibleItems.length > 0) {
+                    group.classList.add('visible');
+                    group.style.display = '';
+                } else {
+                    group.classList.remove('visible');
+                    group.style.display = 'none';
                 }
             });
 
