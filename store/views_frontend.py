@@ -91,6 +91,23 @@ def inc_quantity(request, purchase_id):
 def dec_quantity(request, purchase_id):
     return inc_dec_quantity(request, purchase_id, -1)
 
+@login_required
+def delete_purchase(request, purchase_id):
+    if request.method != 'POST':
+        return HttpResponseForbidden("Invalid request method.")
+
+    purchase = Purchase.objects.get(id=purchase_id)
+
+    # check if purchase belongs to user
+    if purchase.customer != request.user.customer:
+        return HttpResponseForbidden("You do not have permission to edit this purchase.")
+    if purchase.basket.completed is not None:
+        return HttpResponseForbidden("This basket is already completed.")
+
+    basket_id = purchase.basket.id
+    purchase.delete()
+    return HttpResponseRedirect(f'/store/basket/{basket_id}/')
+
 def inc_dec_quantity(request, purchase_id, delta):
     """
     Helper function to increase or decrease the quantity of a purchase.

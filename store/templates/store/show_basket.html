@@ -7,7 +7,7 @@
 <style>
     .basket-summary {
         position: sticky;
-        top: 40px;
+        top: 20px;
         z-index: 2;
     }
 
@@ -17,11 +17,6 @@
 
     .basket-items {
         display: grid;
-    }
-
-    .basket-items ion-card {
-        margin-top: 8px;
-        margin-bottom: 8px;
     }
 
     .purchase-row {
@@ -34,8 +29,19 @@
     .qty-controls {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 4px;
         margin-top: 8px;
+    }
+
+    .qty-btn {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        min-height: 28px;
+        height: 28px;
+    }
+
+    .qty-btn ion-icon {
+        font-size: 14px;
     }
 </style>
 
@@ -57,12 +63,15 @@
         <ion-card-content>
             <div class="purchase-row">
                 <div class="qty-controls">
-                    <ion-button fill="outline" size="small" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}" hx-target="#body">
+                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}" hx-target="#body">
                         <ion-icon name="remove-outline"></ion-icon>
                     </ion-button>
                     <strong>{{ purchase.quantity }}</strong>
-                    <ion-button fill="outline" size="small" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}" hx-target="#body">
+                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}" hx-target="#body">
                         <ion-icon name="add-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button color="danger" fill="clear" size="small" hx-post="{% url 'store:delete-purchase' purchase_id=purchase.id %}" hx-target="#body">
+                        <ion-icon name="trash-outline"></ion-icon>
                     </ion-button>
                 </div>
                 <ion-note>{{ purchase.price }}</ion-note>

@@ -101,3 +101,20 @@ class BasketFrontendViewTests(TestCase):
         self.assertContains(response, 'Offene Einkaeufe')
         self.assertContains(response, f'/store/basket/{basket.id}/')
         self.assertContains(response, 'disabled="true"')
+
+    def test_delete_purchase_endpoint_removes_purchase(self):
+        basket = ShoppingBasket.objects.create(customer=self.customer)
+        purchase = Purchase.objects.create(
+            article=self.article,
+            quantity=2,
+            price=self.article.price,
+            customer=self.customer,
+            basket=basket,
+        )
+
+        response = self.client.post(
+            reverse('store:delete-purchase', args=[purchase.id]),
+        )
+
+        self.assertRedirects(response, f'/store/basket/{basket.id}/')
+        self.assertFalse(Purchase.objects.filter(id=purchase.id).exists())
