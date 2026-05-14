@@ -1,17 +1,29 @@
 from django.shortcuts import render
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .models import Article, Purchase, ShoppingBasket
 
 
 @login_required
 def home(request):
-    return render(request, 'store/home.html')
+    open_baskets = ShoppingBasket.objects.filter(
+        customer=request.user.customer,
+        completed__isnull=True,
+    ).order_by('-date')
+    return render(request, 'store/home.html', {'open_baskets': open_baskets})
 
 @login_required
 def new_basket(request):
     if request.method != 'POST':
         return HttpResponseForbidden("Invalid request method.")
+
+    open_basket = ShoppingBasket.objects.filter(
+        customer=request.user.customer,
+        completed__isnull=True,
+    ).order_by('-date').first()
+    if open_basket is not None:
+        return HttpResponseRedirect(f'/store/basket/{open_basket.id}/')
     
     # create a new shopping basket for the user
     basket = ShoppingBasket.objects.create(customer=request.user.customer)
@@ -23,6 +35,8 @@ def show_basket(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
     if basket.customer != request.user.customer:
         return HttpResponseForbidden("You do not have permission to view this basket.")
+    if basket.completed is not None:
+        return HttpResponseRedirect('/store/')
     
     purchases = basket.purchases.all()
     purchases_total = sum(purchase.total_price for purchase in purchases)
@@ -30,7 +44,13 @@ def show_basket(request, basket_id):
 
 @login_required
 def choose_article(request, basket_id):
-    articles = Article.objects.all()
+    basket = ShoppingBasket.objects.get(id=basket_id)
+    if basket.customer != request.user.customer:
+        return HttpResponseForbidden("You do not have permission to modify this basket.")
+    if basket.completed is not None:
+        return HttpResponseForbidden("This basket is already completed.")
+
+    articles = Article.objects.filter(active=True).order_by('group__idx', 'sortidx')
     return render(request, 'store/choose_article.html', {'articles': articles, 'basket_id': basket_id})
 
 @login_required
@@ -44,6 +64,8 @@ def create_purchase(request, basket_id, article_id):
     # check if basket belongs to user
     if basket.customer != request.user.customer:
         return HttpResponseForbidden("You do not have permission to add to this basket.")
+    if basket.completed is not None:
+        return HttpResponseForbidden("This basket is already completed.")
 
     # create new purchase in current shopping basket
     purchase = Purchase.objects.create(
@@ -76,6 +98,8 @@ def inc_dec_quantity(request, purchase_id, delta):
     # check if purchase belongs to user
     if purchase.customer != request.user.customer:
         return HttpResponseForbidden("You do not have permission to edit this purchase.")
+    if purchase.basket.completed is not None:
+        return HttpResponseForbidden("This basket is already completed.")
 
     purchase.quantity += delta
 
@@ -87,17 +111,43 @@ def inc_dec_quantity(request, purchase_id, delta):
 
 @login_required
 def finish_basket(request, basket_id):
-    if request.method != 'POST':
-        return HttpResponseForbidden("Invalid request method.")
-    
     basket = ShoppingBasket.objects.get(id=basket_id)
 
     # check if basket belongs to user
     if basket.customer != request.user.customer:
         return HttpResponseForbidden("You do not have permission to finish this basket.")
+    if basket.completed is not None:
+        return HttpResponseRedirect('/store/')
 
-    # here you would typically trigger the checkout process, e.g. by sending a message to a message queue
-    # for now, we just mark the basket as finished
-    # basket.is_finished = True
-    # basket.save()
+    purchases = basket.purchases.all()
+    purchases_total = sum(purchase.total_price for purchase in purchases)
+
+    if request.method == 'GET':
+        return render(
+            request,
+            'store/confirm_finish_basket.html',
+            {
+                'basket': basket,
+                'purchases': purchases,
+                'purchases_count': len(purchases),
+                'purchases_total': purchases_total,
+            },
+        )
+
+    if request.method != 'POST':
+        return HttpResponseForbidden("Invalid request method.")
+
+    action = request.POST.get('action')
+    if action == 'cancel':
+        return HttpResponseRedirect(f'/store/basket/{basket.id}/')
+
+    if action == 'delete':
+        basket.delete()
+        return HttpResponseRedirect('/store/')
+
+    if action != 'confirm':
+        return HttpResponseForbidden("Invalid finish action.")
+
+    basket.completed = timezone.now()
+    basket.save(update_fields=['completed'])
     return HttpResponseRedirect('/store/')

@@ -189,6 +189,10 @@ class ShoppingBasket(models.Model):
         on_delete=models.SET_NULL, null=True, blank=True,
         verbose_name=_('Invoice'))
 
+    completed = models.DateTimeField(
+        null=True, blank=True, verbose_name=_('Completed'),
+        help_text=_('When the basket was completed'))
+
     class Meta:
         verbose_name = _('Shopping Basket')
         verbose_name_plural = _('Shopping Baskets')

@@ -85,7 +85,7 @@
     </ion-fab-button>
 </ion-fab>
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="success" hx-get="{% url 'store:finish-basket' basket_id=basket.id %}" hx-target="#body" hx-push-url="true">
+    <ion-fab-button color="success" hx-get="{% url 'store:finish-basket' basket_id=basket.id %}" hx-target="#body" hx-push-url="false">
         <ion-icon name="checkmark-outline"></ion-icon>
     </ion-fab-button>
 </ion-fab>

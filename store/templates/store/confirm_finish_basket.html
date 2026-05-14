@@ -1,0 +1,71 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Einkauf abschliessen{% endblock %}
+{% block navbar_title %}Bestaetigen{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Einkauf abschliessen?</ion-card-title>
+        <ion-card-subtitle>{{ purchases_count }} Artikel, Total {{ purchases_total }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-list>
+        {% for purchase in purchases %}
+        <ion-item>
+            <ion-label>{{ purchase.quantity }} x {{ purchase.article.name }}</ion-label>
+            <ion-note slot="end">{{ purchase.total_price }}</ion-note>
+        </ion-item>
+        {% empty %}
+        <ion-item>
+            <ion-label>Der Einkaufskorb ist leer.</ion-label>
+        </ion-item>
+        {% endfor %}
+    </ion-list>
+    <ion-card-content>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <ion-button
+                        expand="block"
+                        fill="outline"
+                        color="danger"
+                        hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
+                        hx-target="#body"
+                        hx-push-url="true"
+                        hx-vals='{"action":"delete"}'
+                    >
+                        Einkauf loeschen
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button
+                        expand="block"
+                        fill="outline"
+                        color="medium"
+                        hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
+                        hx-target="#body"
+                        hx-push-url="false"
+                        hx-vals='{"action":"cancel"}'
+                    >
+                        Abbrechen
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <ion-button
+                        expand="block"
+                        color="success"
+                        hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
+                        hx-target="#body"
+                        hx-push-url="true"
+                        hx-vals='{"action":"confirm"}'
+                    >
+                        Abschliessen
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card-content>
+</ion-card>
+{% endblock %}

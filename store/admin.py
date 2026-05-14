@@ -179,7 +179,7 @@ class InvoiceAdmin(ModelAdminTotals):
             messages.SUCCESS)
 
 class ShoppingBasketAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'invoice', 'date')
+    list_display = ('id', 'customer', 'invoice', 'date', 'completed')
     search_fields = ('customer__name',)
     ordering = ('-date',)
     inlines = (InvoicePurchaseInline,)

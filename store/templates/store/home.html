@@ -10,9 +10,38 @@
         <ion-card-subtitle>Willkommen, {{ request.user.get_full_name|default:request.user.username }}.</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
+        {% if open_baskets %}
+        <ion-note color="warning">Ein Einkauf ist noch offen. Bitte diesen zuerst abschliessen.</ion-note>
+        <ion-button expand="block" disabled="true">
+            Neuer Einkauf
+        </ion-button>
+        {% else %}
         <ion-button expand="block" hx-post="{% url 'store:new-basket' %}" hx-target="#body" hx-push-url="true">
             Neuer Einkauf
         </ion-button>
+        {% endif %}
     </ion-card-content>
 </ion-card>
+
+{% if open_baskets %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Offene Einkaeufe</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+        {% for basket in open_baskets %}
+        <ion-item
+            button="true"
+            detail="true"
+            hx-get="{% url 'store:show-basket' basket_id=basket.id %}"
+            hx-target="#body"
+            hx-push-url="true"
+        >
+            <ion-label>Einkauf #{{ basket.id }}</ion-label>
+            <ion-note slot="end">{{ basket.date|date:"d.m.Y H:i" }}</ion-note>
+        </ion-item>
+        {% endfor %}
+    </ion-list>
+</ion-card>
+{% endif %}
 {% endblock %}
