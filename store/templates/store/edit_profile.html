@@ -1,0 +1,49 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Profil bearbeiten{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Profil bearbeiten</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <form method="post" action="{% url 'store:edit-profile' %}">
+            {% csrf_token %}
+            <ion-list lines="full">
+                <ion-item>
+                    <ion-label position="stacked">Vorname</ion-label>
+                    <ion-input
+                        name="first_name"
+                        type="text"
+                        value="{{ request.user.first_name }}"
+                        maxlength="150"
+                        autocomplete="given-name"
+                    ></ion-input>
+                </ion-item>
+                {% if errors.first_name %}
+                <ion-item lines="none">
+                    <ion-note color="danger" slot="end">{{ errors.first_name }}</ion-note>
+                </ion-item>
+                {% endif %}
+                <ion-item>
+                    <ion-label position="stacked">Nachname</ion-label>
+                    <ion-input
+                        name="last_name"
+                        type="text"
+                        value="{{ request.user.last_name }}"
+                        maxlength="150"
+                        autocomplete="family-name"
+                    ></ion-input>
+                </ion-item>
+                {% if errors.last_name %}
+                <ion-item lines="none">
+                    <ion-note color="danger" slot="end">{{ errors.last_name }}</ion-note>
+                </ion-item>
+                {% endif %}
+            </ion-list>
+            <ion-button expand="block" type="submit" style="margin-top: 16px;">Speichern</ion-button>
+        </form>
+    </ion-card-content>
+</ion-card>
+{% endblock %}

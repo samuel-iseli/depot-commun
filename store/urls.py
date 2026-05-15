@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', views.email_login_request, name='email-login'),
     path('login/confirm/<uidb64>/<token>/', views.email_login_confirm, name='email-login-confirm'),
     path('logout/', views.logout_view, name='logout'),
+    path('profile/', views.edit_profile, name='edit-profile'),
     path('basket/new/', views.new_basket, name='new-basket'),
     path('basket/<int:basket_id>/', views.show_basket, name='show-basket'),
     path('basket/<int:basket_id>/choose-article/', views.choose_article, name='choose-article'),

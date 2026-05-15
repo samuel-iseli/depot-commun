@@ -64,7 +64,7 @@
             <ion-menu side="end" content-id="main-content" type="overlay">
                 <ion-content>
                     <ion-list>
-                        <ion-item lines="full">
+                        <ion-item lines="full" button="true" detail="true" hx-get="{% url 'store:edit-profile' %}" hx-target="#page-shell" hx-push-url="true" onclick="document.querySelector('ion-menu').close()">
                             <ion-icon name="person-outline" slot="start"></ion-icon>
                             <ion-label class="app-menu-user">{{ request.user.get_full_name|default:request.user.username }}</ion-label>
                         </ion-item>

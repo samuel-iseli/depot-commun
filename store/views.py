@@ -197,6 +197,25 @@ def logout_view(request):
 
 
 @login_required
+def edit_profile(request):
+    user = request.user
+    errors = {}
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        if len(first_name) > 150:
+            errors['first_name'] = 'Vorname darf maximal 150 Zeichen enthalten.'
+        if len(last_name) > 150:
+            errors['last_name'] = 'Nachname darf maximal 150 Zeichen enthalten.'
+        if not errors:
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save(update_fields=['first_name', 'last_name'])
+            return HttpResponseRedirect('/store/')
+    return render(request, 'store/edit_profile.html', {'errors': errors})
+
+
+@login_required
 def show_basket(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
     if basket.customer is None or basket.customer.user != request.user:
