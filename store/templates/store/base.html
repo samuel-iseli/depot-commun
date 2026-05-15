@@ -58,7 +58,7 @@
         </style>
         {% block extra_css %}{% endblock %}
     </head>
-    <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+    <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-select="#page-shell" hx-swap="outerHTML">
         <ion-app>
             {% if request.user.is_authenticated %}
             <ion-menu side="end" content-id="main-content" type="overlay">
@@ -100,10 +100,12 @@
             </ion-header>
 
             <ion-content id="main-content" fullscreen="true">
-                <div class="page-shell ion-padding">
-                    {% block content %}{% endblock %}
+                <div id="page-shell">
+                    <div class="page-shell ion-padding">
+                        {% block content %}{% endblock %}
+                    </div>
+                    {% block fixed_actions %}{% endblock %}
                 </div>
-                {% block fixed_actions %}{% endblock %}
             </ion-content>
         </ion-app>
 

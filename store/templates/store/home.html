@@ -16,7 +16,7 @@
             Neuer Einkauf
         </ion-button>
         {% else %}
-        <ion-button expand="block" hx-post="{% url 'store:new-basket' %}" hx-target="#body" hx-push-url="true">
+        <ion-button expand="block" hx-post="{% url 'store:new-basket' %}" hx-target="#page-shell" hx-push-url="true">
             Neuer Einkauf
         </ion-button>
         {% endif %}
@@ -45,7 +45,7 @@
             {% if selected_customer and selected_customer.id == customer.id %}
             <ion-note slot="end" color="success">Aktiv</ion-note>
             {% else %}
-            <form hx-post="{% url 'store:home' %}" hx-target="#body" hx-push-url="false">
+            <form hx-post="{% url 'store:home' %}" hx-target="#page-shell" hx-push-url="false">
                 {% csrf_token %}
                 <input type="hidden" name="customer_id" value="{{ customer.id }}">
                 <ion-button size="small" type="submit">Auswählen</ion-button>
@@ -68,7 +68,7 @@
             button="true"
             detail="true"
             hx-get="{% url 'store:show-basket' basket_id=basket.id %}"
-            hx-target="#body"
+            hx-target="#page-shell"
             hx-push-url="true"
         >
             <ion-label>Einkauf #{{ basket.id }}</ion-label>
