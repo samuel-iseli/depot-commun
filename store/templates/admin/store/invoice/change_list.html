@@ -1,0 +1,9 @@
+{% extends "admin/change_list.html" %}
+{% load admin_urls admin_list %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'admin:store_invoice_create_basket_invoices' %}" class="addlink">Rechnungen für App-Einkäufe generieren</a>
+    </li>
+    {% change_list_object_tools %}
+{% endblock %}

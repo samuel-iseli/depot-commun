@@ -1,22 +1,22 @@
-from .models import Invoice, Purchase
+from .models import Invoice, Purchase, ShoppingBasket
 from collections import defaultdict
 
 
-def get_billable_purchases(end_date):
+def get_billable_baskets(end_date):
     """
-    Get all billable purchases until end_date
-    for a certain depot.
-    This includes all purchases that are not yet on an invoice.
-    Returns a dictionary of users with their purchase items.
+    Get all completed shopping baskets until end_date that are not yet on an invoice.
+    Returns a dictionary of customers with their completed baskets.
     """
-    purchases = Purchase.objects.filter(
-        date__lte=end_date,
-        invoice__isnull=True
+    baskets = ShoppingBasket.objects.filter(
+        completed__isnull=False,
+        completed__lte=end_date,
+        invoice__isnull=True,
+        customer__isnull=False,
     )
 
     billables = defaultdict(list)
-    for p in purchases:
-        billables[p.customer].append(p)
+    for basket in baskets:
+        billables[basket.customer].append(basket)
 
     return billables
 
@@ -45,16 +45,16 @@ def create_invoice(customer, invoice_date, purchases, baskets=None):
 
     return invoice
 
-def create_invoices(end_date, invoice_date):
+def create_basket_invoices(end_date, invoice_date):
     """
-    Create invoices for all billable purchases
-    until end_date
+    Create invoices for all completed shopping baskets that are not yet invoiced.
+    Baskets are grouped by customer and attached to one invoice per customer.
     """
-    purch_per_user = get_billable_purchases(end_date)
+    baskets_per_user = get_billable_baskets(end_date)
 
     invoices = []
-    for customer, items in purch_per_user.items():
-        invoice = create_invoice(customer, invoice_date, items)
+    for customer, baskets in baskets_per_user.items():
+        invoice = create_invoice(customer, invoice_date, [], baskets=baskets)
         invoices.append(invoice)
 
     return invoices

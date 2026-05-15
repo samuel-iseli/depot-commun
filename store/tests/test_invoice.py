@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from store.models import Customer, Article, ArticleGroup, Purchase
-from store.billing import get_billable_purchases, create_invoice, create_invoices
+from store.billing import create_invoice
 
 
 class InvoiceTestBase(TestCase):
@@ -77,26 +77,6 @@ class InvoiceTestBase(TestCase):
 
 
 class InvoiceTest(InvoiceTestBase):
-
-    def test_get_billable_purchases(self):
-        self.create_purchases(
-            self.customer, self.purchase_datetime,
-            self.articles
-        )
-
-        no_purchases = get_billable_purchases(
-            self.purchase_datetime + timedelta(days=-1)
-        )
-
-        self.assertEqual(0, len(no_purchases))
-
-        some_purchases = get_billable_purchases(
-            self.purchase_datetime + timedelta(days=1)
-        )
-
-        # we should get a dictionary with 1 purchase for 1 customer
-        self.assertEqual(1, len(some_purchases.keys()))
-        self.assertEqual(1, len(some_purchases.values()))
 
     def test_create_invoice(self):
         # create 2 purchases
@@ -257,17 +237,6 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
             self.articles
         )
 
-    def test_get_billable_purchases_multiple_user(self):
-
-        billables = get_billable_purchases(self.purchase_datetime)
-
-        # we should get dictionary for 2 users
-        self.assertEqual(2, len(billables))
-
-        # self.customer has 3 purchases, user2 has 2
-        self.assertEqual(3, len(billables[self.customer]))
-        self.assertEqual(2, len(billables[self.user2]))
-
     def test_create_invoice(self):
         invoice = create_invoice(
             self.customer, self.invoice_datetime,
@@ -277,15 +246,3 @@ class InvoiceTestsMultiUsers(InvoiceTestBase):
         self.assertEqual(self.invoice_datetime, invoice.date)
         # purchase1 has 2 items, purchase2 1
         self.assertEqual(3, len(invoice.purchases.all()))
-
-    def test_create_invoices(self):
-        invoices = create_invoices(
-            self.invoice_datetime, self.invoice_datetime)
-
-        self.assertEqual(2, len(invoices))
-
-        self.assertEqual(self.customer, invoices[0].customer)
-        self.assertEqual(Decimal('6.9'), invoices[0].amount)
-
-        self.assertEqual(self.user2, invoices[1].customer)
-        self.assertEqual(Decimal('5.7'), invoices[1].amount)

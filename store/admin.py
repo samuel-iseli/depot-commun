@@ -1,8 +1,8 @@
-from dataclasses import field
-
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django import forms
+from django.http import HttpResponseRedirect
+from django.urls import path, reverse
 from django.utils.translation import gettext as _
 from solo.admin import SingletonModelAdmin
 from django.utils import timezone
@@ -11,7 +11,7 @@ from .models import ExtraItem, ShoppingBasket, UserProfile, Customer, Article, A
 from .email import send_invoice_mails, send_reminder_mails
 from admin_totals.admin import ModelAdminTotals
 
-from .billing import get_billable_purchases, create_invoices
+from .billing import create_basket_invoices
 
 
 class UserProfileAdmin(UserAdmin):
@@ -107,6 +107,7 @@ class InvoiceBasketInline(admin.TabularInline):
 
 class InvoiceAdmin(ModelAdminTotals):
     actions = ['send_invoices_email', 'send_reminder_email', 'mark_as_paid']
+    change_list_template = 'admin/store/invoice/change_list.html'
     list_display = ('id', 'customer', 'date', 'amount', 'paid', 'email_sent')
     list_totals = [('amount', models.Sum)]
     date_hierarchy = 'date'
@@ -114,6 +115,17 @@ class InvoiceAdmin(ModelAdminTotals):
     list_filter = ('paid',)
     search_fields = ('id', 'customer__name')
     inlines = (InvoicePurchaseInline, InvoiceExtraInline, InvoiceBasketInline)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'create-basket-invoices/',
+                self.admin_site.admin_view(self.create_basket_invoices_view),
+                name='store_invoice_create_basket_invoices',
+            ),
+        ]
+        return custom_urls + urls
 
     @admin.action(description=_('Send selected invoices per e-mail'))
     def send_invoices_email(self, request, queryset):
@@ -163,37 +175,17 @@ class InvoiceAdmin(ModelAdminTotals):
             invoice.paid = True
             invoice.save()
 
-    def query_pending_invoices(self, request, queryset):
-        """
-        Display the number and total amount of invoices that
-        would be generated now.
-        """
-        billables = get_billable_purchases(timezone.now())
-        purchases = []
-        for plist in billables.values():
-            purchases.extend(plist)
-
-        total = sum([purchase.total_price for purchase in purchases])
-
-        # show message
-        self.message_user(
-            request,
-            _(f'{len(billables)} invoices with a total amount of {total} would be generated.'),
-            messages.SUCCESS)
-
-    def do_create_invoices(self, request, queryset):
-        """
-        create all pending invoices.
-        """
+    def create_basket_invoices_view(self, request):
         effective_date = timezone.now()
-        invoices = create_invoices(effective_date, effective_date)
-        total = sum([inv.amount for inv in invoices])
+        invoices = create_basket_invoices(effective_date, effective_date)
+        total = sum((invoice.amount for invoice in invoices), 0)
 
-        # show created invoice count
         self.message_user(
             request,
-            _(f'{len(invoices)} invoices with a total amount of {total} have been generated.'),
-            messages.SUCCESS)
+            _(f'{len(invoices)} Rechnungen mit einem Gesamtbetrag von {total} wurden aus App-Einkäufen generiert.'),
+            messages.SUCCESS,
+        )
+        return HttpResponseRedirect(reverse('admin:store_invoice_changelist'))
 
 class ShoppingBasketAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'invoice', 'date', 'completed')
