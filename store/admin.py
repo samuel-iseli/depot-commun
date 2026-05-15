@@ -85,6 +85,26 @@ class InvoiceExtraInline(admin.TabularInline):
     fields = ('text', 'amount')
 
 
+class InvoiceBasketInline(admin.TabularInline):
+    model = ShoppingBasket
+    extra = 0
+    can_delete = False
+    show_change_link = True
+    fields = ('completed', 'purchase_count', 'purchase_total')
+    readonly_fields = ('completed', 'purchase_count', 'purchase_total')
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    @admin.display(description='Anzahl Einkäufe')
+    def purchase_count(self, basket):
+        return basket.purchases.count()
+
+    @admin.display(description='Einkauf Total')
+    def purchase_total(self, basket):
+        return sum((purchase.total_price for purchase in basket.purchases.all()), 0)
+
+
 class InvoiceAdmin(ModelAdminTotals):
     actions = ['send_invoices_email', 'send_reminder_email', 'mark_as_paid']
     list_display = ('id', 'customer', 'date', 'amount', 'paid', 'email_sent')
@@ -93,7 +113,7 @@ class InvoiceAdmin(ModelAdminTotals):
     ordering = ('-id',)
     list_filter = ('paid',)
     search_fields = ('id', 'customer__name')
-    inlines = (InvoicePurchaseInline, InvoiceExtraInline)
+    inlines = (InvoicePurchaseInline, InvoiceExtraInline, InvoiceBasketInline)
 
     @admin.action(description=_('Send selected invoices per e-mail'))
     def send_invoices_email(self, request, queryset):

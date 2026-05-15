@@ -101,7 +101,8 @@ class Invoice(models.Model):
     def update_amount(self):
         purchase_amount = sum([p.price * p.quantity for p in self.purchases.all()])
         extra_amount = sum([itm.amount for itm in self.extra_items.all()])
-        self.amount = purchase_amount + extra_amount
+        basket_amount = sum([basket.total_amount for basket in self.baskets.all()])
+        self.amount = purchase_amount + extra_amount + basket_amount
         self.save()
 
     def save(self, *args, **kwargs):
@@ -193,6 +194,24 @@ class ShoppingBasket(models.Model):
     completed = models.DateTimeField(
         null=True, blank=True, verbose_name=_('Completed'),
         help_text=_('When the basket was completed'))
+    
+    @property
+    def total_amount(self):
+        return sum((purchase.total_price for purchase in self.purchases.all()), 0)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # update price on invoice
+        if self.invoice:
+            self.invoice.update_amount()
+
+    def delete(self):
+        """
+        override delete to update invoice amount.
+        """
+        super().delete()
+        if self.invoice:
+            self.invoice.update_amount()
 
     class Meta:
         verbose_name = _('Shopping Basket')

@@ -1,10 +1,11 @@
 from decimal import Decimal
 
+from django.contrib.admin.sites import AdminSite
 from django.test import TestCase
 from django.utils import timezone
 
-from store.admin import InvoicePurchaseForm
-from store.models import Article, ArticleGroup, Customer, Invoice, Purchase
+from store.admin import InvoiceBasketInline, InvoicePurchaseForm
+from store.models import Article, ArticleGroup, Customer, Invoice, Purchase, ShoppingBasket
 
 
 class InvoicePurchaseInlineTest(TestCase):
@@ -81,3 +82,50 @@ class InvoicePurchaseInlineTest(TestCase):
             self._widget_choice_ids(form),
             [self.active_article.pk, self.inactive_article.pk],
         )
+
+
+class InvoiceBasketInlineTest(TestCase):
+    def setUp(self):
+        self.group = ArticleGroup.objects.create(idx=1, name='Group')
+        self.article = Article.objects.create(
+            group=self.group,
+            sortidx=1,
+            name='Article',
+            price=Decimal('2.50'),
+            active=True,
+        )
+        self.customer = Customer.objects.create(
+            name='Test Customer',
+            street='Example Street 1',
+            zip='8000',
+            city='Zurich',
+        )
+        self.invoice = Invoice.objects.create(customer=self.customer)
+        self.basket = ShoppingBasket.objects.create(
+            customer=self.customer,
+            invoice=self.invoice,
+            completed=timezone.now(),
+        )
+        Purchase.objects.create(
+            article=self.article,
+            quantity=2,
+            price=Decimal('2.50'),
+            customer=self.customer,
+            invoice=self.invoice,
+            basket=self.basket,
+            date=timezone.now(),
+        )
+        Purchase.objects.create(
+            article=self.article,
+            quantity=1,
+            price=Decimal('3.00'),
+            customer=self.customer,
+            invoice=self.invoice,
+            basket=self.basket,
+            date=timezone.now(),
+        )
+        self.inline = InvoiceBasketInline(Invoice, AdminSite())
+
+    def test_purchase_count_and_total(self):
+        self.assertEqual(self.inline.purchase_count(self.basket), 2)
+        self.assertEqual(self.inline.purchase_total(self.basket), Decimal('8.00'))
