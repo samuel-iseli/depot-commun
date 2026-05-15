@@ -14,7 +14,7 @@ from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
 
 
-def _build_unique_username(user_model, email):
+def _build_unique_username_from_email(user_model, email):
     local_part = (email.split('@', 1)[0] or 'user').strip().lower()
     base = ''.join(char if char.isalnum() else '-' for char in local_part).strip('-')
     if not base:
@@ -43,9 +43,18 @@ def _get_or_create_login_user_for_email(email):
         return None
 
     user = user_model.objects.create_user(
-        username=_build_unique_username(user_model, email),
+        username=_build_unique_username_from_email(user_model, email),
         email=email,
     )
+
+    # if single customer, assign name to user
+    if unassigned_customers.count() == 1:
+        customer = unassigned_customers.first()
+        first_name, last_name = customer.name.split(' ', 1) if ' ' in customer.name else (customer.name, '')
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
     unassigned_customers.update(user=user)
     return user
 
