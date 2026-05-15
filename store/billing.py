@@ -21,7 +21,7 @@ def get_billable_purchases(end_date):
     return billables
 
 
-def create_invoice(customer, invoice_date, purchases):
+def create_invoice(customer, invoice_date, purchases, baskets=None):
     """
     create an invoice for a list of purchase items.
     """
@@ -36,6 +36,10 @@ def create_invoice(customer, invoice_date, purchases):
 
     # add the items to invoice
     for item in purchases:
+        item.invoice = invoice
+        item.save()
+
+    for item in baskets or []:
         item.invoice = invoice
         item.save()
 

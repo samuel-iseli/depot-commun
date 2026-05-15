@@ -63,6 +63,8 @@ class InvoicePdfRenderer(object):
         self.render_header(bill, story)
         story.append(Spacer(1, 0.5 * cm))
         self.render_items(bill, story)
+        story.append(Spacer(1, 0.5 * cm))
+        self.render_app_baskets(bill, story)
         story.append(Spacer(1, 1*cm))
         self.render_paymentinfo(story)
         story.append(PageBreak('payslip'))
@@ -136,13 +138,18 @@ class InvoicePdfRenderer(object):
         """
         render the list of purchases on the bill.
         """
-        # group purchases by article and price
+        # group purchases by article and price;
+        # direct purchases are those not linked to a basket,
+        # basket purchases come through invoice.baskets to avoid double-counting
         article_lines = defaultdict(lambda: 0)
-        for purchase in invoice.purchases.all():
+        for purchase in invoice.purchases.filter(basket__isnull=True):
             article = purchase.article
             p_quantity = purchase.quantity
             p_price = purchase.price
             article_lines[(article, p_price)] += p_quantity
+        for basket in invoice.baskets.all():
+            for purchase in basket.purchases.all():
+                article_lines[(purchase.article, purchase.price)] += purchase.quantity
 
         lines = []
         lines.append((
@@ -177,6 +184,51 @@ class InvoicePdfRenderer(object):
 
         items_table = Table(lines, (None, 2 * cm, 2 * cm, 2 * cm), style=self.table_style)
         story.append(items_table)
+
+    def render_app_baskets(self, invoice, story):
+        """
+        Render an "App purchases" section summarising each shopping basket
+        linked to the invoice (one row per basket: completed date, article count,
+        total amount).  If there are also direct purchases on the invoice
+        (i.e. not via a basket) a trailing row reading "Articles tallied on paper"
+        (without a date) is appended.
+        The section is skipped entirely when the invoice has neither baskets
+        nor direct purchases.
+        """
+        baskets = list(invoice.baskets.all())
+        direct_purchases = invoice.purchases.filter(basket__isnull=True)
+
+        if not baskets:
+            return
+
+        story.append(Paragraph('App Einkäufe', self.heading2))
+
+        lines = [(
+            Paragraph('<i>Datum</i>', self.normal),
+            Paragraph('<i>Artikel</i>', self.normalright),
+            Paragraph('<i>Betrag</i>', self.normalright),
+        )]
+
+        for basket in baskets:
+            purchases = list(basket.purchases.all())
+            count = len(purchases)
+            total = sum(p.total_price for p in purchases)
+            date_str = self.date_format(basket.completed) if basket.completed else '—'
+            lines.append((
+                Paragraph(date_str, self.normal),
+                Paragraph(str(count), self.normalright),
+                Paragraph('%10.2f' % total, self.normalright),
+            ))
+
+        if direct_purchases.exists():
+            lines.append((
+                Paragraph('Artikel auf Papier erfasst', self.normal),
+                Paragraph(str(len(direct_purchases)), self.normalright),
+                Paragraph('%10.2f' % sum(p.total_price for p in direct_purchases), self.normalright),
+            ))
+
+        table = Table(lines, (None, 2 * cm, 2 * cm), style=self.table_style)
+        story.append(table)
 
     def render_paymentinfo(self, story):
         story.append(
