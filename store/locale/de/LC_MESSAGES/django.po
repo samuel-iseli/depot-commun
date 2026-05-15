@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 21:39+0200\n"
+"POT-Creation-Date: 2026-05-15 22:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,198 +18,197 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\store\admin.py:71
+#: .\store\admin.py:118
 msgid "Send selected invoices per e-mail"
 msgstr "Ausgewählte Rechnungen per E-Mail versenden"
 
-#: .\store\admin.py:84
-#, python-format
-msgid "Failed to send e-mail to %s (e-mail address '%s')."
-msgstr "Konnte keine E-Mail an %s (E-Mail Adresse '%s') senden."
-
-#: .\store\admin.py:92
-#, python-format
-msgid "Successfully sent %d e-mails."
-msgstr "%d E-Mails erfolgreich versandt."
-
-#: .\store\admin.py:96
+#: .\store\admin.py:160
 msgid "Mark selected invoices as paid"
 msgstr "Ausgewählte Rechnungen als bezahlt markieren"
 
-#: .\store\admin.py:117
-msgid ""
-"{len(billables)} invoices with a total amount of {total} would be generated."
-msgstr "{len(billables)} Rechnungen mit Totalbetrag {total} würden generiert."
-
-#: .\store\admin.py:131
-msgid ""
-"{len(invoices)} invoices with a total amount of {total} have been generated."
-msgstr "{len(invoices)} Rechnungen mit Totalbetrag {total} wurden generiert."
-
-#: .\store\admin.py:137
+#: .\store\admin.py:206
 msgid "Payment Account"
 msgstr "Zahlungskonto"
 
-#: .\store\models.py:12 .\store\models.py:44 .\store\models.py:62
+#: .\store\models.py:15
+msgid "User"
+msgstr ""
+
+#: .\store\models.py:18 .\store\models.py:45 .\store\models.py:63
 msgid "Name"
 msgstr "Name"
 
-#: .\store\models.py:14
+#: .\store\models.py:20
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: .\store\models.py:16
+#: .\store\models.py:22
 msgid "Street"
 msgstr "Strasse"
 
-#: .\store\models.py:18
+#: .\store\models.py:24
 msgid "House Number"
 msgstr "Hausnummer"
 
-#: .\store\models.py:20
+#: .\store\models.py:26
 msgid "ZIP"
 msgstr "PLZ"
 
-#: .\store\models.py:22
+#: .\store\models.py:28
 msgid "City"
 msgstr "Ort"
 
-#: .\store\models.py:29 .\store\models.py:39 .\store\models.py:89
-#: .\store\models.py:135
+#: .\store\models.py:35 .\store\models.py:90 .\store\models.py:136
+#: .\store\models.py:187
 msgid "Customer"
 msgstr "Kundin"
 
-#: .\store\models.py:30
+#: .\store\models.py:36
 msgid "Customers"
 msgstr "Kundinnen"
 
-#: .\store\models.py:43
+#: .\store\models.py:44
 msgid "Idx"
 msgstr "Idx"
 
-#: .\store\models.py:51
+#: .\store\models.py:52
 msgid "Articlegroup"
 msgstr "Artikelgruppe"
 
-#: .\store\models.py:52
+#: .\store\models.py:53
 msgid "Articlegroups"
 msgstr "Artikelgruppen"
 
-#: .\store\models.py:58
+#: .\store\models.py:59
 msgid "Group"
 msgstr "Gruppe"
 
-#: .\store\models.py:60
+#: .\store\models.py:61
 msgid "Sort Index"
 msgstr "Sortier Index"
 
-#: .\store\models.py:64 .\store\models.py:132
+#: .\store\models.py:65 .\store\models.py:133
 msgid "Price"
 msgstr "Preis"
 
-#: .\store\models.py:66
+#: .\store\models.py:67
 msgid "Active"
 msgstr "Aktiv"
 
-#: .\store\models.py:81 .\store\models.py:128
+#: .\store\models.py:82 .\store\models.py:129
 msgid "Article"
 msgstr "Artikel"
 
-#: .\store\models.py:82
+#: .\store\models.py:83
 msgid "Articles"
 msgstr "Artikel"
 
-#: .\store\models.py:91 .\store\models.py:141
+#: .\store\models.py:92 .\store\models.py:142 .\store\models.py:183
 msgid "Date"
 msgstr "Datum"
 
-#: .\store\models.py:93 .\store\models.py:180
+#: .\store\models.py:94 .\store\models.py:209
 msgid "Amount"
 msgstr "Betrag"
 
-#: .\store\models.py:94
+#: .\store\models.py:95
 msgid "Paid"
 msgstr "Bezahlt"
 
-#: .\store\models.py:97
+#: .\store\models.py:98
 msgid "Payment date"
 msgstr "Zahlungsdatum"
 
-#: .\store\models.py:117
+#: .\store\models.py:118
 #, python-format
 msgid "Invoice %d"
 msgstr "Rechnung %d"
 
-#: .\store\models.py:120 .\store\models.py:139 .\store\models.py:184
+#: .\store\models.py:121 .\store\models.py:140 .\store\models.py:191
+#: .\store\models.py:213
 msgid "Invoice"
 msgstr "Rechnung"
 
-#: .\store\models.py:121
+#: .\store\models.py:122
 msgid "Invoices"
 msgstr "Rechnungen"
 
-#: .\store\models.py:130
+#: .\store\models.py:131
 msgid "Quantity"
 msgstr "Menge"
 
-#: .\store\models.py:168
+#: .\store\models.py:146
+msgid "Basket"
+msgstr ""
+
+#: .\store\models.py:177
 msgid "Purchase"
 msgstr "Einkauf"
 
-#: .\store\models.py:169
+#: .\store\models.py:178
 msgid "Purchases"
 msgstr "Einkäufe"
 
-#: .\store\models.py:178
+#: .\store\models.py:194
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+#: .\store\models.py:195
+msgid "When the basket was completed"
+msgstr "Wann der Korb abgeschlossen wurde"
+
+#: .\store\models.py:198
+msgid "Shopping Basket"
+msgstr "Einkaufskorb"
+
+#: .\store\models.py:199
+msgid "Shopping Baskets"
+msgstr "Einkaufskörbe"
+
+#: .\store\models.py:207
 msgid "Text"
 msgstr "Text"
 
-#: .\store\models.py:201
+#: .\store\models.py:230
 msgid "Extra Item"
 msgstr "Zusatzeintrag"
 
-#: .\store\models.py:202
+#: .\store\models.py:231
 msgid "Extra Items"
 msgstr "Zusatzeinträge"
 
-#: .\store\models.py:224
+#: .\store\models.py:253
 msgid "Bank"
 msgstr "Bank"
 
-#: .\store\models.py:227
+#: .\store\models.py:256
 msgid "Account Number"
 msgstr "Kontonummer (IBAN)"
 
-#: .\store\models.py:230
+#: .\store\models.py:259
 msgid "Account Name"
 msgstr "Konto Name"
 
-#: .\store\models.py:233
+#: .\store\models.py:262
 msgid "Account Street"
 msgstr "Konto Strasse"
 
-#: .\store\models.py:236
+#: .\store\models.py:265
 msgid "Account House Number"
 msgstr "Konto Hausnummer"
 
-#: .\store\models.py:239
+#: .\store\models.py:268
 msgid "Account Place"
 msgstr "Konto Ort"
 
-#: .\store\models.py:242
+#: .\store\models.py:271
 msgid "Account Postal Code"
 msgstr "Konto PLZ"
 
-#: .\store\models.py:246 .\store\models.py:249
+#: .\store\models.py:275 .\store\models.py:278
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: .\store\templates\admin\store\invoice\change_form.html:10
 msgid "History"
 msgstr "Verlauf"
-
-#~ msgid "Please pay specifying bill number to:"
-#~ msgstr "Bitte einzahlen unter Angabe der Rechnungsnummer auf:"
-
-#~ msgid "in favor of"
-#~ msgstr "zugunsten von"
