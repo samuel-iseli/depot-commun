@@ -14,6 +14,42 @@ from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
 
 
+def _build_unique_username(user_model, email):
+    local_part = (email.split('@', 1)[0] or 'user').strip().lower()
+    base = ''.join(char if char.isalnum() else '-' for char in local_part).strip('-')
+    if not base:
+        base = 'user'
+
+    username = base
+    suffix = 1
+    while user_model.objects.filter(username=username).exists():
+        suffix += 1
+        username = f'{base}-{suffix}'
+    return username
+
+
+def _get_or_create_login_user_for_email(email):
+    user_model = get_user_model()
+    user = user_model.objects.filter(
+        is_active=True,
+        email__iexact=email,
+    ).order_by('id').first()
+    if user is not None:
+        return user
+
+    matching_customers = models.Customer.objects.filter(email__iexact=email)
+    unassigned_customers = matching_customers.filter(user__isnull=True)
+    if not unassigned_customers.exists():
+        return None
+
+    user = user_model.objects.create_user(
+        username=_build_unique_username(user_model, email),
+        email=email,
+    )
+    unassigned_customers.update(user=user)
+    return user
+
+
 def _get_safe_next_url(request, fallback='/store/'):
     next_url = request.POST.get('next') or request.GET.get('next') or fallback
     if not url_has_allowed_host_and_scheme(
@@ -32,10 +68,7 @@ def email_login_request(request):
     next_url = _get_safe_next_url(request)
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
-        user = get_user_model().objects.filter(
-            is_active=True,
-            email__iexact=email,
-        ).order_by('id').first()
+        user = _get_or_create_login_user_for_email(email)
 
         if user is not None:
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))

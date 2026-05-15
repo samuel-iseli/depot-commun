@@ -69,3 +69,79 @@ class EmailLoginTests(TestCase):
         response = self.client.get('/store/login/confirm/invalid/invalid/')
         self.assertEqual(response.status_code, 400)
         self.assertContains(response, 'Link ist ungültig oder abgelaufen', status_code=400)
+
+    def test_post_email_creates_user_for_matching_customers_and_sends_confirmation(self):
+        Customer.objects.create(
+            user=None,
+            name='Fresh Customer One',
+            email='new-login@example.com',
+            street='Street 1',
+            zip='8000',
+            city='Zurich',
+        )
+        Customer.objects.create(
+            user=None,
+            name='Fresh Customer Two',
+            email='new-login@example.com',
+            street='Street 2',
+            zip='8000',
+            city='Zurich',
+        )
+
+        response = self.client.post(
+            reverse('store:email-login'),
+            {'email': 'new-login@example.com', 'next': '/store/'},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Anmelde-Link gesendet')
+
+        user_model = get_user_model()
+        created_user = user_model.objects.filter(email='new-login@example.com').first()
+        self.assertIsNotNone(created_user)
+        self.assertEqual(created_user.customers.count(), 2)
+
+        from django.core import mail
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('/store/login/confirm/', mail.outbox[0].body)
+
+    def test_post_email_does_not_reassign_customer_with_existing_user(self):
+        user_model = get_user_model()
+        existing_user = user_model.objects.create_user(
+            username='already-linked',
+            email='already-linked@example.com',
+            password='unused-password',
+        )
+        kept_customer = Customer.objects.create(
+            user=existing_user,
+            name='Already Linked',
+            email='shared-login@example.com',
+            street='Street 1',
+            zip='8000',
+            city='Zurich',
+        )
+        adopted_customer = Customer.objects.create(
+            user=None,
+            name='Adopted Customer',
+            email='shared-login@example.com',
+            street='Street 2',
+            zip='8000',
+            city='Zurich',
+        )
+
+        response = self.client.post(
+            reverse('store:email-login'),
+            {'email': 'shared-login@example.com', 'next': '/store/'},
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        kept_customer.refresh_from_db()
+        adopted_customer.refresh_from_db()
+
+        self.assertEqual(kept_customer.user_id, existing_user.id)
+        self.assertIsNotNone(adopted_customer.user_id)
+        self.assertNotEqual(adopted_customer.user_id, existing_user.id)
+
+        from django.core import mail
+        self.assertEqual(len(mail.outbox), 1)
