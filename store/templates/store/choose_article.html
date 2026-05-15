@@ -57,8 +57,6 @@
                 data-article-name="{{ article.name|lower }}"
                 data-article-price="{{ article.price }}"
                 hx-post="{% url 'store:create-purchase' basket_id=basket_id article_id=article.id %}"
-                hx-target="#page-shell"
-                hx-push-url="true"
             >
                 <ion-label>{{ article.name }}</ion-label>
                 <ion-note slot="end">{{ article.price }}</ion-note>

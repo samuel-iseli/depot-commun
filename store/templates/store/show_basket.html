@@ -63,14 +63,14 @@
         <ion-card-content>
             <div class="purchase-row">
                 <div class="qty-controls">
-                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}" hx-target="#page-shell">
+                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:dec-quantity' purchase_id=purchase.id %}">
                         <ion-icon name="remove-outline"></ion-icon>
                     </ion-button>
                     <strong>{{ purchase.quantity }}</strong>
-                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}" hx-target="#page-shell">
+                    <ion-button class="qty-btn" fill="outline" size="small" hx-post="{% url 'store:inc-quantity' purchase_id=purchase.id %}">
                         <ion-icon name="add-outline"></ion-icon>
                     </ion-button>
-                    <ion-button color="danger" fill="clear" size="small" hx-post="{% url 'store:delete-purchase' purchase_id=purchase.id %}" hx-target="#page-shell">
+                    <ion-button color="danger" fill="clear" size="small" hx-post="{% url 'store:delete-purchase' purchase_id=purchase.id %}">
                         <ion-icon name="trash-outline"></ion-icon>
                     </ion-button>
                 </div>
@@ -89,12 +89,12 @@
 
 {% block fixed_actions %}
 <ion-fab slot="fixed" vertical="bottom" horizontal="center">
-    <ion-fab-button hx-get="{% url 'store:choose-article' basket_id=basket.id %}" hx-target="#page-shell" hx-push-url="true">
+    <ion-fab-button hx-get="{% url 'store:choose-article' basket_id=basket.id %}" hx-push-url="true">
         <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
 </ion-fab>
 <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="success" hx-get="{% url 'store:finish-basket' basket_id=basket.id %}" hx-target="#page-shell" hx-push-url="false">
+    <ion-fab-button color="success" hx-get="{% url 'store:finish-basket' basket_id=basket.id %}" hx-push-url="true">
         <ion-icon name="checkmark-outline"></ion-icon>
     </ion-fab-button>
 </ion-fab>

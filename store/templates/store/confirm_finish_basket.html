@@ -30,7 +30,6 @@
                         fill="outline"
                         color="danger"
                         hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
-                        hx-target="#page-shell"
                         hx-push-url="true"
                         hx-vals='{"action":"delete"}'
                     >
@@ -43,8 +42,6 @@
                         fill="outline"
                         color="medium"
                         hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
-                        hx-target="#page-shell"
-                        hx-push-url="false"
                         hx-vals='{"action":"cancel"}'
                     >
                         Weiter einkaufen
@@ -57,8 +54,6 @@
                         expand="block"
                         color="success"
                         hx-post="{% url 'store:finish-basket' basket_id=basket.id %}"
-                        hx-target="#page-shell"
-                        hx-push-url="true"
                         hx-vals='{"action":"confirm"}'
                     >
                         Einkauf abschliessen

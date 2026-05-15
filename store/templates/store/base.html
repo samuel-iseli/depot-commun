@@ -58,7 +58,7 @@
         </style>
         {% block extra_css %}{% endblock %}
     </head>
-    <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-select="#page-shell" hx-swap="outerHTML">
+    <body id="body" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' hx-select="#page-shell" hx-target="#page-shell" hx-select-oob="#toolbar-title">
         <ion-app>
             {% if request.user.is_authenticated %}
             <ion-menu side="end" content-id="main-content" type="overlay">
@@ -83,7 +83,7 @@
             <ion-header translucent="true">
                 <ion-toolbar>
                     <ion-title>
-                        <span class="app-navbar-customer">
+                        <span id="toolbar-title" class="app-navbar-customer">
                             {% if selected_customer %}
                             {{ selected_customer.name }}
                             {% else %}
