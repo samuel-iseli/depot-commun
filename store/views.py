@@ -1,3 +1,5 @@
+import logging
+
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -13,6 +15,9 @@ from . import models
 from .models import Article, Purchase, ShoppingBasket
 from .invoice_pdf import InvoicePdfRenderer
 from .articles_pdf import ArticlesPdfRenderer
+
+
+logger = logging.getLogger(__name__)
 
 
 def _build_unique_username_from_email(user_model, email):
@@ -115,18 +120,48 @@ def email_login_request(request):
 
 
 def email_login_confirm(request, uidb64, token):
+    token_preview = f"{token[:8]}..." if token else "<missing>"
+    logger.debug(
+        "email_login_confirm called: path=%s host=%s uidb64=%s token=%s next=%s",
+        request.path,
+        request.get_host(),
+        uidb64,
+        token_preview,
+        request.GET.get('next'),
+    )
+
     user_model = get_user_model()
     user = None
     try:
         user_id = force_str(urlsafe_base64_decode(uidb64))
         user = user_model.objects.get(pk=user_id)
+        logger.debug(
+            "email_login_confirm user resolved: user_id=%s is_active=%s",
+            user.id,
+            user.is_active,
+        )
     except (TypeError, ValueError, OverflowError, user_model.DoesNotExist):
+        logger.exception(
+            "email_login_confirm failed to decode/resolve user: uidb64=%s token=%s",
+            uidb64,
+            token_preview,
+        )
         user = None
 
-    if user is not None and user.is_active and default_token_generator.check_token(user, token):
+    token_valid = user is not None and default_token_generator.check_token(user, token)
+    if user is not None and user.is_active and token_valid:
+        logger.info("email_login_confirm success: user_id=%s", user.id)
         auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return HttpResponseRedirect(_get_safe_next_url(request))
 
+    logger.warning(
+        "email_login_confirm rejected: has_user=%s is_active=%s token_valid=%s uidb64=%s token=%s",
+        user is not None,
+        user.is_active if user is not None else None,
+        token_valid,
+        uidb64,
+        token_preview,
+    )
     return render(request, 'store/login_email_invalid.html', status=400)
 
 
