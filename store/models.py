@@ -1,5 +1,6 @@
 import random
 from django.db import models
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _, gettext
 from solo.models import SingletonModel
 from django.utils import timezone
@@ -182,6 +183,10 @@ class Purchase(models.Model):
 class ShoppingBasket(models.Model):
     date = models.DateTimeField(
         default=timezone.now, verbose_name=_('Date'))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='shopping_baskets',
+        on_delete=models.CASCADE,
+        verbose_name=_('User'))
     customer = models.ForeignKey(
         Customer, related_name='shopping_baskets',
         on_delete=models.SET_NULL, null=True, blank=True,
