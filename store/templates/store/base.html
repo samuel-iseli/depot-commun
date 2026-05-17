@@ -76,6 +76,12 @@
                             <ion-icon name="person-outline" slot="start"></ion-icon>
                             <ion-label class="app-menu-user">{{ request.user.get_full_name|default:request.user.username }}</ion-label>
                         </ion-item>
+                        {% if request.user.is_staff %}
+                        <ion-item lines="full" button="true" detail="true" href="{% url 'admin:index' %}">
+                            <ion-icon name="settings-outline" slot="start"></ion-icon>
+                            <ion-label>Admin</ion-label>
+                        </ion-item>
+                        {% endif %}
                         <ion-item lines="full">
                             <ion-label>Abmelden</ion-label>
                             <form method="post" action="{% url 'store:logout' %}" slot="end">
