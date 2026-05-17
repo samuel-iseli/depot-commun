@@ -1,3 +1,4 @@
+from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
@@ -225,6 +226,46 @@ def edit_profile(request):
             return HttpResponseRedirect('/store/')
     return render(request, 'store/edit_profile.html', {'errors': errors})
 
+
+@login_required
+def users_list(request):
+    from .context_processors import selected_customer as get_selected_customer
+    ctx = get_selected_customer(request)
+    selected_customer = ctx['selected_customer']
+    if not selected_customer:
+        return HttpResponseForbidden("Kein Kunde ausgewählt.")
+    users = selected_customer.users.all()
+    return render(request, 'store/users.html', {'users': users, 'selected_customer': selected_customer})
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def add_user(request):
+    from .context_processors import selected_customer as get_selected_customer
+    ctx = get_selected_customer(request)
+    selected_customer = ctx['selected_customer']
+    error = None
+    if not selected_customer:
+        return HttpResponseForbidden("Kein Kunde ausgewählt.")
+    if request.method == "POST":
+        email = request.POST.get('email', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        if not email or not first_name or not last_name:
+            error = "Bitte alle Felder ausfüllen."
+        else:
+            User = get_user_model()
+            user, created = User.objects.get_or_create(email=email, defaults={
+                'username': email,
+                'first_name': first_name,
+                'last_name': last_name,
+            })
+            if not created:
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save(update_fields=['first_name', 'last_name'])
+            selected_customer.users.add(user)
+            return HttpResponseRedirect('/store/users/')
+    return render(request, 'store/add_user.html', {'selected_customer': selected_customer, 'error': error})
 
 @login_required
 def show_basket(request, basket_id):
