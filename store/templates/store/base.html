@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="de">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'store/icons/apple-touch-icon.png' %}" />
         <title>{% block title %}Depot Commun{% endblock %}</title>
 
         <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core@7/dist/ionic/ionic.esm.js"></script>
