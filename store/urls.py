@@ -5,7 +5,8 @@ app_name = 'store'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('users/', views.users_list, name='users'),
+    path('customer/', views.customer_page, name='customer'),
+    path('users/', views.customer_page, name='users'),
     path('users/new/', views.add_user, name='add-user'),
     path('login/', views.email_login_request, name='email-login'),
     path('login/confirm/<uidb64>/<token>/', views.email_login_confirm, name='email-login-confirm'),

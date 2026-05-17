@@ -12,6 +12,19 @@
             {% csrf_token %}
             <ion-list lines="full">
                 <ion-item>
+                    <ion-text position="stacked">Benutzername: {{ request.user.username }} </ion-text>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="stacked">E-Mail</ion-label>
+                    <ion-input
+                        name="email"
+                        type="email"
+                        value="{{ request.user.email }}"
+                        maxlength="150"
+                        autocomplete="email"
+                    ></ion-input>
+                </ion-item>
+                <ion-item>
                     <ion-label position="stacked">Vorname</ion-label>
                     <ion-input
                         name="first_name"

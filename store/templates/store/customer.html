@@ -1,0 +1,56 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Kunde{% endblock %}
+
+{% block content %}
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Kunde bearbeiten</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <form method="post" action="{% url 'store:customer' %}">
+      {% csrf_token %}
+      <ion-list lines="full">
+        <ion-item>
+          <ion-label position="stacked">Kundenname</ion-label>
+          <ion-input
+            name="customer_name"
+            type="text"
+            value="{{ selected_customer.name }}"
+            maxlength="50"
+            autocomplete="organization"
+            required
+          ></ion-input>
+        </ion-item>
+        {% if errors.customer_name %}
+        <ion-item lines="none">
+          <ion-note color="danger" slot="end">{{ errors.customer_name }}</ion-note>
+        </ion-item>
+        {% endif %}
+      </ion-list>
+      <ion-button expand="block" type="submit" style="margin-top: 16px;">Speichern</ion-button>
+    </form>
+
+    <ion-card-header style="padding-left: 0; padding-right: 0;">
+      <ion-card-title style="font-size: 1.05rem;">Zugeordnete Benutzer</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      {% for user in users %}
+        <ion-item>
+          <ion-label>
+            <h2>{{ user.get_full_name|default:user.username }}</h2>
+            <p>{{ user.email }}</p>
+          </ion-label>
+        </ion-item>
+      {% empty %}
+        <ion-item>
+          <ion-label>Keine Benutzer gefunden.</ion-label>
+        </ion-item>
+      {% endfor %}
+    </ion-list>
+    <form action="{% url 'store:add-user' %}" method="get" style="margin-top: 16px;">
+      <ion-button expand="block" type="submit">Benutzer hinzufügen</ion-button>
+    </form>
+  </ion-card-content>
+</ion-card>
+{% endblock %}

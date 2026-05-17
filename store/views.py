@@ -228,14 +228,35 @@ def edit_profile(request):
 
 
 @login_required
-def users_list(request):
-    from .context_processors import selected_customer as get_selected_customer
-    ctx = get_selected_customer(request)
-    selected_customer = ctx['selected_customer']
+@require_http_methods(["GET", "POST"])
+def customer_page(request):
+    selected_customer, _ = _get_selected_customer(request)
+    errors = {}
+
     if not selected_customer:
         return HttpResponseForbidden("Kein Kunde ausgewählt.")
+
+    if request.method == "POST":
+        customer_name = request.POST.get('customer_name', '').strip()
+        if not customer_name:
+            errors['customer_name'] = 'Bitte einen Kundennamen eingeben.'
+        elif len(customer_name) > 50:
+            errors['customer_name'] = 'Kundenname darf maximal 50 Zeichen enthalten.'
+        else:
+            selected_customer.name = customer_name
+            selected_customer.save(update_fields=['name'])
+            return HttpResponseRedirect('/store/customer/')
+
     users = selected_customer.users.all()
-    return render(request, 'store/users.html', {'users': users, 'selected_customer': selected_customer})
+    return render(
+        request,
+        'store/customer.html',
+        {
+            'users': users,
+            'selected_customer': selected_customer,
+            'errors': errors,
+        },
+    )
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -264,7 +285,7 @@ def add_user(request):
                 user.last_name = last_name
                 user.save(update_fields=['first_name', 'last_name'])
             selected_customer.users.add(user)
-            return HttpResponseRedirect('/store/users/')
+            return HttpResponseRedirect('/store/customer/')
     return render(request, 'store/add_user.html', {'selected_customer': selected_customer, 'error': error})
 
 @login_required
