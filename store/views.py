@@ -122,7 +122,8 @@ def email_login_request(request):
 def email_login_confirm(request, uidb64, token):
     token_preview = f"{token[:8]}..." if token else "<missing>"
     logger.debug(
-        "email_login_confirm called: path=%s host=%s uidb64=%s token=%s next=%s",
+        "email_login_confirm called: method=%s path=%s host=%s uidb64=%s token=%s next=%s",
+        request.method,
         request.path,
         request.get_host(),
         uidb64,
@@ -149,7 +150,18 @@ def email_login_confirm(request, uidb64, token):
         user = None
 
     token_valid = user is not None and default_token_generator.check_token(user, token)
-    if user is not None and user.is_active and token_valid:
+    if request.method == 'GET' and user is not None and user.is_active and token_valid:
+        logger.info("email_login_confirm token accepted on GET: user_id=%s", user.id)
+        return render(
+            request,
+            'store/login_email_confirm.html',
+            {
+                'user': user,
+                'next': _get_safe_next_url(request),
+            },
+        )
+
+    if request.method == 'POST' and user is not None and user.is_active and token_valid:
         logger.info("email_login_confirm success: user_id=%s", user.id)
         auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return HttpResponseRedirect(_get_safe_next_url(request))

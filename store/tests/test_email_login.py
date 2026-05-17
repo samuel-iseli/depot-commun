@@ -47,7 +47,7 @@ class EmailLoginTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('/store/login/confirm/', mail.outbox[0].body)
 
-    def test_confirmation_link_logs_in_user(self):
+    def test_confirmation_link_shows_confirmation_then_logs_in_user(self):
         self.client.post(
             reverse('store:email-login'),
             {'email': 'mail-user@example.com', 'next': '/store/'},
@@ -59,8 +59,12 @@ class EmailLoginTests(TestCase):
         self.assertIsNotNone(match)
 
         response = self.client.get(match.group(1))
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/store/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Login bestätigen')
+
+        response_post = self.client.post(match.group(1), {'next': '/store/'})
+        self.assertEqual(response_post.status_code, 302)
+        self.assertEqual(response_post.url, '/store/')
 
         response_after_login = self.client.get(reverse('store:home'))
         self.assertEqual(response_after_login.status_code, 200)

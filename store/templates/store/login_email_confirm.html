@@ -1,0 +1,22 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Depot Commun | Login bestätigen{% endblock %}
+
+{% block content %}
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Login bestätigen</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <p>Bitte bestätige die Anmeldung für:</p>
+        <p><strong>{{ user.email }}</strong></p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <ion-button expand="block" type="submit">
+                Bestätigen
+            </ion-button>
+        </form>
+    </ion-card-content>
+</ion-card>
+{% endblock %}
