@@ -20,8 +20,7 @@ class BasketFrontendViewTests(TestCase):
             username='frontend-user',
             password='test-pass-123',
         )
-        self.customer.user = self.user
-        self.customer.save()
+        self.customer.users.add(self.user)
         self.client.force_login(self.user)
 
         self.group = ArticleGroup.objects.create(idx=1, name='Food')
@@ -34,7 +33,7 @@ class BasketFrontendViewTests(TestCase):
         )
 
     def test_new_basket_redirects_to_existing_open_basket(self):
-        open_basket = ShoppingBasket.objects.create(customer=self.customer)
+        open_basket = ShoppingBasket.objects.create(customer=self.customer, user=self.user)
 
         response = self.client.post(reverse('store:new-basket'))
 
@@ -45,7 +44,7 @@ class BasketFrontendViewTests(TestCase):
         )
 
     def test_finish_basket_confirmation_and_cancel_then_confirm(self):
-        basket = ShoppingBasket.objects.create(customer=self.customer)
+        basket = ShoppingBasket.objects.create(customer=self.customer, user=self.user)
         Purchase.objects.create(
             article=self.article,
             quantity=2,
@@ -76,7 +75,7 @@ class BasketFrontendViewTests(TestCase):
         self.assertIsNotNone(basket.completed)
 
     def test_finish_basket_delete_removes_incomplete_basket(self):
-        basket = ShoppingBasket.objects.create(customer=self.customer)
+        basket = ShoppingBasket.objects.create(customer=self.customer, user=self.user)
         purchase = Purchase.objects.create(
             article=self.article,
             quantity=1,
@@ -95,7 +94,7 @@ class BasketFrontendViewTests(TestCase):
         self.assertFalse(Purchase.objects.filter(id=purchase.id).exists())
 
     def test_home_lists_open_baskets_and_disables_new_basket_action(self):
-        basket = ShoppingBasket.objects.create(customer=self.customer)
+        basket = ShoppingBasket.objects.create(customer=self.customer, user=self.user)
 
         response = self.client.get(reverse('store:home'))
 
@@ -104,7 +103,7 @@ class BasketFrontendViewTests(TestCase):
         self.assertContains(response, 'disabled="true"')
 
     def test_delete_purchase_endpoint_removes_purchase(self):
-        basket = ShoppingBasket.objects.create(customer=self.customer)
+        basket = ShoppingBasket.objects.create(customer=self.customer, user=self.user)
         purchase = Purchase.objects.create(
             article=self.article,
             quantity=2,
@@ -122,12 +121,12 @@ class BasketFrontendViewTests(TestCase):
 
     def test_home_shows_all_customers_for_user(self):
         second_customer = Customer.objects.create(
-            user=self.user,
             name='Second Customer',
             street='Side Street 2',
             zip='9000',
             city='St. Gallen',
         )
+        second_customer.users.add(self.user)
 
         response = self.client.get(reverse('store:home'))
 
@@ -137,12 +136,12 @@ class BasketFrontendViewTests(TestCase):
 
     def test_new_basket_uses_selected_customer(self):
         second_customer = Customer.objects.create(
-            user=self.user,
             name='Second Customer',
             street='Side Street 2',
             zip='9000',
             city='St. Gallen',
         )
+        second_customer.users.add(self.user)
 
         select_response = self.client.post(
             reverse('store:home'),
@@ -158,12 +157,12 @@ class BasketFrontendViewTests(TestCase):
 
     def test_navbar_displays_selected_customer(self):
         second_customer = Customer.objects.create(
-            user=self.user,
             name='Second Customer',
             street='Side Street 2',
             zip='9000',
             city='St. Gallen',
         )
+        second_customer.users.add(self.user)
 
         self.client.post(
             reverse('store:home'),

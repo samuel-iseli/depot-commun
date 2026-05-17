@@ -88,6 +88,11 @@ class InvoicePurchaseInlineTest(TestCase):
 
 class InvoiceBasketInlineTest(TestCase):
     def setUp(self):
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user(
+            username='basket-user',
+            password='test-pass',
+        )
         self.group = ArticleGroup.objects.create(idx=1, name='Group')
         self.article = Article.objects.create(
             group=self.group,
@@ -102,9 +107,11 @@ class InvoiceBasketInlineTest(TestCase):
             zip='8000',
             city='Zurich',
         )
+        self.customer.users.add(self.user)
         self.invoice = Invoice.objects.create(customer=self.customer)
         self.basket = ShoppingBasket.objects.create(
             customer=self.customer,
+            user=self.user,
             invoice=self.invoice,
             completed=timezone.now(),
         )
@@ -142,6 +149,10 @@ class InvoiceAdminBasketGenerationTest(TestCase):
             password='test-password',
         )
         self.client.force_login(self.admin_user)
+        self.app_user = user_model.objects.create_user(
+            username='app-user',
+            password='test-password',
+        )
 
         self.group = ArticleGroup.objects.create(idx=1, name='Group')
         self.article = Article.objects.create(
@@ -158,16 +169,19 @@ class InvoiceAdminBasketGenerationTest(TestCase):
             zip='8000',
             city='Zurich',
         )
+        self.customer.users.add(self.app_user)
         self.other_customer = Customer.objects.create(
             name='Other Customer',
             street='Example Street 2',
             zip='8001',
             city='Zurich',
         )
+        self.other_customer.users.add(self.app_user)
 
     def test_generate_basket_invoices_creates_invoices_for_completed_uninvoiced_baskets(self):
         completed_basket = ShoppingBasket.objects.create(
             customer=self.customer,
+            user=self.app_user,
             completed=timezone.now(),
         )
         Purchase.objects.create(
@@ -180,6 +194,7 @@ class InvoiceAdminBasketGenerationTest(TestCase):
 
         second_completed_basket = ShoppingBasket.objects.create(
             customer=self.customer,
+            user=self.app_user,
             completed=timezone.now(),
         )
         Purchase.objects.create(
@@ -190,7 +205,7 @@ class InvoiceAdminBasketGenerationTest(TestCase):
             basket=second_completed_basket,
         )
 
-        ignored_open_basket = ShoppingBasket.objects.create(customer=self.customer)
+        ignored_open_basket = ShoppingBasket.objects.create(customer=self.customer, user=self.app_user)
         Purchase.objects.create(
             article=self.article,
             quantity=4,
@@ -202,6 +217,7 @@ class InvoiceAdminBasketGenerationTest(TestCase):
         existing_invoice = Invoice.objects.create(customer=self.other_customer, amount=Decimal('0.00'))
         already_invoiced_basket = ShoppingBasket.objects.create(
             customer=self.other_customer,
+            user=self.app_user,
             completed=timezone.now(),
             invoice=existing_invoice,
         )

@@ -19,8 +19,12 @@ class UserProfileAdmin(UserAdmin):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'user')
+    list_display = ('name', 'email', 'linked_users')
     search_fields = ('name', 'email')
+
+    @admin.display(description='Users')
+    def linked_users(self, customer):
+        return ', '.join(customer.users.values_list('username', flat=True))
 
 
 class ItemAdmin(admin.ModelAdmin):

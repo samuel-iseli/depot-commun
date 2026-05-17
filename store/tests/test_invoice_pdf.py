@@ -1,6 +1,7 @@
 from decimal import Decimal
 from io import BytesIO
 
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from store.tests.test_invoice import InvoiceTestBase
@@ -54,6 +55,15 @@ class InvoiceAppBasketsSectionTest(InvoiceTestBase):
         InvoicePdfRenderer().render_app_baskets(invoice, story)
         return story
 
+    def setUp(self):
+        super().setUp()
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user(
+            username='invoice-basket-user',
+            password='test-pass',
+        )
+        self.customer.users.add(self.user)
+
     def _paragraph_texts(self, story):
         """Flatten all Paragraph text values from table cells in the story."""
         from reportlab.platypus import Table, Paragraph
@@ -76,6 +86,7 @@ class InvoiceAppBasketsSectionTest(InvoiceTestBase):
         invoice = create_invoice(self.customer, self.invoice_datetime, [])
         basket = ShoppingBasket.objects.create(
             customer=self.customer,
+            user=self.user,
             invoice=invoice,
             completed=timezone.now(),
         )
@@ -99,6 +110,7 @@ class InvoiceAppBasketsSectionTest(InvoiceTestBase):
         )
         basket = ShoppingBasket.objects.create(
             customer=self.customer,
+            user=self.user,
             completed=timezone.now(),
         )
         invoice = create_invoice(self.customer, self.invoice_datetime, [direct], baskets=[basket])
@@ -109,7 +121,7 @@ class InvoiceAppBasketsSectionTest(InvoiceTestBase):
     def test_no_tallied_row_when_only_baskets(self):
         invoice = create_invoice(self.customer, self.invoice_datetime, [])
         basket = ShoppingBasket.objects.create(
-            customer=self.customer, invoice=invoice, completed=timezone.now(),
+            customer=self.customer, user=self.user, invoice=invoice, completed=timezone.now(),
         )
         Purchase.objects.create(
             article=self.articles[0], quantity=1,

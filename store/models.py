@@ -8,12 +8,11 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Customer(models.Model):
-    user = models.ForeignKey(
+    users = models.ManyToManyField(
         'UserProfile',
         related_name='customers',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        verbose_name=_('User'))
+        blank=True,
+        verbose_name=_('Users'))
     name = models.CharField(
         max_length=50,
         verbose_name=_('Name'))

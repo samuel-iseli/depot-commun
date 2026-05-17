@@ -16,13 +16,13 @@ class EmailLoginTests(TestCase):
             email='mail-user@example.com',
             password='unused-password',
         )
-        Customer.objects.create(
-            user=self.user,
+        customer = Customer.objects.create(
             name='Mail User Customer',
             street='Main Street 1',
             zip='8000',
             city='Zurich',
         )
+        customer.users.add(self.user)
 
     def test_anonymous_home_redirects_to_custom_login(self):
         response = self.client.get(reverse('store:home'))
@@ -72,7 +72,6 @@ class EmailLoginTests(TestCase):
 
     def test_post_email_creates_user_for_matching_customers_and_sends_confirmation(self):
         Customer.objects.create(
-            user=None,
             name='Fresh Customer One',
             email='new-login@example.com',
             street='Street 1',
@@ -80,7 +79,6 @@ class EmailLoginTests(TestCase):
             city='Zurich',
         )
         Customer.objects.create(
-            user=None,
             name='Fresh Customer Two',
             email='new-login@example.com',
             street='Street 2',
@@ -113,15 +111,14 @@ class EmailLoginTests(TestCase):
             password='unused-password',
         )
         kept_customer = Customer.objects.create(
-            user=existing_user,
             name='Already Linked',
             email='shared-login@example.com',
             street='Street 1',
             zip='8000',
             city='Zurich',
         )
+        kept_customer.users.add(existing_user)
         adopted_customer = Customer.objects.create(
-            user=None,
             name='Adopted Customer',
             email='shared-login@example.com',
             street='Street 2',
@@ -139,9 +136,10 @@ class EmailLoginTests(TestCase):
         kept_customer.refresh_from_db()
         adopted_customer.refresh_from_db()
 
-        self.assertEqual(kept_customer.user_id, existing_user.id)
-        self.assertIsNotNone(adopted_customer.user_id)
-        self.assertNotEqual(adopted_customer.user_id, existing_user.id)
+        self.assertTrue(kept_customer.users.filter(id=existing_user.id).exists())
+        self.assertEqual(kept_customer.users.count(), 1)
+        self.assertEqual(adopted_customer.users.count(), 1)
+        self.assertNotEqual(adopted_customer.users.first().id, existing_user.id)
 
         from django.core import mail
         self.assertEqual(len(mail.outbox), 1)
