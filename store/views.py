@@ -1,6 +1,7 @@
 import logging
 
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_page
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
@@ -348,6 +349,7 @@ def show_basket(request, basket_id):
     return render(request, 'store/show_basket.html', {'basket': basket, 'purchases': purchases, 'purchases_count': len(purchases), 'purchases_total': purchases_total})
 
 
+@cache_page(60 * 5)  # cache for 5 minutes, since article data changes rarely
 @login_required
 def choose_article(request, basket_id):
     basket = ShoppingBasket.objects.get(id=basket_id)
@@ -440,7 +442,9 @@ def inc_dec_quantity(request, purchase_id, delta):
         purchase.delete()
     else:
         purchase.save()
-    return HttpResponseRedirect(f'/store/basket/{purchase.basket.id}/')
+
+    # no redirect after post for better UX - just show updated basket
+    return show_basket(request, purchase.basket.id)
 
 
 @login_required
