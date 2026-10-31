@@ -63,11 +63,13 @@ class EmailLoginTests(TestCase):
         self.assertContains(response, 'Login bestätigen')
 
         response_post = self.client.post(match.group(1), {'next': '/store/'})
-        self.assertEqual(response_post.status_code, 302)
-        self.assertEqual(response_post.url, '/store/')
+        self.assertEqual(response_post.status_code, 200)
+        self.assertContains(response_post, 'Login bestätigt')
 
-        response_after_login = self.client.get(reverse('store:home'))
-        self.assertEqual(response_after_login.status_code, 200)
+        # confirming does not log in the confirming browser; the polling device does
+        self.assertEqual(self.client.get(reverse('store:home')).status_code, 302)
+        self.assertEqual(self.client.get(reverse('store:email-login-status')).json()['status'], 'ok')
+        self.assertEqual(self.client.get(reverse('store:home')).status_code, 200)
 
     def test_invalid_confirmation_link_shows_error(self):
         response = self.client.get('/store/login/confirm/invalid/invalid/')
@@ -147,3 +149,56 @@ class EmailLoginTests(TestCase):
 
         from django.core import mail
         self.assertEqual(len(mail.outbox), 1)
+
+    def _request_login(self, client):
+        client.post(
+            reverse('store:email-login'),
+            {'email': 'mail-user@example.com', 'next': '/store/'},
+        )
+        from django.core import mail
+        match = re.search(r'http://testserver(/store/login/confirm/\S+)', mail.outbox[-1].body)
+        return match.group(1)
+
+    def test_polling_device_is_logged_in_after_link_confirmed_elsewhere(self):
+        from django.test import Client
+        pwa = Client()
+        link = self._request_login(pwa)
+        self.assertIn('lr=', link)
+
+        status_url = reverse('store:email-login-status')
+        self.assertEqual(pwa.get(status_url).json()['status'], 'pending')
+
+        safari = Client()
+        safari.post(link, {'next': '/store/'})
+
+        self.assertEqual(pwa.get(status_url).json(), {'status': 'ok', 'next': '/store/'})
+        self.assertEqual(pwa.get(reverse('store:home')).status_code, 200)
+
+    def test_other_device_cannot_poll_without_session(self):
+        from django.test import Client
+        pwa = Client()
+        link = self._request_login(pwa)
+        Client().post(link, {'next': '/store/'})
+
+        attacker = Client()
+        self.assertEqual(attacker.get(reverse('store:email-login-status')).json()['status'], 'expired')
+
+    def test_login_request_is_single_use(self):
+        from django.test import Client
+        from store.models import LoginRequest
+        pwa = Client()
+        link = self._request_login(pwa)
+        Client().post(link, {'next': '/store/'})
+        pwa.get(reverse('store:email-login-status'))
+        self.assertTrue(LoginRequest.objects.get().consumed)
+
+    def test_expired_login_request_is_not_approved(self):
+        from datetime import timedelta
+        from django.test import Client
+        from django.utils import timezone
+        from store.models import LoginRequest
+        pwa = Client()
+        link = self._request_login(pwa)
+        LoginRequest.objects.update(created=timezone.now() - timedelta(hours=1))
+        Client().post(link, {'next': '/store/'})
+        self.assertEqual(pwa.get(reverse('store:email-login-status')).json()['status'], 'expired')

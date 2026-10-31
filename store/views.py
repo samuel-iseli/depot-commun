@@ -2,7 +2,10 @@ import logging
 
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.core.exceptions import ValidationError
+from django.urls import reverse
+from datetime import timedelta
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import get_user_model, login as auth_login, logout as auth_logout
@@ -19,6 +22,24 @@ from .articles_pdf import ArticlesPdfRenderer
 
 
 logger = logging.getLogger(__name__)
+
+LOGIN_REQUEST_SESSION_KEY = 'login_request_id'
+LOGIN_REQUEST_MAX_AGE = timedelta(minutes=15)
+
+
+def _approve_login_request(request_id, user):
+    if not request_id:
+        return False
+    try:
+        return models.LoginRequest.objects.filter(
+            pk=request_id,
+            user=user,
+            consumed=False,
+            approved__isnull=True,
+            created__gte=timezone.now() - LOGIN_REQUEST_MAX_AGE,
+        ).update(approved=timezone.now()) > 0
+    except (ValidationError, ValueError):
+        return False
 
 
 def _build_unique_username_from_email(user_model, email):
@@ -87,10 +108,15 @@ def email_login_request(request):
         email = request.POST.get('email', '').strip()
         user = _get_or_create_login_user_for_email(email)
 
+        # Always create a request so the response does not reveal whether the e-mail is known.
+        login_request = models.LoginRequest.objects.create(user=user)
+        request.session[LOGIN_REQUEST_SESSION_KEY] = str(login_request.id)
+        request.session['login_next'] = next_url
+
         if user is not None:
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            query_string = urlencode({'next': next_url})
+            query_string = urlencode({'next': next_url, 'lr': str(login_request.id)})
             confirm_url = f'/store/login/confirm/{uidb64}/{token}/?{query_string}'
             confirmation_link = request.build_absolute_uri(confirm_url)
 
@@ -115,9 +141,42 @@ def email_login_request(request):
             msg.attach_alternative(html_body, 'text/html')
             msg.send(fail_silently=False)
 
-        return render(request, 'store/login_email_sent.html', {'email': email})
+        return render(request, 'store/login_email_sent.html', {
+            'email': email,
+            'poll_url': reverse('store:email-login-status'),
+        })
 
     return render(request, 'store/login_email.html', {'next': next_url})
+
+
+def email_login_status(request):
+    """Polled by the device that requested the login; logs it in once the e-mail link was confirmed."""
+    if request.user.is_authenticated:
+        return JsonResponse({'status': 'ok', 'next': request.session.get('login_next', '/store/')})
+
+    request_id = request.session.get(LOGIN_REQUEST_SESSION_KEY)
+    if not request_id:
+        return JsonResponse({'status': 'expired'})
+
+    try:
+        login_request = models.LoginRequest.objects.get(pk=request_id)
+    except (models.LoginRequest.DoesNotExist, ValidationError, ValueError):
+        return JsonResponse({'status': 'expired'})
+
+    if login_request.consumed or timezone.now() - login_request.created > LOGIN_REQUEST_MAX_AGE:
+        return JsonResponse({'status': 'expired'})
+    if login_request.approved is None or login_request.user is None or not login_request.user.is_active:
+        return JsonResponse({'status': 'pending'})
+
+    # Atomic single-use claim so concurrent polls cannot both log in.
+    claimed = models.LoginRequest.objects.filter(pk=login_request.pk, consumed=False).update(consumed=True)
+    if not claimed:
+        return JsonResponse({'status': 'expired'})
+
+    next_url = request.session.get('login_next', '/store/')
+    auth_login(request, login_request.user, backend='django.contrib.auth.backends.ModelBackend')
+    request.session.pop(LOGIN_REQUEST_SESSION_KEY, None)
+    return JsonResponse({'status': 'ok', 'next': next_url})
 
 
 def email_login_confirm(request, uidb64, token):
@@ -164,8 +223,10 @@ def email_login_confirm(request, uidb64, token):
 
     if request.method == 'POST' and user is not None and user.is_active and token_valid:
         logger.info("email_login_confirm success: user_id=%s", user.id)
-        auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-        return HttpResponseRedirect(_get_safe_next_url(request))
+        if _approve_login_request(request.GET.get('lr'), user):
+            return render(request, 'store/login_email_approved.html')
+        logger.warning("email_login_confirm: no pending login request for user_id=%s", user.id)
+        return render(request, 'store/login_email_invalid.html', status=400)
 
     logger.warning(
         "email_login_confirm rejected: has_user=%s is_active=%s token_valid=%s uidb64=%s token=%s",

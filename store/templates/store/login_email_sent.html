@@ -9,7 +9,34 @@
     </ion-card-header>
     <ion-card-content>
         <p>Wenn die E-Mail-Adresse bekannt ist, wurde ein Anmelde-Link gesendet.</p>
-        <p>Diese Seite kann geschlossen werden.</p>
+        <p id="login-wait">Öffne den Link in der E-Mail. Diese Seite meldet Dich danach automatisch an.</p>
+        <p id="login-expired" hidden>Die Anmeldeanfrage ist abgelaufen. <a href="{% url 'store:email-login' %}">Erneut versuchen</a></p>
     </ion-card-content>
 </ion-card>
+<script>
+(function () {
+    var url = "{{ poll_url|escapejs }}";
+    var timer = null;
+    function stop() { clearInterval(timer); }
+    function poll() {
+        fetch(url, {credentials: 'same-origin', cache: 'no-store'})
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.status === 'ok') {
+                    stop();
+                    window.location.href = data.next || '/store/';
+                } else if (data.status === 'expired') {
+                    stop();
+                    document.getElementById('login-wait').hidden = true;
+                    document.getElementById('login-expired').hidden = false;
+                }
+            })
+            .catch(function () {});
+    }
+    timer = setInterval(poll, 2000);
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) { poll(); }
+    });
+})();
+</script>
 {% endblock %}
