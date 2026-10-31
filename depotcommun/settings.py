@@ -155,3 +155,6 @@ EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL', True)
 
 # import export settings
 IMPORT_EXPORT_SKIP_ADMIN_LOG = True
+
+# session lifetime
+SESSION_COOKIE_AGE = 360 * 24 * 60 * 60   # 1 year
